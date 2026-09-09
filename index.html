@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notanext — Lecture de notes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Notanext</h1>
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-label">Score</span>
+        <span id="score" class="stat-value">0</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Série</span>
+        <span id="streak" class="stat-value">0</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="staff-wrap">
+      <svg id="staff" viewBox="0 0 300 200" role="img" aria-label="Portée musicale en clé de sol"></svg>
+    </div>
+
+    <p id="feedback" class="feedback" aria-live="polite">&nbsp;</p>
+
+    <div class="answers" id="answers"></div>
+  </main>
+
+  <script src="js/notes.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/staff.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
