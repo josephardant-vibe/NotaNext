@@ -1,10 +1,14 @@
 // Boucle de jeu : tirage de la note, boutons de réponse, score et série.
 (function () {
-  const { NOTE_NAMES, randomNote, playTone, renderStaff } = window.Notanext;
+  const { NOTE_NAMES, randomNote, playTone, renderStaff, showAnswerLabel } = window.Notanext;
+
+  const CORRECT_PHRASES = ['Bien joué !', 'Bravo !', 'Exactement !', 'Bien vu !', 'Parfait !'];
+  const MAX_STREAK_VISUAL = 8;
 
   const svg = document.getElementById('staff');
   const scoreEl = document.getElementById('score');
   const streakEl = document.getElementById('streak');
+  const streakFillEl = document.getElementById('streak-fill');
   const feedbackEl = document.getElementById('feedback');
   const answersEl = document.getElementById('answers');
 
@@ -23,6 +27,12 @@
     });
   }
 
+  function pop(el) {
+    el.classList.remove('pop');
+    void el.offsetWidth; // force reflow pour rejouer l'animation
+    el.classList.add('pop');
+  }
+
   function nextNote() {
     current = randomNote();
     renderStaff(svg, current);
@@ -34,19 +44,24 @@
   function handleAnswer(name) {
     playTone(current.freq);
 
-    if (name === current.name) {
+    const isCorrect = name === current.name;
+    showAnswerLabel(svg, current, isCorrect);
+
+    if (isCorrect) {
       score++;
       streak++;
-      feedbackEl.textContent = 'Bien joué !';
+      feedbackEl.textContent = CORRECT_PHRASES[Math.floor(Math.random() * CORRECT_PHRASES.length)];
       feedbackEl.className = 'feedback correct';
+      pop(scoreEl);
     } else {
       streak = 0;
-      feedbackEl.textContent = `C'était ${current.name}`;
-      feedbackEl.className = 'feedback incorrect';
+      feedbackEl.textContent = ' ';
+      feedbackEl.className = 'feedback';
     }
 
     scoreEl.textContent = score;
     streakEl.textContent = streak;
+    streakFillEl.style.width = Math.min(streak / MAX_STREAK_VISUAL, 1) * 100 + '%';
 
     setTimeout(nextNote, 900);
   }

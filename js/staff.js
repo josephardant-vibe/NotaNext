@@ -66,5 +66,18 @@ window.Notanext = window.Notanext || {};
     svg.appendChild(head);
   }
 
+  function showAnswerLabel(svg, note, isCorrect) {
+    const existing = svg.querySelector('.answer-label');
+    if (existing) existing.remove();
+
+    const label = document.createElementNS(SVG_NS, 'text');
+    label.setAttribute('x', NOTE_X + 22);
+    label.setAttribute('y', stepToY(note.step) + 5);
+    label.setAttribute('class', 'answer-label ' + (isCorrect ? 'correct' : 'incorrect'));
+    label.textContent = note.name;
+    svg.appendChild(label);
+  }
+
   window.Notanext.renderStaff = renderStaff;
+  window.Notanext.showAnswerLabel = showAnswerLabel;
 })();
