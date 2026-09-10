@@ -1,83 +1,114 @@
-// Dessine la portée en clé de sol et la note courante en SVG.
+// Composant portée : dessine clé + lignes + note(s) ou étiquettes.
+// Réutilisé par les exercices (Deviner / Placer) et par l'onglet Apprendre.
 window.Notanext = window.Notanext || {};
 
 (function () {
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
-  const STAFF_LINE_STEPS = [0, 2, 4, 6, 8]; // Mi4, Sol4, Si4, Ré5, Fa5
-  const BASE_Y = 140; // y de la ligne du bas (step 0)
-  const STEP_PX = 10;
-  const STAFF_X_START = 70;
-  const STAFF_X_END = 280;
-  const NOTE_X = 190;
+  const STEP = 12;                 // demi-espacement de ligne, en unités viewBox
+  const BASE_Y = 106;              // y de la ligne du bas (step 0)
+  const X0 = 46;
+  const X1 = 198;
+  const NOTE_X = 130;
+  const VIEWBOX = '0 -24 210 180'; // marge haut/bas : aucune note coupée
 
-  function stepToY(step) {
-    return BASE_Y - step * STEP_PX;
+  const LINE_STEPS = [0, 2, 4, 6, 8];
+  const yOf = (step) => BASE_Y - step * STEP;
+
+  function el(tag, attrs) {
+    const node = document.createElementNS(SVG_NS, tag);
+    for (const k in attrs) node.setAttribute(k, attrs[k]);
+    return node;
   }
 
-  function drawLedgerLine(svg, y) {
-    const ledger = document.createElementNS(SVG_NS, 'line');
-    ledger.setAttribute('x1', NOTE_X - 12);
-    ledger.setAttribute('x2', NOTE_X + 12);
-    ledger.setAttribute('y1', y);
-    ledger.setAttribute('y2', y);
-    ledger.setAttribute('class', 'ledger-line');
-    svg.appendChild(ledger);
+  function drawClef(svg, clef) {
+    const t = el('text', {
+      x: 2,
+      y: yOf(clef.line) + clef.glyphDy,
+      class: 'clef-glyph',
+      'font-size': clef.glyphSize,
+    });
+    t.textContent = clef.glyph;
+    svg.appendChild(t);
   }
 
-  function renderStaff(svg, note) {
+  function drawLedgers(svg, step, cx) {
+    if (step <= -2) for (let s = -2; s >= step; s -= 2) svg.appendChild(el('line', { class: 'ledger-line', x1: cx - 15, x2: cx + 15, y1: yOf(s), y2: yOf(s) }));
+    if (step >= 10) for (let s = 10; s <= step; s += 2) svg.appendChild(el('line', { class: 'ledger-line', x1: cx - 15, x2: cx + 15, y1: yOf(s), y2: yOf(s) }));
+  }
+
+  function noteAt(cx, step, cls) {
+    const y = yOf(step);
+    const g = el('g', { transform: `rotate(-18 ${cx} ${y})` });
+    g.appendChild(el('ellipse', { class: cls, cx, cy: y, rx: 11, ry: 7.5 }));
+    return g;
+  }
+
+  // opts : { clef, note, ghostStep, sideLabel:{text,ok}, indicator:'ok'|'no', labels:[notes], onNoteClick }
+  function renderStaff(svg, opts) {
+    opts = opts || {};
+    svg.setAttribute('viewBox', VIEWBOX);
     svg.innerHTML = '';
 
-    STAFF_LINE_STEPS.forEach((step) => {
-      const y = stepToY(step);
-      const line = document.createElementNS(SVG_NS, 'line');
-      line.setAttribute('x1', STAFF_X_START);
-      line.setAttribute('x2', STAFF_X_END);
-      line.setAttribute('y1', y);
-      line.setAttribute('y2', y);
-      line.setAttribute('class', 'staff-line');
-      svg.appendChild(line);
-    });
+    LINE_STEPS.forEach((s) => svg.appendChild(el('line', { class: 'staff-line', x1: X0, x2: X1, y1: yOf(s), y2: yOf(s) })));
+    if (opts.clef) drawClef(svg, opts.clef);
 
-    const clef = document.createElementNS(SVG_NS, 'text');
-    clef.setAttribute('x', 20);
-    clef.setAttribute('y', stepToY(4) + 18);
-    clef.setAttribute('class', 'clef');
-    clef.textContent = '\u{1D11E}';
-    svg.appendChild(clef);
-
-    if (!note) return;
-
-    const y = stepToY(note.step);
-
-    if (note.step < 0) {
-      for (let s = -2; s >= note.step; s -= 2) drawLedgerLine(svg, stepToY(s));
-    } else if (note.step > 8) {
-      for (let s = 10; s <= note.step; s += 2) drawLedgerLine(svg, stepToY(s));
+    if (opts.ghostStep != null) {
+      drawLedgers(svg, opts.ghostStep, NOTE_X);
+      svg.appendChild(noteAt(NOTE_X, opts.ghostStep, 'ghost'));
     }
 
-    const head = document.createElementNS(SVG_NS, 'ellipse');
-    head.setAttribute('cx', NOTE_X);
-    head.setAttribute('cy', y);
-    head.setAttribute('rx', 8);
-    head.setAttribute('ry', 6);
-    head.setAttribute('transform', `rotate(-18 ${NOTE_X} ${y})`);
-    head.setAttribute('class', 'note-head');
-    svg.appendChild(head);
+    if (opts.note) {
+      const y = yOf(opts.note.step);
+      drawLedgers(svg, opts.note.step, NOTE_X);
+      svg.appendChild(noteAt(NOTE_X, opts.note.step, 'note-head'));
+
+      if (opts.indicator) {
+        svg.appendChild(el('circle', { cx: NOTE_X + 22, cy: y, r: 4, fill: opts.indicator === 'ok' ? '#3f7d52' : '#9a938a' }));
+      }
+      if (opts.sideLabel) {
+        const t = el('text', { x: NOTE_X + 20, y: y + 4.5, class: 'side-label ' + (opts.sideLabel.ok ? 'ok' : 'no') });
+        t.textContent = opts.sideLabel.text;
+        svg.appendChild(t);
+      }
+      return svg.querySelector('.note-head');
+    }
+
+    if (opts.labels) {
+      const list = opts.labels;
+      const span = (X1 - X0 - 24) / (list.length - 1);
+      list.forEach((nt, i) => {
+        const cx = X0 + 16 + i * span;
+        const cy = yOf(nt.step);
+        drawLedgers(svg, nt.step, cx);
+        const g = noteAt(cx, nt.step, '');
+        g.setAttribute('class', 'learn-note');
+        g.querySelector('ellipse').setAttribute('rx', 6);
+        g.querySelector('ellipse').setAttribute('ry', 4.8);
+        g.querySelector('ellipse').setAttribute('fill', '#b8502f');
+        if (opts.onNoteClick) {
+          g.style.cursor = 'pointer';
+          g.addEventListener('click', () => opts.onNoteClick(nt));
+        }
+        svg.appendChild(g);
+        const t = el('text', { x: cx + 11, y: cy + 3.5, class: 'learn-label' });
+        t.textContent = nt.name;
+        svg.appendChild(t);
+      });
+    }
+
+    return null;
   }
 
-  function showAnswerLabel(svg, note, isCorrect) {
-    const existing = svg.querySelector('.answer-label');
-    if (existing) existing.remove();
-
-    const label = document.createElementNS(SVG_NS, 'text');
-    label.setAttribute('x', NOTE_X + 22);
-    label.setAttribute('y', stepToY(note.step) + 5);
-    label.setAttribute('class', 'answer-label ' + (isCorrect ? 'correct' : 'incorrect'));
-    label.textContent = note.name;
-    svg.appendChild(label);
+  // Convertit un clic sur la portée en `step` (borné à la plage jouable).
+  function eventToStep(svg, clientY) {
+    const r = svg.getBoundingClientRect();
+    const vb = svg.viewBox.baseVal;
+    const scale = Math.min(r.width / vb.width, r.height / vb.height);
+    const offY = (r.height - vb.height * scale) / 2;
+    const y = (clientY - r.top - offY) / scale + vb.y;
+    return Math.max(-2, Math.min(8, Math.round((BASE_Y - y) / STEP)));
   }
 
-  window.Notanext.renderStaff = renderStaff;
-  window.Notanext.showAnswerLabel = showAnswerLabel;
+  window.Notanext.staff = { renderStaff, eventToStep };
 })();
