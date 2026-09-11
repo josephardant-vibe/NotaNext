@@ -376,6 +376,25 @@ select {
   stroke-dasharray: 3 3;
 }
 
+.note-head.reveal-correct {
+  fill: var(--success);
+  fill-opacity: 0.55;
+}
+
+.note-head.reveal-wrong {
+  fill: var(--grey-ind);
+}
+
+.marker-line {
+  stroke: var(--accent);
+  stroke-width: 1.6;
+  opacity: 0.55;
+}
+
+.window-note {
+  transition: transform 0.35s ease;
+}
+
 .side-label {
   font-family: "IBM Plex Sans", sans-serif;
   font-size: 13px;
@@ -384,17 +403,6 @@ select {
 
 .side-label.ok { fill: var(--success); }
 .side-label.no { fill: var(--grey-ind); }
-
-@keyframes noteCorrect {
-  0% { fill: var(--accent); transform: scale(1); }
-  35% { fill: var(--success); transform: scale(1.4); }
-  70% { fill: var(--success); transform: scale(1); }
-  100% { fill: var(--accent); transform: scale(1); }
-}
-
-.note-head.flash {
-  animation: noteCorrect 0.65s ease;
-}
 
 .learn-note {
   cursor: pointer;

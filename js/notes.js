@@ -40,10 +40,17 @@ window.Notanext = window.Notanext || {};
 
   const EXERCISES = [
     {
-      id: 'guess',
+      id: 'guess-window',
       title: 'Deviner la note',
+      tag: 'Plusieurs notes défilent, trouve celle repérée par le trait.',
+      mode: 'guess-window',
+      icon: '<svg viewBox="0 0 60 40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><ellipse cx="8" cy="30" rx="6" ry="4.5" transform="rotate(-15 8 30)"/><line x1="14" y1="27" x2="14" y2="8"/><ellipse cx="28" cy="30" rx="6" ry="4.5" transform="rotate(-15 28 30)"/><line x1="34" y1="27" x2="34" y2="8"/><ellipse cx="48" cy="30" rx="6" ry="4.5" transform="rotate(-15 48 30)"/><line x1="54" y1="27" x2="54" y2="8"/><line x1="28" y1="2" x2="28" y2="38" stroke-width="1.5" opacity="0.7"/></svg>',
+    },
+    {
+      id: 'guess-scroll',
+      title: 'Deviner la note - défilement continu',
       tag: 'Une note est affichée, trouve son nom.',
-      mode: 'guess',
+      mode: 'guess-scroll',
       icon: '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><ellipse cx="13" cy="29" rx="9" ry="6.5" transform="rotate(-18 13 29)"/><path d="M21 27 V 7 C 30 10, 34 16, 32 24"/></svg>',
     },
     {
@@ -51,7 +58,7 @@ window.Notanext = window.Notanext || {};
       title: 'Placer la note',
       tag: 'Un nom est donné, place-le sur la portée.',
       mode: 'place',
-      icon: '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10h32M4 17h32M4 24h32M4 31h32"/><circle cx="27" cy="20.5" r="4" fill="currentColor" stroke="none"/></svg>',
+      icon: '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><ellipse cx="13" cy="29" rx="9" ry="6.5" transform="rotate(-18 13 29)" stroke-dasharray="3 3"/><line x1="21" y1="27" x2="21" y2="7" stroke-dasharray="3 3"/></svg>',
     },
   ];
 
@@ -65,25 +72,25 @@ window.Notanext = window.Notanext || {};
 
   const FAQ_ANSWERS = {
     sol: [
-      'Le Sol sur la 2e ligne.',
+      "La clé de sol t'indique où se trouve la note Sol sur la portée : elle est placée sur la 2e ligne en partant du bas. À partir de cette note de référence, tu retrouves toutes les autres en comptant les lignes et les espaces.",
       'Violon, flûte, hautbois, clarinette, trompette, saxophone, main droite au piano, harpe, voix soprano/alto/ténor.',
-      'Convient aux tessitures aiguës — en clé de fa, ces notes demanderaient trop de lignes supplémentaires au-dessus.',
+      'Convient aux notes aiguës — en clé de fa, ces notes demanderaient trop de lignes supplémentaires au-dessus.',
       "Oui, la clé la plus utilisée en musique aujourd'hui.",
     ],
     fa: [
-      'Le Fa sur la 4e ligne.',
+      "La clé de fa t'indique où se trouve la note Fa sur la portée : elle est placée sur la 4e ligne en partant du bas. À partir de cette note de référence, tu retrouves toutes les autres en comptant les lignes et les espaces.",
       'Violoncelle, contrebasse, basson, trombone, tuba, main gauche au piano, voix graves.',
-      'Convient aux tessitures graves — en clé de sol, ces notes demanderaient trop de lignes en dessous.',
+      'Convient aux notes graves — en clé de sol, ces notes demanderaient trop de lignes en dessous.',
       'Oui, la deuxième plus utilisée, complémentaire de la clé de sol au piano.',
     ],
     utA: [
-      'Le Do central sur la ligne du milieu.',
+      "La clé d'ut alto t'indique où se trouve le Do central sur la portée : il est placé sur la ligne du milieu (la 3e en partant du bas). À partir de cette note de référence, tu retrouves toutes les autres en comptant les lignes et les espaces.",
       "Principalement l'alto (instrument à cordes).",
       "La tessiture de l'alto se situe entre le violon et le violoncelle — les deux autres clés lui imposeraient des lignes supplémentaires.",
       "Oui, la seule clé d'ut encore couramment utilisée en pratique courante.",
     ],
     utT: [
-      'Le Do central sur la 4e ligne.',
+      "La clé d'ut ténor t'indique où se trouve le Do central sur la portée : il est placé sur la 4e ligne en partant du bas. À partir de cette note de référence, tu retrouves toutes les autres en comptant les lignes et les espaces.",
       'Passages aigus du violoncelle, du basson et du trombone ténor.',
       'Évite trop de lignes au-dessus de la portée dans le registre aigu de ces instruments.',
       'Oui mais ponctuellement, pour les passages aigus de ces instruments.',

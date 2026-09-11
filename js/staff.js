@@ -44,7 +44,7 @@ window.Notanext = window.Notanext || {};
     return g;
   }
 
-  // opts : { clef, note, ghostStep, sideLabel:{text,ok}, indicator:'ok'|'no', labels:[notes], onNoteClick }
+  // opts : { clef, note, ghostStep, sideLabel:{text,ok}, reveal:{correctStep,correctName,clickedStep,ok}, labels:[notes], onNoteClick }
   function renderStaff(svg, opts) {
     opts = opts || {};
     svg.setAttribute('viewBox', VIEWBOX);
@@ -63,15 +63,32 @@ window.Notanext = window.Notanext || {};
       drawLedgers(svg, opts.note.step, NOTE_X);
       svg.appendChild(noteAt(NOTE_X, opts.note.step, 'note-head'));
 
-      if (opts.indicator) {
-        svg.appendChild(el('circle', { cx: NOTE_X + 22, cy: y, r: 4, fill: opts.indicator === 'ok' ? '#3f7d52' : '#9a938a' }));
-      }
       if (opts.sideLabel) {
         const t = el('text', { x: NOTE_X + 20, y: y + 4.5, class: 'side-label ' + (opts.sideLabel.ok ? 'ok' : 'no') });
         t.textContent = opts.sideLabel.text;
         svg.appendChild(t);
       }
       return svg.querySelector('.note-head');
+    }
+
+    // Mode Placer : révèle TOUTES les positions valides pour le nom demandé
+    // (vert transparent + nom) et, si la réponse est fausse, la position
+    // cliquée en plus (grise, sans nom) — et rien d'autre.
+    if (opts.reveal) {
+      const { correctSteps, correctName, clickedStep, ok } = opts.reveal;
+      const correctX = ok ? NOTE_X : NOTE_X + 16;
+      if (!ok) {
+        drawLedgers(svg, clickedStep, NOTE_X - 16);
+        svg.appendChild(noteAt(NOTE_X - 16, clickedStep, 'note-head reveal-wrong'));
+      }
+      correctSteps.forEach((step) => {
+        drawLedgers(svg, step, correctX);
+        svg.appendChild(noteAt(correctX, step, 'note-head reveal-correct'));
+        const label = el('text', { x: correctX + 20, y: yOf(step) + 4.5, class: 'side-label ok' });
+        label.textContent = correctName;
+        svg.appendChild(label);
+      });
+      return null;
     }
 
     if (opts.labels) {
@@ -110,5 +127,9 @@ window.Notanext = window.Notanext || {};
     return Math.max(-2, Math.min(8, Math.round((BASE_Y - y) / STEP)));
   }
 
-  window.Notanext.staff = { renderStaff, eventToStep };
+  window.Notanext.staff = {
+    renderStaff,
+    eventToStep,
+    geometry: { STEP, BASE_Y, X0, X1, VIEWBOX, LINE_STEPS },
+  };
 })();
