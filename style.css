@@ -161,6 +161,12 @@ body {
   max-width: 940px;
 }
 
+/* Utilisé par les exercices qui ont besoin de toute la largeur disponible
+   (ex. la portée à défilement continu), plutôt que la largeur standard des cartes. */
+.panel.stretch {
+  max-width: none;
+}
+
 h1 {
   font-family: "Fraunces", Georgia, serif;
   font-weight: 600;
@@ -309,6 +315,7 @@ select {
 .ex-config {
   display: flex;
   justify-content: center;
+  gap: 10px;
   flex: 0 0 auto;
 }
 
@@ -359,8 +366,20 @@ select {
 }
 
 .clef-glyph {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 2.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.clef-glyph .clef-dot {
   fill: var(--ink);
-  font-family: Georgia, "Times New Roman", serif;
+  stroke: none;
+}
+
+.clef-glyph .clef-bar {
+  stroke-width: 5.5;
 }
 
 .note-head {
@@ -492,7 +511,7 @@ select {
 .learn-layout {
   display: flex;
   gap: 16px;
-  height: 100%;
+  flex: 1;
   min-height: 0;
 }
 
@@ -590,6 +609,247 @@ select {
   font-size: 12.5px;
   line-height: 1.55;
   color: #4a443c;
+}
+
+/* ---------- THÉORIE DE BASE & NOTATION ---------- */
+/* Déroulé plein écran : barre du haut (retour + progression) + une seule
+   section (ou un quiz, ou le récap) à la fois dans le corps. */
+.theory-run {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+}
+
+.theory-run-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.theory-progress {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.theory-progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: inherit;
+  transition: width 0.25s ease;
+}
+
+.theory-step-label {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.theory-run-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: auto;
+}
+
+.theory-screen {
+  margin: auto;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.theory-screen h2 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: 20px;
+  margin: 0;
+  color: var(--accent-dark);
+}
+
+.theory-content p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #4a443c;
+}
+
+.theory-run-icon {
+  width: clamp(180px, 60%, 300px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: var(--ink);
+}
+
+.theory-run-icon svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.btn-primary {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 11px 26px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.btn-primary:hover {
+  background: var(--accent-dark);
+}
+
+/* ----- quiz de rappel ----- */
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.quiz-option {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 12px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.quiz-option:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.quiz-option:disabled {
+  cursor: default;
+}
+
+.quiz-option.correct {
+  border-color: var(--success);
+  background: rgba(63, 125, 82, 0.14);
+  color: var(--success);
+  font-weight: 600;
+}
+
+.quiz-option.wrong {
+  border-color: var(--grey-ind);
+  background: rgba(154, 147, 138, 0.14);
+  color: var(--grey-ind);
+}
+
+.quiz-explain {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--paper);
+  border: 1px solid var(--border);
+}
+
+.quiz-explain p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #4a443c;
+}
+
+/* ----- récap ----- */
+.theory-recap-score {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 700;
+  font-size: 40px;
+  margin: 0;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.theory-recap p:not(.theory-recap-score) {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* Glyphe cliquable : surlignage cuivre temporaire pendant la lecture du son
+   (ou, pour un silence, pendant le clignotement qui marque les temps). */
+.theory-glyph {
+  transition: color 0.15s ease;
+}
+
+.theory-glyph.is-playable {
+  cursor: pointer;
+}
+
+.theory-glyph.is-active {
+  color: var(--accent);
+}
+
+.theory-glyph.is-active.is-accent {
+  color: var(--accent-dark);
+}
+
+.theory-label {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  fill: var(--muted);
+  text-anchor: middle;
+}
+
+.theory-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.theory-listen[disabled] {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.train-btn {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 13px;
+  border-radius: 999px;
+  border: 1.5px solid var(--accent);
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--accent-dark);
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 @media (max-width: 760px) {

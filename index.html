@@ -32,21 +32,15 @@
   </div>
 
   <div class="shell" id="view-learn" hidden>
-    <div class="panel wide">
-      <div class="learn-layout">
-        <div class="learn-left">
-          <h2>Les clés</h2>
-          <select id="learn-clef" aria-label="Choisir une clé"></select>
-          <p class="learn-hint">Clique une note pour l'entendre.</p>
-          <div class="learn-staff">
-            <svg id="learn-staff" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Portée annotée"></svg>
-          </div>
+    <div class="panel" id="learn-panel">
+      <div id="learn-grid">
+        <div class="grid-head">
+          <h1>Apprendre</h1>
+          <span class="hint">Choisis une leçon</span>
         </div>
-        <div class="faq">
-          <h3>FAQ</h3>
-          <div id="faq-body"></div>
-        </div>
+        <div class="grid" id="learn-card-grid"></div>
       </div>
+      <div class="ex-page" id="learn-page" hidden></div>
     </div>
   </div>
 
@@ -55,6 +49,7 @@
   <script src="js/staff.js"></script>
   <script src="js/scroll-staff.js"></script>
   <script src="js/window-staff.js"></script>
+  <script src="js/theory.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

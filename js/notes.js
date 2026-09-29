@@ -20,12 +20,14 @@ window.Notanext = window.Notanext || {};
   }
 
   // `base` = numéro diatonique absolu de la note posée sur la ligne du bas de la portée.
-  // `line` = ligne (0,2,4,6,8) sur laquelle la clé fixe sa note de référence.
+  // `line` = ligne (0,2,4,6,8) sur laquelle la clé fixe sa note de référence —
+  // c'est aussi la ligne sur laquelle js/staff.js calibre le tracé de la clé
+  // (`shape`), donc modifier `line` seul suffit à replacer correctement le dessin.
   const CLEFS = [
-    { id: 'sol', label: 'Clé de sol',       glyph: '𝄞', base: 30, line: 2, glyphSize: 104, glyphDy: 38 },
-    { id: 'fa',  label: 'Clé de fa',         glyph: '𝄢', base: 18, line: 6, glyphSize: 70,  glyphDy: 26 },
-    { id: 'utA', label: "Clé d'ut (alto)",   glyph: '𝄡', base: 24, line: 4, glyphSize: 74,  glyphDy: 26 },
-    { id: 'utT', label: "Clé d'ut (ténor)",  glyph: '𝄡', base: 22, line: 6, glyphSize: 74,  glyphDy: 26 },
+    { id: 'sol', label: 'Clé de sol',       shape: 'treble', base: 30, line: 2 },
+    { id: 'fa',  label: 'Clé de fa',         shape: 'bass',   base: 18, line: 6 },
+    { id: 'utA', label: "Clé d'ut (alto)",   shape: 'cclef',  base: 24, line: 4 },
+    { id: 'utT', label: "Clé d'ut (ténor)",  shape: 'cclef',  base: 22, line: 6 },
   ];
 
   function clefById(id) {
@@ -59,6 +61,118 @@ window.Notanext = window.Notanext || {};
       tag: 'Un nom est donné, place-le sur la portée.',
       mode: 'place',
       icon: '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><ellipse cx="13" cy="29" rx="9" ry="6.5" transform="rotate(-18 13 29)" stroke-dasharray="3 3"/><line x1="21" y1="27" x2="21" y2="7" stroke-dasharray="3 3"/></svg>',
+    },
+  ];
+
+  // "Apprendre" est aussi une grille de cartes : ajouter une future leçon
+  // = une entrée ici, comme pour EXERCISES.
+  const LEARN_CARDS = [
+    {
+      id: 'clefs',
+      title: 'Les clés',
+      tag: 'Repères sur la portée et FAQ, clé par clé.',
+      icon: '<svg viewBox="0 0 60 90" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M30 6 C 44 20, 44 34, 30 46 C 18 56, 14 44, 22 38 C 34 30, 44 44, 34 58 C 26 70, 12 66, 10 54 M30 6 C 22 22, 26 44, 30 60 C 33 74, 30 86, 22 86 C 14 86, 12 78, 18 76"/></svg>',
+    },
+    {
+      id: 'theory',
+      title: 'Théorie de base & notation',
+      tag: 'Notes, valeurs, silences, mesure et altérations.',
+      icon: '<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="10" y1="8" x2="10" y2="52"/><line x1="50" y1="8" x2="50" y2="52"/><line x1="10" y1="20" x2="50" y2="20"/><line x1="10" y1="40" x2="50" y2="40"/><ellipse cx="26" cy="34" rx="7" ry="5.2" fill="currentColor" transform="rotate(-15 26 34)"/><line x1="32" y1="31" x2="32" y2="14"/></svg>',
+    },
+  ];
+
+  // Contenu de la carte "Théorie de base & notation" : une pure liste de
+  // données (titre, texte, illustration typée + sons associés + quiz de
+  // rappel). Aucun HTML ici — js/theory.js sait dessiner chaque
+  // `illustration.type` et brancher son son ; le déroulé plein écran +
+  // quiz (game.js) parcourt cette liste. Ajouter une future sous-section
+  // qui réutilise un type existant ne demande qu'une entrée ici.
+  const THEORY_SECTIONS = [
+    {
+      id: 'note',
+      title: "Qu'est-ce qu'une note ?",
+      text: "Une note représente un son musical. Elle a deux informations : sa hauteur (aiguë ou grave, indiquée par sa position sur la portée) et sa durée (combien de temps elle dure).",
+      illustration: {
+        type: 'note-single',
+        sound: { freq: FREQ.Sol4 },
+      },
+      quiz: {
+        question: "Qu'est-ce qui définit une note ?",
+        options: ['Sa couleur', 'Sa hauteur et sa durée', 'Sa position sur la page'],
+        correctIndex: 1,
+      },
+    },
+    {
+      id: 'values',
+      title: 'Les valeurs de note',
+      text: 'La ronde dure 4 temps, la blanche 2 temps, la noire 1 temps.',
+      illustration: {
+        type: 'note-values',
+        sound: { freq: FREQ.Sol4 },
+        items: [
+          { label: 'Ronde', filled: false, stem: false, sound: { beats: 4 } },
+          { label: 'Blanche', filled: false, stem: true, sound: { beats: 2 } },
+          { label: 'Noire', filled: true, stem: true, sound: { beats: 1 } },
+        ],
+      },
+      quiz: {
+        question: 'Combien de temps dure une blanche ?',
+        options: ['1 temps', '2 temps', '4 temps'],
+        correctIndex: 1,
+      },
+    },
+    {
+      id: 'rests',
+      title: 'Les silences',
+      text: "Un silence indique de ne rien jouer, pendant la même durée qu'une note : silence de ronde, de blanche, de noire.",
+      illustration: {
+        type: 'rest-values',
+        items: [
+          { label: 'Ronde', variant: 'whole', pulseBeats: 4 },
+          { label: 'Blanche', variant: 'half', pulseBeats: 2 },
+          { label: 'Noire', variant: 'quarter', pulseBeats: 1 },
+        ],
+      },
+      quiz: {
+        question: 'Que signifie un silence de noire ?',
+        options: ['Jouer une noire', "Ne rien jouer pendant la durée d'une noire", 'Jouer plus fort'],
+        correctIndex: 1,
+      },
+    },
+    {
+      id: 'measure',
+      title: 'La mesure et le temps',
+      text: 'La portée est découpée en mesures par des barres verticales. Un chiffrage au début (par exemple 4/4) indique combien de temps il y a dans chaque mesure.',
+      illustration: {
+        type: 'measure',
+        beats: 4,
+        timeSig: '4/4',
+        sound: { type: 'metronome', accentFirst: true },
+      },
+      quiz: {
+        question: 'Que signifie le chiffrage 4/4 ?',
+        options: ['4 mesures', '4 temps par mesure', '4 notes par ligne'],
+        correctIndex: 1,
+      },
+    },
+    {
+      id: 'accidentals',
+      title: 'Les altérations',
+      text: "Le dièse hausse une note d'un demi-ton, le bémol la baisse d'un demi-ton, le bécarre annule l'altération précédente.",
+      illustration: {
+        type: 'accidentals',
+        sound: { freq: FREQ.Sol4 },
+        items: [
+          { label: 'Dièse', variant: 'sharp', sound: { semitone: 1 } },
+          { label: 'Bémol', variant: 'flat', sound: { semitone: -1 } },
+          { label: 'Bécarre', variant: 'natural' },
+        ],
+      },
+      quiz: {
+        question: 'Que fait un bémol ?',
+        options: ["Hausse d'un demi-ton", "Baisse d'un demi-ton", 'Annule une altération'],
+        correctIndex: 1,
+      },
     },
   ];
 
@@ -98,6 +212,6 @@ window.Notanext = window.Notanext || {};
   };
 
   window.Notanext.data = {
-    FR, CLEFS, clefById, notesOf, EXERCISES, FAQ_QUESTIONS, FAQ_ANSWERS,
+    FR, CLEFS, clefById, notesOf, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS, THEORY_SECTIONS,
   };
 })();

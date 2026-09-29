@@ -1,10 +1,17 @@
 // Application : navigation (onglets, grille de cartes, pages d'exercice) et logique des exercices.
 (function () {
-  const { data, staff, scrollStaff, windowStaff, playTone } = window.Notanext;
-  const { CLEFS, clefById, notesOf, FR, EXERCISES, FAQ_QUESTIONS, FAQ_ANSWERS } = data;
+  const { data, staff, scrollStaff, windowStaff, playTone, theory } = window.Notanext;
+  const { CLEFS, clefById, notesOf, FR, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS, THEORY_SECTIONS } = data;
   const { renderStaff, eventToStep } = staff;
-  const { createScrollStaff } = scrollStaff;
+  const { createScrollStaff, SPEED_LEVELS } = scrollStaff;
   const { createWindowStaff } = windowStaff;
+
+  const SPEED_LABELS = [
+    ['debutant', 'Débutant'],
+    ['intermediaire', 'Intermédiaire'],
+    ['avance', 'Avancé'],
+    ['expert', 'Expert'],
+  ];
 
   const CORRECT_PHRASES = ['Bravo !', 'Exactement !', 'Bien vu !', 'Parfait !'];
 
@@ -22,6 +29,10 @@
   const viewLearn = document.getElementById('view-learn');
   const exGrid = document.getElementById('ex-grid');
   const exPage = document.getElementById('ex-page');
+  const exPanel = document.getElementById('ex-panel');
+  const learnPanel = document.getElementById('learn-panel');
+  const learnGrid = document.getElementById('learn-grid');
+  const learnPage = document.getElementById('learn-page');
 
   // ---------- routeur (générique, indépendant du contenu des exercices) ----------
   function buildGrid() {
@@ -48,6 +59,179 @@
     mountExercise(EXERCISES.find((e) => e.id === id));
   }
 
+  // "Apprendre" suit exactement le même principe que "S'exercer" : une grille
+  // de cartes, une carte ouvre une page dédiée avec un bouton retour. Ajouter
+  // une future leçon ne demande qu'une entrée dans LEARN_CARDS + un mount*.
+  function buildLearnGrid() {
+    const grid = document.getElementById('learn-card-grid');
+    if (grid.childElementCount) return;
+    LEARN_CARDS.forEach((c) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'card';
+      btn.innerHTML = `<div class="card-cover">${c.icon}</div><div class="card-body"><p class="card-title">${c.title}</p><p class="card-tag">${c.tag}</p></div>`;
+      btn.addEventListener('click', () => openLearnCard(c.id));
+      grid.appendChild(btn);
+    });
+  }
+
+  function showLearnGrid() {
+    learnGrid.hidden = false;
+    learnPage.hidden = true;
+    learnPanel.classList.remove('wide');
+  }
+
+  function openLearnCard(id) {
+    learnGrid.hidden = true;
+    learnPage.hidden = false;
+    // "Les clés" reste en deux colonnes (portée + FAQ) ; la théorie est un
+    // déroulé plein écran, une section à la fois, plus à l'aise en largeur
+    // standard (comme les pages d'exercice) qu'en panneau large.
+    learnPanel.classList.toggle('wide', id === 'clefs');
+    if (id === 'theory') mountTheoryPage();
+    else mountClefsPage();
+  }
+
+  // ----- Carte "Les clés" (clé + portée annotée + FAQ, inchangé) -----
+  function mountClefsPage() {
+    learnPage.innerHTML = `
+      <button type="button" class="backbtn" id="learn-back">&#8592; Apprendre</button>
+      <div class="learn-layout">
+        <div class="learn-left">
+          <h2>Les clés</h2>
+          <select id="learn-clef" aria-label="Choisir une clé"></select>
+          <p class="learn-hint">Clique une note pour l'entendre.</p>
+          <div class="learn-staff">
+            <svg id="learn-staff" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Portée annotée"></svg>
+          </div>
+        </div>
+        <div class="faq">
+          <h3>FAQ</h3>
+          <div id="faq-body"></div>
+        </div>
+      </div>
+    `;
+    document.getElementById('learn-back').addEventListener('click', showLearnGrid);
+    buildLearn();
+  }
+
+  // ----- Carte "Théorie de base & notation" -----
+  // Déroulé plein écran, une section à la fois : contenu (illustration +
+  // texte, son déjà branché par js/theory.js) puis quiz de rappel pour cette
+  // section, avant de passer à la suivante. `THEORY_SECTIONS` reste la seule
+  // source de vérité (titre, texte, illustration, quiz) ; ce qui suit ne fait
+  // que la parcourir pas à pas, une future section n'y change rien.
+  function mountTheoryPage() {
+    const N = THEORY_SECTIONS.length;
+    const TOTAL_STEPS = N * 2; // section i : pas 2i = contenu, 2i+1 = quiz
+    let step = 0;
+    let score = 0;
+
+    learnPage.innerHTML = `
+      <div class="theory-run">
+        <div class="theory-run-top" id="theory-run-top"></div>
+        <div class="theory-run-body" id="theory-run-body"></div>
+      </div>
+    `;
+    const topEl = document.getElementById('theory-run-top');
+    const bodyEl = document.getElementById('theory-run-body');
+
+    function renderTop(label) {
+      const pct = Math.round((Math.min(step, TOTAL_STEPS) / TOTAL_STEPS) * 100);
+      topEl.innerHTML = `
+        <button type="button" class="backbtn" id="theory-exit">&#8592; Apprendre</button>
+        <div class="theory-progress" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
+          <div class="theory-progress-fill" style="width:${pct}%"></div>
+        </div>
+        ${label ? `<span class="theory-step-label">${label}</span>` : ''}
+      `;
+      document.getElementById('theory-exit').addEventListener('click', showLearnGrid);
+    }
+
+    function goNext() {
+      step++;
+      render();
+    }
+
+    function render() {
+      if (step >= TOTAL_STEPS) return renderRecap();
+      const sectionIndex = Math.floor(step / 2);
+      const isQuiz = step % 2 === 1;
+      const section = THEORY_SECTIONS[sectionIndex];
+      renderTop(`${isQuiz ? 'Quiz' : 'Section'} ${sectionIndex + 1} sur ${N}`);
+      if (isQuiz) renderQuiz(section);
+      else renderContent(section);
+    }
+
+    function renderContent(section) {
+      bodyEl.innerHTML = `
+        <div class="theory-screen theory-content" id="theory-illustration">
+          <div class="theory-run-icon">${theory.renderIcon(section.illustration)}</div>
+          <h2>${section.title}</h2>
+          <p>${section.text}</p>
+          <div class="theory-actions">
+            ${theory.renderListen(section.illustration)}
+            <button type="button" class="train-btn" disabled title="Bientôt disponible">S'entraîner sur ce thème</button>
+          </div>
+          <button type="button" class="btn-primary" id="theory-next">Suivant &#8594;</button>
+        </div>
+      `;
+      theory.mount(document.getElementById('theory-illustration'), section.illustration);
+      document.getElementById('theory-next').addEventListener('click', goNext);
+    }
+
+    function renderQuiz(section) {
+      const { question, options, correctIndex } = section.quiz;
+      bodyEl.innerHTML = `
+        <div class="theory-screen theory-quiz">
+          <h2>${question}</h2>
+          <div class="quiz-options">
+            ${options.map((opt, i) => `<button type="button" class="quiz-option" data-i="${i}">${opt}</button>`).join('')}
+          </div>
+          <div class="quiz-explain" id="quiz-explain" hidden>
+            <p></p>
+            <button type="button" class="btn-primary" id="theory-next">Suivant &#8594;</button>
+          </div>
+        </div>
+      `;
+      const optionBtns = Array.from(bodyEl.querySelectorAll('.quiz-option'));
+      const explain = document.getElementById('quiz-explain');
+
+      optionBtns.forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const chosen = Number(btn.dataset.i);
+          const ok = chosen === correctIndex;
+          if (ok) score++;
+          optionBtns.forEach((b, i) => {
+            b.disabled = true;
+            if (i === correctIndex) b.classList.add('correct');
+            else if (i === chosen) b.classList.add('wrong');
+          });
+          // Explication : le texte déjà écrit pour cette notion, façon code de la route.
+          explain.querySelector('p').textContent = section.text;
+          explain.hidden = false;
+          document.getElementById('theory-next').addEventListener('click', goNext);
+        }, { once: true });
+      });
+    }
+
+    function renderRecap() {
+      topEl.innerHTML = '<button type="button" class="backbtn" id="theory-exit">&#8592; Apprendre</button>';
+      document.getElementById('theory-exit').addEventListener('click', showLearnGrid);
+      bodyEl.innerHTML = `
+        <div class="theory-screen theory-recap">
+          <h2>Récap</h2>
+          <p class="theory-recap-score">${score} / ${N}</p>
+          <p>Bonnes réponses au quiz de rappel.</p>
+          <button type="button" class="btn-primary" id="theory-finish">Retour à Apprendre</button>
+        </div>
+      `;
+      document.getElementById('theory-finish').addEventListener('click', showLearnGrid);
+    }
+
+    render();
+  }
+
   function setTab(name) {
     const isEx = name === 'ex';
     tabEx.classList.toggle('on', isEx);
@@ -55,7 +239,7 @@
     viewEx.hidden = !isEx;
     viewLearn.hidden = isEx;
     if (isEx) showGrid();
-    else buildLearn();
+    else showLearnGrid();
   }
 
   tabEx.addEventListener('click', () => setTab('ex'));
@@ -67,6 +251,8 @@
     let score = 0;
     let streak = 0;
 
+    exPanel.classList.toggle('stretch', ex.mode === 'guess-scroll');
+
     exPage.innerHTML = `
       <div class="ex-top">
         <button type="button" class="backbtn" id="back">&#8592; Exercices</button>
@@ -75,6 +261,7 @@
       </div>
       <div class="ex-config">
         <select id="clef-sel" aria-label="Choisir une clé">${CLEFS.map((c) => `<option value="${c.id}">${c.label}</option>`).join('')}</select>
+        ${ex.mode === 'guess-scroll' ? `<select id="speed-sel" aria-label="Choisir une vitesse">${SPEED_LABELS.map(([v, label]) => `<option value="${v}"${v === 'intermediaire' ? ' selected' : ''}>${label}</option>`).join('')}</select>` : ''}
       </div>
       ${ex.mode === 'place' ? '<div class="namebox" id="namebox">–</div>' : ''}
       <div class="staff-box"><svg class="staff-svg" id="staff" role="img" aria-label="Portée"></svg></div>
@@ -121,6 +308,10 @@
       clefId = e.target.value;
       controller.onClefChange();
     });
+    const speedSel = document.getElementById('speed-sel');
+    if (speedSel) {
+      speedSel.addEventListener('change', (e) => controller.onSpeedChange(e.target.value));
+    }
 
     // ----- Deviner la note - défilement continu -----
     function mountGuessScroll(svgEl, clefFn, onGood, onBad) {
@@ -142,11 +333,16 @@
         clef: clefFn(),
         pickNote,
         onDue: (note) => playTone(note.freq),
+        // Une note qui dépasse le repère sans réponse compte comme une erreur,
+        // exactement comme une mauvaise réponse donnée à temps.
+        onMiss: (name) => onBad(name),
+        initialSpeed: SPEED_LEVELS.intermediaire,
       });
 
       return {
         currentNote: () => scroll.currentNote(),
         onClefChange: () => scroll.setClef(clefFn()),
+        onSpeedChange: (level) => scroll.setSpeed(SPEED_LEVELS[level]),
         destroy: () => scroll.destroy(),
       };
     }
@@ -279,5 +475,6 @@
   }
 
   buildGrid();
+  buildLearnGrid();
   setTab('ex');
 })();

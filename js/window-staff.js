@@ -6,6 +6,7 @@ window.Notanext = window.Notanext || {};
 (function () {
   const SVG_NS = 'http://www.w3.org/2000/svg';
   const { STEP, BASE_Y, VIEWBOX } = window.Notanext.staff.geometry;
+  const { drawClef } = window.Notanext.staff;
 
   const WINDOW_SIZE = 3;          // notes visibles simultanément (la 2e est la cible)
   const TARGET_INDEX = 1;
@@ -61,14 +62,7 @@ window.Notanext = window.Notanext || {};
       [0, 2, 4, 6, 8].forEach((s) =>
         staticLayer.appendChild(el('line', { class: 'staff-line', x1: 0, x2: 200, y1: yOf(s), y2: yOf(s) }))
       );
-      const t = el('text', {
-        x: 2,
-        y: yOf(currentClef.line) + currentClef.glyphDy,
-        class: 'clef-glyph',
-        'font-size': currentClef.glyphSize,
-      });
-      t.textContent = currentClef.glyph;
-      staticLayer.appendChild(t);
+      drawClef(staticLayer, currentClef);
       staticLayer.appendChild(
         el('line', { class: 'marker-line', x1: SLOTS_X[TARGET_INDEX], x2: SLOTS_X[TARGET_INDEX], y1: -20, y2: 152 })
       );

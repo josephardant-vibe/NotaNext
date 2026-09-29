@@ -21,15 +21,40 @@ window.Notanext = window.Notanext || {};
     return node;
   }
 
+  // Tracés dessinés à la main, calibrés sur les lignes de la portée (STEP/BASE_Y)
+  // plutôt que rendus via un glyphe Unicode musical (𝄞 𝄢 𝄡) dont la position réelle
+  // dépend de la police de secours choisie par le navigateur/l'OS — c'était la
+  // cause du mauvais positionnement (notamment la clé de sol) selon la machine.
+  // Coordonnées locales : (0,0) = le point que `clef.line` doit toucher exactement
+  // (le cœur de la spirale pour sol, entre les 2 points pour fa, le pincement
+  // central pour ut alto/ténor).
+  const CLEF_PATHS = {
+    treble: `M 6,-96 C 22,-92 24,-78 12,-70 C -2,-62 -18,-70 -16,-84 C -14,-95 0,-99 10,-92
+              M 10,-92 C 14,-84 8,-70 -2,-58 C -14,-44 -18,-30 -10,-18 C -4,-9 6,-9 10,-16 C 14,-24 8,-30 3,-27 C -1,-25 0,-19 4,-19
+              M -10,-18 C -15,-18 -18,-5 -13,8 C -7,20 7,25 9,37 C 11,47 2,54 -7,51 C -14,48 -15,40 -10,36 C -7,33 -4,35 -4,38`,
+    bass: 'M -22,-4 C -22,-22 -8,-34 6,-32 C 20,-30 29,-15 26,-1 C 23,13 9,22 -6,22',
+    cclef: 'M -8,-50 C 10,-45 10,-6 -8,0 C 10,6 10,45 -8,50',
+  };
+  const CLEF_OFFSET_X = { treble: 22, bass: 24, cclef: 22 };
+  // Décalage vertical fin : le repère (0,0) du tracé lui-même ne tombe pas
+  // toujours exactement sur son point notable (spirale/pince) une fois dessiné
+  // à la main ; ce petit ajustement corrige l'écart, calibré visuellement.
+  const CLEF_OFFSET_Y = { treble: 18, bass: 0, cclef: 0 };
+
   function drawClef(svg, clef) {
-    const t = el('text', {
-      x: 2,
-      y: yOf(clef.line) + clef.glyphDy,
-      class: 'clef-glyph',
-      'font-size': clef.glyphSize,
-    });
-    t.textContent = clef.glyph;
-    svg.appendChild(t);
+    const y = yOf(clef.line) + CLEF_OFFSET_Y[clef.shape];
+    const g = el('g', { class: 'clef-glyph', transform: `translate(${2 + CLEF_OFFSET_X[clef.shape]},${y})` });
+    g.appendChild(el('path', { d: CLEF_PATHS[clef.shape] }));
+    if (clef.shape === 'bass') {
+      g.appendChild(el('circle', { class: 'clef-dot', cx: 30, cy: -13, r: 3.2 }));
+      g.appendChild(el('circle', { class: 'clef-dot', cx: 30, cy: 10, r: 3.2 }));
+    }
+    if (clef.shape === 'cclef') {
+      g.appendChild(el('line', { class: 'clef-bar', x1: -20, x2: -20, y1: -50, y2: 50 }));
+      g.appendChild(el('line', { x1: 16, x2: 16, y1: -50, y2: 50 }));
+      g.appendChild(el('line', { x1: 24, x2: 24, y1: -50, y2: 50 }));
+    }
+    svg.appendChild(g);
   }
 
   function drawLedgers(svg, step, cx) {
@@ -130,6 +155,7 @@ window.Notanext = window.Notanext || {};
   window.Notanext.staff = {
     renderStaff,
     eventToStep,
+    drawClef,
     geometry: { STEP, BASE_Y, X0, X1, VIEWBOX, LINE_STEPS },
   };
 })();
