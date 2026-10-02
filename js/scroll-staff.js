@@ -12,11 +12,12 @@ window.Notanext = window.Notanext || {};
   const VB_HEIGHT = 180;   // hauteur du viewBox (fixe, comme la portée statique)
   const VB_Y = -24;        // marge haute/basse : aucune note coupée
   const DEFAULT_VB_WIDTH = 210;
-  const MARKER_FRACTION = 1 / 3; // position du repère, en fraction de la largeur du viewBox
+  const MARKER_X = 84;           // repère collé contre la clé (la clé finit vers x = 69), en unités de viewBox
+  const CLIP_X = 68;             // les notes glissent sous le bord droit de la clé
   const EXIT_MARGIN = -30;       // les notes sont retirées un peu après être sorties à gauche
-  const SPACING_X = 65;          // écart (unités de viewBox) entre deux notes générées
+  const SPACING_X = 95;          // écart (unités de viewBox) entre deux notes générées : cibles bien distinctes, aussi au doigt
 
-  const REF_SPEED = 55; // vitesse de référence (unités de viewBox / seconde) = "Intermédiaire"
+  const REF_SPEED = 44; // vitesse de référence (unités de viewBox / seconde) = "Intermédiaire" (55 * 0.8 : tous les niveaux ralentis de 20 %)
   const SPEED_LEVELS = {
     debutant: Math.round(REF_SPEED * 0.6),
     intermediaire: REF_SPEED,
@@ -50,17 +51,23 @@ window.Notanext = window.Notanext || {};
     const notesLayer = el('g', { class: 'scroll-notes' });
     svg.appendChild(staticLayer);
     svg.appendChild(notesLayer);
+    // Rogne les notes à gauche : elles disparaissent sous la clé au lieu de la traverser.
+    const clip = el('clipPath', { id: 'scroll-notes-clip' });
+    const clipRect = el('rect', { x: CLIP_X, y: -100, width: 4000, height: 400 });
+    clip.appendChild(clipRect);
+    svg.insertBefore(clip, staticLayer);
+    notesLayer.setAttribute('clip-path', 'url(#scroll-notes-clip)');
 
     let currentClef = clef;
     let SPEED = initialSpeed || REF_SPEED;
     let spawnInterval = (SPACING_X / SPEED) * 1000; // ms
     let vbWidth = DEFAULT_VB_WIDTH;
     let SPAWN_X = vbWidth;
-    let MARKER_X = vbWidth * MARKER_FRACTION;
 
     let notes = []; // toutes les notes affichées, dans l'ordre d'apparition : { note, x, group, state }
     let queue = [];  // sous-ensemble non tranchées (state === 'pending'), même ordre
     let rafId = null;
+    let paused = false;
     let clock = 0;
     let nextSpawnAt = 0;
 
@@ -83,7 +90,6 @@ window.Notanext = window.Notanext || {};
     function updateGeometry() {
       vbWidth = measureVbWidth();
       SPAWN_X = vbWidth;
-      MARKER_X = vbWidth * MARKER_FRACTION;
       svg.setAttribute('viewBox', `0 ${VB_Y} ${vbWidth} ${VB_HEIGHT}`);
     }
 
@@ -132,7 +138,7 @@ window.Notanext = window.Notanext || {};
 
     function tick(nowReal) {
       let dt = 0;
-      if (!document.hidden) dt = Math.min(nowReal - lastReal, 100);
+      if (!document.hidden && !paused) dt = Math.min(nowReal - lastReal, 100);
       lastReal = nowReal;
       clock += dt;
 
@@ -198,6 +204,10 @@ window.Notanext = window.Notanext || {};
       setClef(newClef) {
         currentClef = newClef;
         drawStatic();
+      },
+      // Gèle l'horloge (ex. pendant la configuration du clavier) : rien n'avance ni n'est compté raté.
+      setPaused(value) {
+        paused = value;
       },
       setSpeed(newSpeed) {
         SPEED = newSpeed;

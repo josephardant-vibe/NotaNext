@@ -13,8 +13,10 @@ window.Notanext = window.Notanext || {};
   // `duration` (secondes) : durée totale du son avant extinction complète.
   // Par défaut 0.7s, comme avant — les appels existants (jeux, "Les clés")
   // ne passent pas ce paramètre et ne changent pas de son.
-  function playTone(freq, duration) {
+  // `volume` (gain de crête, 0-1) : 0.25 par défaut, comme avant.
+  function playTone(freq, duration, volume) {
     duration = duration || 0.7;
+    volume = volume || 0.25;
     try {
       const audioCtx = getContext();
       const now = audioCtx.currentTime;
@@ -27,7 +29,7 @@ window.Notanext = window.Notanext || {};
 
       // Enveloppe courte pour éviter les clics et donner un son net.
       gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(0.25, now + 0.02);
+      gain.gain.linearRampToValueAtTime(volume, now + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
       osc.connect(gain).connect(audioCtx.destination);

@@ -122,10 +122,24 @@ window.Notanext = window.Notanext || {};
 
         entries = entries.slice(1).concat([{ note: freshNote, group: freshGroup }]);
 
-        setTimeout(() => {
+        // Le son de la nouvelle cible ne part qu'une fois son glissement terminé
+        // (transitionend), et non sur un simple minuteur qui peut se déclencher
+        // une image avant la fin réelle de l'animation CSS. Le minuteur n'est
+        // qu'un filet de sécurité si l'événement ne vient pas.
+        const arriving = entries[TARGET_INDEX];
+        let settled = false;
+        const settle = () => {
+          if (settled) return;
+          settled = true;
+          arriving.group.removeEventListener('transitionend', onEnd);
           locked = false;
-          if (onDue) onDue(entries[TARGET_INDEX].note);
-        }, TRANSITION_MS);
+          if (onDue) onDue(arriving.note);
+        };
+        const onEnd = (e) => {
+          if (e.target === arriving.group && e.propertyName === 'transform') settle();
+        };
+        arriving.group.addEventListener('transitionend', onEnd);
+        setTimeout(settle, TRANSITION_MS + 150);
       },
       setClef(newClef) {
         currentClef = newClef;

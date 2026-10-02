@@ -107,6 +107,16 @@ body {
   cursor: pointer;
 }
 
+.nav button.nav-kbd {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+}
+
+.nav button.nav-kbd:hover {
+  color: var(--accent-dark);
+}
+
 .nav button.on {
   background: var(--accent);
   color: #fff;
@@ -366,20 +376,9 @@ select {
 }
 
 .clef-glyph {
-  fill: none;
-  stroke: var(--ink);
-  stroke-width: 2.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.clef-glyph .clef-dot {
+  font-family: "Noto Music", serif;
   fill: var(--ink);
   stroke: none;
-}
-
-.clef-glyph .clef-bar {
-  stroke-width: 5.5;
 }
 
 .note-head {
@@ -722,6 +721,58 @@ select {
   background: var(--accent-dark);
 }
 
+.btn-secondary {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 9.5px 22px;
+  border: 1.5px solid var(--accent);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
+  color: var(--accent-dark);
+  cursor: pointer;
+  margin-top: 6px;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.theory-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* ----- mini-jeux d'écoute ----- */
+.listen-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 420px;
+  margin: auto;
+}
+
+.listen-screen {
+  margin: auto;
+}
+
+.listen-answers {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.listen-answers .quiz-option {
+  flex: 1;
+  text-align: center;
+  font-size: 16px;
+  padding: 16px 10px;
+}
+
 /* ----- quiz de rappel ----- */
 .quiz-options {
   display: flex;
@@ -875,4 +926,87 @@ select {
 @media (max-height: 540px) {
   body { overflow: auto; }
   .shell { min-height: 560px; }
+}
+
+/* ----- clavier personnalisable (défilement continu) ----- */
+.key-hint {
+  display: block;
+  min-height: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted);
+  line-height: 12px;
+}
+
+.kbd-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  background: var(--paper);
+  overflow: auto;
+}
+
+.kbd-panel {
+  margin: auto;
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  text-align: center;
+}
+
+.kbd-panel h2 {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: 20px;
+  margin: 0;
+  color: var(--accent-dark);
+}
+
+.kbd-panel p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.kbd-rows {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kbd-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.kbd-key {
+  min-width: 150px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.kbd-key:hover,
+.kbd-key.waiting {
+  border-color: var(--accent);
+}
+
+.kbd-key.waiting {
+  color: var(--accent-dark);
 }

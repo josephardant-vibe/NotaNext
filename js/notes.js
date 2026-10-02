@@ -68,6 +68,12 @@ window.Notanext = window.Notanext || {};
   // = une entrée ici, comme pour EXERCISES.
   const LEARN_CARDS = [
     {
+      id: 'listen',
+      title: 'Les bases : écoute et ressens',
+      tag: "5 mini-jeux d'écoute : aigu, durée, volume, répétition, comptage.",
+      icon: '<svg viewBox="0 0 60 40" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><ellipse cx="17" cy="29" rx="8" ry="5.8" fill="currentColor" transform="rotate(-18 17 29)"/><ellipse cx="43" cy="12" rx="8" ry="5.8" transform="rotate(-18 43 12)"/></svg>',
+    },
+    {
       id: 'clefs',
       title: 'Les clés',
       tag: 'Repères sur la portée et FAQ, clé par clé.',
@@ -77,7 +83,7 @@ window.Notanext = window.Notanext || {};
       id: 'theory',
       title: 'Théorie de base & notation',
       tag: 'Notes, valeurs, silences, mesure et altérations.',
-      icon: '<svg viewBox="0 0 60 60" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="10" y1="8" x2="10" y2="52"/><line x1="50" y1="8" x2="50" y2="52"/><line x1="10" y1="20" x2="50" y2="20"/><line x1="10" y1="40" x2="50" y2="40"/><ellipse cx="26" cy="34" rx="7" ry="5.2" fill="currentColor" transform="rotate(-15 26 34)"/><line x1="32" y1="31" x2="32" y2="14"/></svg>',
+      icon: '<svg viewBox="0 0 40 60" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><ellipse cx="13" cy="47" rx="10" ry="7" fill="currentColor" transform="rotate(-20 13 47)"/><path d="M22 44 V 8"/></svg>',
     },
   ];
 
@@ -212,6 +218,6 @@ window.Notanext = window.Notanext || {};
   };
 
   window.Notanext.data = {
-    FR, CLEFS, clefById, notesOf, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS, THEORY_SECTIONS,
+    FR, FREQ, CLEFS, clefById, notesOf, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS, THEORY_SECTIONS,
   };
 })();
