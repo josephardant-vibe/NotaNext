@@ -370,6 +370,8 @@
     else showLearnGrid();
   }
 
+  window.Notanext.app = { setTab };
+
   tabEx.addEventListener('click', () => setTab('ex'));
   tabLearn.addEventListener('click', () => setTab('learn'));
 
