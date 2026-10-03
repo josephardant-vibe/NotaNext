@@ -16,44 +16,85 @@
   <section class="home" id="view-home" hidden>
     <header class="home-header">
       <a href="#" class="home-logo" data-go="ex">NotaNext</a>
-      <nav class="home-nav" aria-label="Navigation principale">
-        <a href="#" class="on" data-go="ex">S'exercer</a>
-        <span aria-hidden="true">&middot;</span>
-        <a href="#" data-go="learn">Apprendre</a>
+      <nav class="home-nav" aria-label="Sections de la page">
+        <a href="#comment" data-scroll>Comment ça marche</a>
+        <a href="#jeux" data-scroll>Les jeux</a>
+        <a href="#cours" data-scroll>Les cours</a>
+        <a href="#methode" data-scroll>Notre méthode</a>
       </nav>
-      <div></div>
+      <a href="#" class="home-enter" data-go="ex">S'exercer</a>
     </header>
 
-    <main class="home-main">
-      <svg class="home-blob" viewBox="0 0 400 300" aria-hidden="true"><ellipse cx="200" cy="150" rx="190" ry="136" transform="rotate(-20 200 150)"/></svg>
-      <div class="home-grid">
-        <div class="home-text">
-          <h1>Apprends à lire la musique.<br><em>Puis à l'entendre.</em></h1>
-          <p>Maîtrise les notes, développe ton oreille et progresse à ton rythme grâce à une pratique interactive.</p>
-          <div class="home-cta">
-            <a href="#" class="home-btn" data-go="ex">Commencer gratuitement
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
-            <span>Directement dans ton navigateur, sans installation.</span>
+    <div class="home-hero">
+      <main class="home-main">
+        <svg class="home-blob" viewBox="0 0 400 300" aria-hidden="true"><ellipse cx="200" cy="150" rx="190" ry="136" transform="rotate(-20 200 150)"/></svg>
+        <div class="home-grid">
+          <div class="home-text">
+            <h1>Apprends à lire la musique.<br><em>Puis à l'entendre.</em></h1>
+            <p>Maîtrise les notes, développe ton oreille et progresse à ton rythme grâce à une pratique interactive.</p>
+            <div class="home-cta">
+              <a href="#" class="home-btn" data-go="ex">Commencer gratuitement
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </a>
+              <span>Directement dans ton navigateur, sans installation.</span>
+            </div>
+          </div>
+
+          <div class="home-demo" aria-label="Aperçu d'un exercice">
+            <div class="home-demo-top">
+              <div class="home-demo-tabs"><span class="on">Deviner la note</span><span>Oreille</span></div>
+              <span class="home-demo-count" id="home-count">1 / 8</span>
+            </div>
+            <svg viewBox="0 0 400 130" width="100%" role="img" aria-label="Portée en clé de sol avec une note">
+              <path class="home-staff" d="M8 40H392M8 52H392M8 64H392M8 76H392M8 88H392"/>
+              <text class="home-clef" x="22" y="94" font-size="60">&#x1D11E;</text>
+              <ellipse id="home-note" cx="250" cy="70" rx="9.5" ry="7" transform="rotate(-20 250 70)"/>
+              <path id="home-stem" d="M259 70V32"/>
+            </svg>
+            <div class="home-question" id="home-question">Quelle est cette note ?</div>
+            <div class="home-answers" id="home-answers"></div>
           </div>
         </div>
+      </main>
+    </div>
 
-        <div class="home-demo" aria-label="Aperçu d'un exercice">
-          <div class="home-demo-top">
-            <div class="home-demo-tabs"><span class="on">Deviner la note</span><span>Oreille</span></div>
-            <span class="home-demo-count" id="home-count">1 / 8</span>
-          </div>
-          <svg viewBox="0 0 400 130" width="100%" role="img" aria-label="Portée en clé de sol avec une note">
-            <path class="home-staff" d="M8 40H392M8 52H392M8 64H392M8 76H392M8 88H392"/>
-            <text class="home-clef" x="22" y="94" font-size="60">&#x1D11E;</text>
-            <ellipse id="home-note" cx="250" cy="70" rx="9.5" ry="7" transform="rotate(-20 250 70)"/>
-            <path id="home-stem" d="M259 70V32"/>
-          </svg>
-          <div class="home-question" id="home-question">Quelle est cette note ?</div>
-          <div class="home-answers" id="home-answers"></div>
+    <section class="home-section" id="comment">
+      <div class="home-wrap">
+        <h2>Comment NotaNext fonctionne</h2>
+        <div class="home-steps">
+          <div class="home-step"><span>1</span><h3>Choisis un exercice</h3><p>Lecture de notes, défilement ou placement : prends celui qui te convient.</p></div>
+          <div class="home-step"><span>2</span><h3>Réponds, c'est corrigé aussitôt</h3><p>Vert si c'est juste, la bonne réponse affichée sinon : tu apprends à chaque note.</p></div>
+          <div class="home-step"><span>3</span><h3>Reviens quand tu veux</h3><p>Pas de compte à créer : tout se passe dans ton navigateur, tu reprends en un clic.</p></div>
         </div>
       </div>
-    </main>
+    </section>
+
+    <section class="home-section" id="methode">
+      <div class="home-wrap home-method">
+        <h2>Apprendre en s'exerçant</h2>
+        <div>
+          <p>Se tester retient mieux que relire : chercher la réponse ancre la note plus solidement qu'une seconde lecture.</p>
+          <p>Espacer les séances aide la mémoire : mieux vaut dix minutes plusieurs fois par semaine qu'une longue session isolée.</p>
+          <p>NotaNext applique ces deux principes avec des manches courtes, corrigées tout de suite, faciles à reprendre souvent.</p>
+          <div class="home-sources">
+            <a href="https://doi.org/10.1111/j.1467-9280.2006.01693.x" target="_blank" rel="noopener">Se tester retient mieux que relire — Roediger &amp; Karpicke, 2006</a>
+            <a href="https://pubmed.ncbi.nlm.nih.gov/26173288/" target="_blank" rel="noopener">Tester et espacer : deux des techniques d'étude les plus efficaces — Dunlosky et al., 2013</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="home-section" id="jeux">
+      <div class="home-wrap">
+        <h2>Les jeux</h2>
+        <div class="home-tiles" id="home-tiles"></div>
+      </div>
+    </section>
+
+    <section class="home-section" id="cours">
+      <div class="home-wrap"><h2>Les cours</h2></div>
+      <div class="home-courses" id="home-courses"></div>
+    </section>
 
     <footer class="home-footer"><a href="mailto:contact@notanext.app">contact@notanext.app</a></footer>
   </section>

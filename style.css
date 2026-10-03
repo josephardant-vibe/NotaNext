@@ -1026,27 +1026,35 @@ body.is-home .shell {
 .home {
   flex: 1;
   min-height: 0;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   position: relative;
   background: var(--paper);
 }
 
+.home {
+  scroll-behavior: smooth;
+}
+
 .home-header {
   position: sticky;
   top: 0;
   z-index: 10;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  height: 68px;
+  justify-content: space-between;
+  column-gap: 24px;
+  min-height: 68px;
   padding: 0 clamp(20px, 4vw, 56px);
   background: var(--paper);
 }
 
 .home-logo {
-  justify-self: start;
+  order: 1;
+  padding: 14px 0 8px;
   font-family: "Fraunces", Georgia, serif;
   font-weight: 600;
   font-size: 24px;
@@ -1056,28 +1064,47 @@ body.is-home .shell {
 }
 
 .home-nav {
+  order: 2;
+  flex: 1 1 520px;
   display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--border);
+  justify-content: center;
+  gap: clamp(16px, 2.4vw, 32px);
+  font-size: 14.5px;
+  white-space: nowrap;
 }
 
-.home-nav a {
-  padding: 6px 4px;
-  color: var(--ink);
+.home-nav a,
+.home-enter {
+  color: color-mix(in srgb, var(--ink) 78%, var(--paper));
   text-decoration: none;
-  border-bottom: 2px solid transparent;
 }
 
-.home-nav a.on {
+.home-enter {
+  order: 2;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.home-logo:hover,
+.home-nav a:hover,
+.home-enter:hover {
   color: var(--accent);
-  border-bottom-color: var(--accent);
 }
 
-.home-nav a:hover {
-  color: var(--accent-dark);
+@media (max-width: 760px) {
+  .home-nav {
+    order: 3;
+    flex-basis: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+}
+
+.home-hero {
+  min-height: calc(100dvh - 68px);
+  display: flex;
+  flex-direction: column;
 }
 
 .home-main {
@@ -1300,11 +1327,242 @@ body.is-home .shell {
 }
 
 .home-footer {
-  padding: 0 clamp(20px, 4vw, 56px) 24px;
-  font-size: 13px;
+  margin-top: clamp(64px, 9vw, 120px);
+  padding: 24px clamp(20px, 4vw, 56px) 28px;
+  border-top: 1px solid var(--border);
+  font-size: 13.5px;
 }
 
 .home-footer a {
+  color: var(--muted);
+}
+
+.home-section {
+  scroll-margin-top: 72px;
+  padding: clamp(56px, 8vw, 110px) clamp(20px, 4vw, 56px) 0;
+}
+
+.home-section:last-of-type {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.home-wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.home-section:last-of-type .home-wrap {
+  padding: 0 clamp(20px, 4vw, 56px);
+}
+
+.home-section h2 {
+  margin: 0 0 clamp(28px, 4vw, 52px);
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.home-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: clamp(28px, 4vw, 56px);
+}
+
+.home-step {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 20px;
+  border-top: 1.5px solid var(--border);
+}
+
+.home-step span {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 56px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--accent);
+}
+
+.home-step h3,
+.home-tile h3,
+.home-course h3 {
+  margin: 0;
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.home-step h3 { margin-top: 6px; font-size: 22px; }
+
+.home-step p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.55;
+  color: color-mix(in srgb, var(--ink) 78%, var(--paper));
+}
+
+.home-method {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+  gap: clamp(28px, 5vw, 80px);
+  align-items: start;
+}
+
+.home-method h2 {
+  margin: 0;
+}
+
+.home-method > div {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 38em;
+}
+
+.home-method p {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.home-sources {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.home-sources a {
+  color: var(--accent);
+}
+
+.home-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 480px), 1fr));
+  gap: 20px;
+}
+
+.home-tile,
+.home-course {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px 24px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--paper) 88%, #e7cba2);
+  border: 1.5px solid var(--border);
+}
+
+.home-tile.soon,
+.home-course.soon {
+  background: transparent;
+  border-style: dashed;
+}
+
+.home-tile h3 { font-size: 22px; }
+
+.home-tile p {
+  margin: 4px 0 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.home-tile svg {
+  display: block;
+  width: 100%;
+}
+
+.home-tile.soon svg { opacity: 0.5; }
+
+.home-tile-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+}
+
+.home-tile-msg {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: 18px;
+}
+
+.home-tile-msg.ok { color: var(--success); }
+.home-tile-msg.no { color: var(--grey-ind); }
+
+.home-try {
+  padding: 9px 20px;
+  border: 1.5px solid var(--accent);
+  border-radius: 999px;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.home-try:hover {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+.home-soon {
+  align-self: flex-start;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--paper) 85%, var(--border));
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* Bandeau des cours : défile horizontalement, avec accroche à chaque carte. */
+.home-courses {
+  display: flex;
+  gap: 20px;
+  padding: 0 clamp(20px, 4vw, 56px);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.home-courses::-webkit-scrollbar {
+  display: none;
+}
+
+.home-course {
+  flex: 0 0 min(300px, 80vw);
+  min-height: 240px;
+  scroll-snap-align: start;
+  gap: 12px;
+}
+
+.home-course-kicker {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.home-course h3 { font-size: 24px; }
+
+.home-course .home-try {
+  align-self: flex-start;
+}
+
+.home-course p {
+  flex: 1;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
   color: var(--muted);
 }
 
