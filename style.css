@@ -21,6 +21,7 @@ body {
 
 body {
   margin: 0;
+  background: var(--paper);
   color: var(--ink);
   font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
   min-height: 100dvh;
@@ -30,7 +31,10 @@ body {
   position: relative;
 }
 
-/* ---------- FOND ANIMÉ ---------- */
+/* ---------- FOND ---------- */
+/* Le fond dégradé animé est celui de l'app ; les anciens pictogrammes flottants restent masqués. */
+.bg-icons { display: none; }
+
 .bg {
   position: fixed;
   inset: -20%;
@@ -84,97 +88,128 @@ body {
   50% { transform: translateY(-18px) rotate(3deg); }
 }
 
-/* ---------- NAVBAR ---------- */
+/* ---------- HEADER APP ---------- */
 .nav {
   position: relative;
   z-index: 3;
   flex: 0 0 auto;
   display: flex;
-  gap: 6px;
-  justify-content: center;
-  padding: 9px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px clamp(16px, 4vw, 56px) 8px;
 }
 
 .nav button {
   border: 0;
   font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 8px 18px;
-  border-radius: 999px;
-  color: var(--muted);
-  background: rgba(255, 255, 255, 0.45);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  background: none;
   cursor: pointer;
+}
+
+.app-tabs,
+.app-user {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2vw, 22px);
+}
+
+.app-tabs button,
+.app-user button {
+  padding: 8px 4px;
+  border-bottom: 2px solid transparent;
+}
+
+.app-tabs button:hover,
+.app-user button:hover { color: var(--accent-dark); }
+
+.nav button.on {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
 }
 
 .nav button.nav-kbd {
   display: flex;
   align-items: center;
-  padding: 8px 12px;
+  color: var(--muted);
 }
 
-.nav button.nav-kbd:hover {
-  color: var(--accent-dark);
+.app-user { margin-left: clamp(8px, 2vw, 28px); }
+
+.app-member {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.nav button.on {
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   background: var(--accent);
   color: #fff;
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: 15px;
 }
 
-/* ---------- COQUILLE / PANNEAU VERRE ---------- */
+.avatar.big {
+  width: 84px;
+  height: 84px;
+  font-size: 40px;
+}
+
+/* Retour à l'accueil depuis l'app. */
+.nav .nav-home {
+  margin-right: auto;
+  padding: 0;
+  border: 0;
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+.nav .nav-home:hover {
+  color: var(--accent);
+}
+
+/* ---------- COQUILLE / CARTE VERRE ---------- */
+/* Un seul panneau « verre » par écran : la carte occupe presque tout l'écran. */
 .shell {
   position: relative;
   z-index: 2;
   flex: 1;
   min-height: 0;
   display: flex;
-  align-items: center;
   justify-content: center;
   padding: 0 12px 12px;
 }
 
 .panel {
+  position: relative;
   width: 100%;
-  max-width: 560px;
+  max-width: 1280px;
   height: 100%;
-  max-height: 860px;
   display: flex;
   flex-direction: column;
-  padding: 18px 20px;
+  padding: clamp(16px, 2.4vw, 28px) clamp(16px, 3vw, 36px);
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.52);
   backdrop-filter: blur(7px) brightness(1.04) saturate(135%);
   -webkit-backdrop-filter: blur(7px) brightness(1.04) saturate(135%);
   border: 1px solid rgba(255, 255, 255, 0.62);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.8),
-    0 16px 36px -20px rgba(33, 29, 24, 0.32);
-  overflow: hidden;
-}
-
-.panel::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  background: radial-gradient(130% 55% at 22% -8%, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) 55%);
-  pointer-events: none;
-}
-
-.panel > * {
-  position: relative;
-  z-index: 1;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  overflow: auto;
 }
 
 .panel.wide {
-  max-width: 940px;
-}
-
-/* Utilisé par les exercices qui ont besoin de toute la largeur disponible
-   (ex. la portée à défilement continu), plutôt que la largeur standard des cartes. */
-.panel.stretch {
-  max-width: none;
+  max-width: 1280px;
 }
 
 h1 {
@@ -185,77 +220,73 @@ h1 {
   letter-spacing: -0.01em;
 }
 
-/* ---------- GRILLE DE CARTES ---------- */
+/* ---------- HUBS : GRILLE DE TUILES ---------- */
 .grid-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 16px;
+  margin: 16px 0 28px;
 }
 
-.grid-head .hint {
-  font-size: 12px;
-  color: var(--muted);
+.grid-head h1 {
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.05;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
 }
 
-.card {
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-height: 188px;
+  padding: 22px 24px 20px;
   text-align: left;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  overflow: hidden;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.6);
   font: inherit;
   color: var(--ink);
-  padding: 0;
-  transition: border-color 0.12s, transform 0.12s;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: border-color 0.12s;
 }
 
-.card:hover {
-  border-color: var(--accent);
-  transform: translateY(-2px);
+.tile:hover:not(.soon) { border-color: var(--accent); }
+
+.tile-icon { color: var(--accent); margin-bottom: 8px; }
+
+.tile-title {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1.15;
 }
 
-.card-cover {
-  height: 114px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--paper);
-  border-bottom: 1px solid var(--border);
+.tile-desc {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.tile-go {
+  margin-top: auto;
+  padding-top: 12px;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--accent);
 }
 
-.card-cover svg {
-  width: 54px;
-  height: 54px;
-}
-
-.card-body {
-  padding: 13px 15px 15px;
-}
-
-.card-title {
-  font-family: "Fraunces", Georgia, serif;
-  font-weight: 600;
-  font-size: 17px;
-  margin: 0 0 4px;
-}
-
-.card-tag {
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.4;
-}
+.tile.soon { cursor: default; background: transparent; border-style: dashed; }
+.tile.soon .tile-icon,
+.tile.soon .tile-title,
+.tile.soon .tile-go { color: var(--grey-ind); }
+.tile.soon .tile-go { font-weight: 500; }
 
 @media (max-width: 520px) {
   .grid { grid-template-columns: 1fr; }
+  .tile { min-height: 0; }
 }
 
 /* ---------- PAGE EXERCICE ---------- */
@@ -890,43 +921,17 @@ select {
   cursor: default;
 }
 
-.train-btn {
-  font: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 6px 13px;
-  border-radius: 999px;
-  border: 1.5px solid var(--accent);
-  background: rgba(255, 255, 255, 0.5);
-  color: var(--accent-dark);
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
 @media (max-width: 760px) {
-  .panel.wide { max-height: none; }
   .learn-layout {
     flex-direction: column;
     height: auto;
   }
-  body:has(#view-learn:not([hidden])) { overflow: auto; }
 }
 
 [hidden] {
   display: none !important;
 }
 
-@media (max-width: 460px) {
-  .panel {
-    padding: 15px;
-    border-radius: 18px;
-  }
-}
-
-@media (max-height: 540px) {
-  body { overflow: auto; }
-  .shell { min-height: 560px; }
-}
 
 /* ----- clavier personnalisable (défilement continu) ----- */
 .key-hint {
@@ -1566,25 +1571,329 @@ body.is-home .shell {
   color: var(--muted);
 }
 
-/* Retour à l'accueil depuis l'app. */
-.nav .nav-home {
-  position: absolute;
-  left: clamp(16px, 3vw, 40px);
-  top: 50%;
-  transform: translateY(-50%);
-  padding: 0;
-  background: none;
-  font-family: "Fraunces", Georgia, serif;
-  font-weight: 600;
-  font-size: 19px;
-  letter-spacing: -0.01em;
-  color: var(--ink);
+/* ---------- PAGES D'APPRENDRE (cours, hors hub) ---------- */
+#learn-page {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
 }
 
-.nav .nav-home:hover {
+.panel.wide #learn-page { max-width: 940px; }
+
+/* ---------- CADRE DE JEU (commun à tous les jeux) ---------- */
+/* La carte de jeu remplace les vues S'exercer / Apprendre ; le header (logo NotaNext) reste visible. */
+body.in-game .shell { display: none; }
+
+.game {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  padding: 0 12px 12px;
+}
+
+.gf {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: clamp(14px, 2.4vh, 22px) clamp(14px, 2.4vw, 30px);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.52);
+  backdrop-filter: blur(7px) brightness(1.04) saturate(135%);
+  -webkit-backdrop-filter: blur(7px) brightness(1.04) saturate(135%);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  overflow: hidden;
+}
+
+.gf-top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.gf-top .backbtn { justify-self: start; }
+
+.gf-title {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: 20px;
+  text-align: center;
+}
+
+.gf-right {
+  grid-column: 3;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gf-count {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 700;
+  font-size: 24px;
+  color: var(--gold);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 520px) { .gf-title { display: none; } }
+
+/* Bouton d'orientation : téléphone uniquement */
+.gf-rotate-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+body.is-phone .gf-rotate-btn { display: inline-flex; }
+
+.gf-config {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+.gf-config:empty { display: none; }
+.gf-config { min-height: 38px; }
+.gf-config .namebox { height: 36px; padding: 0; width: 84px; }
+
+.gf-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Même dimensions pour la portée de tous les jeux : pleine largeur de la carte,
+   hauteur = 80 % de l'ancienne portée (qui remplissait toute la zone). */
+.gf .staff-box {
+  flex: 0 0 80%;
+  min-height: 0;
+  width: 100%;
+}
+
+
+.replay.big { font-size: 16px; padding: 14px 26px; }
+
+.gf-feedback {
+  flex: 0 0 auto;
+  margin: 0;
+  min-height: 1.6em;
+  text-align: center;
+}
+
+.gf-next { flex: 0 0 auto; display: flex; justify-content: center; }
+.gf-next:has(button[hidden]) { display: none; }
+
+.gf-answers {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.gf-answers .answer-btn,
+.gf-answers .quiz-option {
+  text-align: center;
+  padding: clamp(10px, 2.4vh, 17px) 0;
+  border-radius: 8px;
+}
+
+/* Jeux d'écoute : 2 à 3 grands choix côte à côte */
+.gf-answers:has(.quiz-option) {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.gf-answers .quiz-option { flex: 0 1 220px; }
+.gf-answers .spacer { visibility: hidden; }
+
+/* Message « Tourne ton téléphone » (3 s) puis rotation automatique du jeu */
+.gf-hint { display: none; }
+
+.game.show-hint .gf-hint {
+  position: absolute;
+  inset: 0 12px 12px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px 20px;
+  border-radius: 22px;
+  background: var(--paper);
+}
+
+.gf-hint-body {
+  margin: auto;
+  width: 100%;
+  text-align: center;
+}
+
+.gf-hint-icon { color: var(--accent); animation: tilt 1.6s ease-in-out infinite; }
+@keyframes tilt { 0%, 30% { transform: rotate(0); } 70%, 100% { transform: rotate(-90deg); } }
+
+.gf-hint h2 { margin: 10px 0 8px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 26px; line-height: 1.15; }
+.gf-hint p { margin: 0; color: var(--muted); }
+
+/* Jeu tourné de force (téléphone) : la carte occupe tout l'écran, sans header */
+body.game-rotated .nav { display: none; }
+
+.game.rot-cw,
+.game.rot-ccw {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 100dvh;
+  height: 100dvw;
+  padding: 8px;
+  transform-origin: top left;
+}
+
+.game.rot-cw { transform: translateX(100dvw) rotate(90deg); }
+.game.rot-ccw { transform: translateY(100dvh) rotate(-90deg); }
+
+/* Écran bas (téléphone en paysage, ou jeu tourné de force) : cadre compact */
+@media (max-height: 520px) {
+  .nav { padding-top: 8px; padding-bottom: 4px; }
+  .gf { gap: 4px; padding: 8px 16px; }
+  .gf-title { display: none; }
+  .gf-count { font-size: 20px; }
+  .gf-answers { gap: 6px; grid-template-columns: repeat(7, 1fr); }
+  .gf-answers .answer-btn, .gf-answers .quiz-option { padding: 7px 0; font-size: 14px; }
+  .gf .key-hint { display: none; }
+  .gf-feedback { font-size: 15px; min-height: 1.3em; }
+  .gf-config { min-height: 0; }
+  .gf-config select, .gf-config .replay { padding-top: 4px; padding-bottom: 4px; font-size: 12px; }
+  .gf-config .namebox { height: 30px; }
+}
+
+.game.rot-cw .gf { gap: 4px; padding: 8px 16px; }
+.game.rot-cw .gf-title { display: none; }
+.game.rot-cw .gf-count { font-size: 20px; }
+.game.rot-cw .gf-answers { gap: 6px; grid-template-columns: repeat(7, 1fr); }
+.game.rot-cw .gf-answers .answer-btn, .game.rot-cw .gf-answers .quiz-option { padding: 7px 0; font-size: 14px; }
+.game.rot-cw .gf .key-hint { display: none; }
+.game.rot-cw .gf-feedback { font-size: 15px; min-height: 1.3em; }
+.game.rot-cw .gf-config { min-height: 0; }
+.game.rot-cw .gf-config select, .game.rot-cw .gf-config .replay { padding-top: 4px; padding-bottom: 4px; font-size: 12px; }
+.game.rot-cw .gf-config .namebox { height: 30px; }
+
+/* ---------- PAGES COQUILLES : COMPTE & PROFIL ---------- */
+.page-panel { max-width: 860px; height: auto; max-height: 100%; align-self: flex-start; margin-top: clamp(0px, 3vh, 28px); }
+
+.page-title {
+  font-size: clamp(32px, 6vw, 52px);
+  line-height: 1.1;
+  margin-bottom: 28px;
+}
+
+.notify { display: flex; flex-direction: column; gap: 12px; }
+.notify-row { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.notify input[type="email"] {
+  flex: 1 1 260px;
+  font: inherit;
+  font-size: 16px;
+  padding: 13px 20px;
+  color: var(--ink);
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+}
+
+.notify input[type="email"]:focus { outline: none; border-color: var(--accent); }
+.notify-info { margin: 0; font-size: 13px; color: var(--muted); }
+.notify-status { margin: 0; min-height: 1.4em; font-size: 14px; color: var(--muted); }
+.notify-status.ok { color: var(--success); }
+.hp { position: absolute; left: -9999px; }
+
+.preview-banner {
+  align-self: flex-start;
+  margin: 0 0 28px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold);
+  background: rgba(169, 121, 27, 0.12);
+}
+
+.profile-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 36px;
+}
+
+.profile-id { display: flex; align-items: center; gap: 20px; }
+.profile-id p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+.profile-name { font-size: clamp(32px, 6vw, 48px); line-height: 1.1; margin-bottom: 6px; }
+
+.pill {
+  padding: 8px 18px;
+  border: 1.5px solid var(--accent);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--accent);
 }
 
-@media (max-width: 720px) {
-  .nav .nav-home { display: none; }
+.profile-sub { margin: 0 0 14px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 24px; }
+
+.recent {
+  margin: 0;
+  padding: 6px 22px;
+  list-style: none;
+  background: #f3ece0;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+
+.recent li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.recent li:last-child { border-bottom: 0; }
+.recent b { display: block; font-weight: 600; font-size: 15px; }
+.recent span { font-size: 12px; color: var(--muted); }
+.recent em { font-style: normal; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 18px; color: var(--gold); }
+
+@media (max-width: 520px) {
+  .nav { gap: 8px; padding-inline: 14px; }
+  .nav button { font-size: 13px; white-space: nowrap; }
+  .nav .nav-home { font-size: 18px; }
+  .app-tabs { gap: 8px; }
+  .app-user { margin-left: 0; }
+  .nav button.nav-kbd { display: none; }
 }

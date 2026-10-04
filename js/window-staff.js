@@ -5,12 +5,13 @@ window.Notanext = window.Notanext || {};
 
 (function () {
   const SVG_NS = 'http://www.w3.org/2000/svg';
-  const { STEP, BASE_Y, VIEWBOX } = window.Notanext.staff.geometry;
+  const { STEP, BASE_Y } = window.Notanext.staff.geometry;
   const { drawClef } = window.Notanext.staff;
 
   const WINDOW_SIZE = 3;          // notes visibles simultanément (la 2e est la cible)
   const TARGET_INDEX = 1;
-  const SLOTS_X = [60, 112, 164]; // positions horizontales fixes des emplacements
+  const SLOT_GAP = 100;           // écart entre deux emplacements (unités de viewBox)
+  const VB_HEIGHT = 180;
   const OFFSCREEN_X = -20;        // là où glisse (puis disparaît) la note qui sort
   const TRANSITION_MS = 350;
 
@@ -45,7 +46,6 @@ window.Notanext = window.Notanext || {};
   // `onDue(note)` est appelée dès qu'une note devient la cible active (celle que les
   // boutons de réponse évaluent et que "Réécouter" rejoue) — au montage puis après chaque avancée.
   function createWindowStaff(svg, { clef, pickNote, onDue }) {
-    svg.setAttribute('viewBox', VIEWBOX);
     svg.innerHTML = '';
 
     const staticLayer = el('g', { class: 'window-static' });
@@ -57,10 +57,28 @@ window.Notanext = window.Notanext || {};
     let entries = []; // { note, group }
     let locked = false;
 
+    // Géométrie : la portée occupe toute la largeur de la boîte (même ratio que le défilement
+    // continu) ; les 3 emplacements sont placés autour du repère, à l'écart de la clé.
+    let vbW = 420;
+    let SLOTS_X = [0, 0, 0];
+    function layout() {
+      const w = svg.clientWidth, h = svg.clientHeight;
+      if (w && h) vbW = VB_HEIGHT * (w / h);
+      const target = Math.round(vbW * 0.42);
+      if (target - SLOT_GAP >= 95) SLOTS_X = [target - SLOT_GAP, target, target + SLOT_GAP];
+      else {
+        // Boîte étroite (téléphone en portrait) : les 3 emplacements se partagent la place après la clé.
+        const lo = 92, hi = vbW - 24;
+        SLOTS_X = [lo, Math.round((lo + hi) / 2), hi];
+      }
+      svg.setAttribute('viewBox', `0 -24 ${vbW} ${VB_HEIGHT}`);
+    }
+    layout();
+
     function drawStatic() {
       staticLayer.innerHTML = '';
       [0, 2, 4, 6, 8].forEach((s) =>
-        staticLayer.appendChild(el('line', { class: 'staff-line', x1: 0, x2: 200, y1: yOf(s), y2: yOf(s) }))
+        staticLayer.appendChild(el('line', { class: 'staff-line', x1: -20, x2: vbW + 20, y1: yOf(s), y2: yOf(s) }))
       );
       drawClef(staticLayer, currentClef);
       staticLayer.appendChild(
@@ -85,6 +103,13 @@ window.Notanext = window.Notanext || {};
 
     drawStatic();
     fillWindow();
+
+    function onResize() {
+      layout();
+      drawStatic();
+      entries.forEach((e, i) => { if (e) e.group.setAttribute('transform', `translate(${SLOTS_X[i]},0)`); });
+    }
+    window.addEventListener('resize', onResize);
 
     return {
       currentNote() {
@@ -147,6 +172,7 @@ window.Notanext = window.Notanext || {};
         fillWindow();
       },
       destroy() {
+        window.removeEventListener('resize', onResize);
         notesLayer.innerHTML = '';
         entries = [];
       },

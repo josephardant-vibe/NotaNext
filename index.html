@@ -99,21 +99,26 @@
     <footer class="home-footer"><a href="mailto:contact@notanext.app">contact@notanext.app</a></footer>
   </section>
 
-  <nav class="nav">
+  <header class="nav app-header" id="app-header">
     <button type="button" id="nav-home" class="nav-home" aria-label="Accueil">NotaNext</button>
-    <button type="button" id="tab-ex" class="on">S'exercer</button>
-    <button type="button" id="nav-kbd" class="nav-kbd" aria-label="Configurer le clavier" title="Configurer le clavier">
-      <svg width="22" height="16" viewBox="0 0 22 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="1" y="1.5" width="20" height="13" rx="2.5"/><path d="M5 5.5h1M9 5.5h1M13 5.5h1M17 5.5h1M5 8.5h1M9 8.5h1M13 8.5h1M17 8.5h1M6.5 11.5h9"/></svg>
-    </button>
-    <button type="button" id="tab-learn">Apprendre</button>
-  </nav>
+    <nav class="app-tabs" aria-label="Navigation de l'app">
+      <button type="button" id="tab-ex" class="on">S'exercer</button>
+      <button type="button" id="nav-kbd" class="nav-kbd" aria-label="Configurer le clavier" title="Configurer le clavier">
+        <svg width="22" height="16" viewBox="0 0 22 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="1" y="1.5" width="20" height="13" rx="2.5"/><path d="M5 5.5h1M9 5.5h1M13 5.5h1M17 5.5h1M5 8.5h1M9 8.5h1M13 8.5h1M17 8.5h1M6.5 11.5h9"/></svg>
+      </button>
+      <button type="button" id="tab-learn">Apprendre</button>
+    </nav>
+    <div class="app-user">
+      <button type="button" id="nav-login" class="app-login">Se connecter</button>
+      <button type="button" id="nav-account" class="app-member" hidden><span class="avatar" id="nav-initial">M</span><span>Mon compte</span></button>
+    </div>
+  </header>
 
   <div class="shell" id="view-ex">
     <div class="panel" id="ex-panel">
       <div id="ex-grid">
         <div class="grid-head">
           <h1>S'exercer</h1>
-          <span class="hint">Choisis un exercice</span>
         </div>
         <div class="grid" id="card-grid"></div>
       </div>
@@ -126,13 +131,37 @@
       <div id="learn-grid">
         <div class="grid-head">
           <h1>Apprendre</h1>
-          <span class="hint">Choisis une leçon</span>
         </div>
         <div class="grid" id="learn-card-grid"></div>
       </div>
       <div class="ex-page" id="learn-page" hidden></div>
     </div>
   </div>
+
+  <!-- Coquille « Créer un compte / Se connecter » : le formulaire est dans le HTML
+       statique pour que Netlify le détecte au déploiement (activation à faire côté Netlify). -->
+  <div class="shell" id="view-account" hidden>
+    <div class="panel page-panel">
+      <h1 class="page-title">Les comptes arrivent bientôt, laisse ton email</h1>
+      <form name="prevenir" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="notify" id="notify-form">
+        <input type="hidden" name="form-name" value="prevenir">
+        <p class="hp" aria-hidden="true"><label>Ne pas remplir : <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+        <div class="notify-row">
+          <input type="email" name="email" id="notify-email" placeholder="ton@email.fr" aria-label="Ton email" autocomplete="email" required>
+          <button type="submit" class="btn-primary">Me prévenir</button>
+        </div>
+        <p class="notify-info">Ton email sert uniquement à te prévenir de l'ouverture des comptes. Rien d'autre.</p>
+        <p class="notify-status" id="notify-status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="shell" id="view-profile" hidden>
+    <div class="panel page-panel" id="profile-panel"></div>
+  </div>
+
+  <!-- Écran de jeu : cadre commun à tous les jeux, rempli par js/game.js -->
+  <div class="game" id="game" hidden></div>
 
   <script src="js/notes.js"></script>
   <script src="js/audio.js"></script>
@@ -141,6 +170,7 @@
   <script src="js/window-staff.js"></script>
   <script src="js/theory.js"></script>
   <script src="js/listen.js"></script>
+  <script src="js/account.js"></script>
   <script src="js/game.js"></script>
   <script src="js/home.js"></script>
 </body>

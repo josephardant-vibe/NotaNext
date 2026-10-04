@@ -80,9 +80,9 @@ window.Notanext = window.Notanext || {};
     document.addEventListener('visibilitychange', onVisibility);
 
     function measureVbWidth() {
-      const rect = svg.getBoundingClientRect();
-      if (!rect.width || !rect.height) return vbWidth;
-      return VB_HEIGHT * (rect.width / rect.height);
+      // clientWidth/Height : dimensions de mise en page, insensibles à une rotation CSS du jeu.
+      if (!svg.clientWidth || !svg.clientHeight) return vbWidth;
+      return VB_HEIGHT * (svg.clientWidth / svg.clientHeight);
     }
 
     // La portée occupe toute la largeur disponible : le viewBox s'élargit pour coller

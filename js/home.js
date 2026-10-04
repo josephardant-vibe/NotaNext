@@ -188,7 +188,8 @@
 
   let seen = false;
   try { seen = !!localStorage.getItem(VISITED_KEY); } catch (e) { /* stockage indisponible : on réaffiche l'accueil */ }
-  if (!seen) {
+  // Un lien direct vers une page de l'app (#/compte, #/profil…) n'affiche pas l'accueil.
+  if (!seen && !location.hash.startsWith('#/')) {
     showHome();
     try { localStorage.setItem(VISITED_KEY, '1'); } catch (e) { /* idem */ }
   }

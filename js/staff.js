@@ -9,8 +9,8 @@ window.Notanext = window.Notanext || {};
   const BASE_Y = 106;              // y de la ligne du bas (step 0)
   const X0 = 46;
   const X1 = 198;
-  const NOTE_X = 130;
   const VIEWBOX = '0 -24 210 180'; // marge haut/bas : aucune note coupée
+  const VB_HEIGHT = 180;
 
   const LINE_STEPS = [0, 2, 4, 6, 8];
   const yOf = (step) => BASE_Y - step * STEP;
@@ -53,13 +53,27 @@ window.Notanext = window.Notanext || {};
     return g;
   }
 
+  // Largeur de viewBox qui épouse le ratio réel de la boîte (clientWidth : insensible aux rotations CSS).
+  function wideWidth(svg) {
+    const w = svg.clientWidth, h = svg.clientHeight;
+    return w && h ? VB_HEIGHT * (w / h) : 420;
+  }
+
   // opts : { clef, note, ghostStep, sideLabel:{text,ok}, reveal:{correctStep,correctName,clickedStep,ok}, labels:[notes], onNoteClick }
   function renderStaff(svg, opts) {
     opts = opts || {};
-    svg.setAttribute('viewBox', VIEWBOX);
+    // `wide` : la portée occupe toute la largeur disponible (jeux), le viewBox suit le ratio réel de la boîte.
+    let x0 = X0, x1 = X1, NOTE_X = 130;
+    if (opts.wide) {
+      const vbW = wideWidth(svg);
+      x0 = -20; x1 = vbW + 20; NOTE_X = Math.round(vbW * 0.55);
+      svg.setAttribute('viewBox', `0 -24 ${vbW} ${VB_HEIGHT}`);
+    } else {
+      svg.setAttribute('viewBox', VIEWBOX);
+    }
     svg.innerHTML = '';
 
-    LINE_STEPS.forEach((s) => svg.appendChild(el('line', { class: 'staff-line', x1: X0, x2: X1, y1: yOf(s), y2: yOf(s) })));
+    LINE_STEPS.forEach((s) => svg.appendChild(el('line', { class: 'staff-line', x1: x0, x2: x1, y1: yOf(s), y2: yOf(s) })));
     if (opts.clef) drawClef(svg, opts.clef);
 
     if (opts.ghostStep != null) {
@@ -102,9 +116,9 @@ window.Notanext = window.Notanext || {};
 
     if (opts.labels) {
       const list = opts.labels;
-      const span = (X1 - X0 - 24) / (list.length - 1);
+      const span = (x1 - x0 - 24) / (list.length - 1);
       list.forEach((nt, i) => {
-        const cx = X0 + 16 + i * span;
+        const cx = x0 + 16 + i * span;
         const cy = yOf(nt.step);
         drawLedgers(svg, nt.step, cx);
         const g = noteAt(cx, nt.step, '');
@@ -127,12 +141,12 @@ window.Notanext = window.Notanext || {};
   }
 
   // Convertit un clic sur la portée en `step` (borné à la plage jouable).
-  function eventToStep(svg, clientY) {
-    const r = svg.getBoundingClientRect();
-    const vb = svg.viewBox.baseVal;
-    const scale = Math.min(r.width / vb.width, r.height / vb.height);
-    const offY = (r.height - vb.height * scale) / 2;
-    const y = (clientY - r.top - offY) / scale + vb.y;
+  function eventToStep(svg, clientY, clientX) {
+    // La matrice écran -> viewBox tient compte du ratio, des marges et d'une éventuelle rotation CSS.
+    const pt = svg.createSVGPoint();
+    pt.x = clientX || 0;
+    pt.y = clientY;
+    const y = pt.matrixTransform(svg.getScreenCTM().inverse()).y;
     return Math.max(-2, Math.min(8, Math.round((BASE_Y - y) / STEP)));
   }
 

@@ -22,71 +22,138 @@
   const BG_ICONS = [ICON_CLEF, ICON_NOTE, ICON_QNOTE, ICON_CLEF, ICON_QNOTE, ICON_NOTE, ICON_QNOTE, ICON_NOTE];
   document.getElementById('bg-icons').innerHTML = BG_ICONS.map((ic, i) => `<span class="bg-icon i${i + 1}">${ic}</span>`).join('');
 
+  // Réglage mobile : true = les jeux s'affichent en paysage (message « Tourne ton téléphone »,
+  // puis rotation automatique après 3 s). Passer à false pour désactiver ce comportement.
+  const MOBILE_LANDSCAPE = true;
+  document.body.classList.toggle('landscape-only', MOBILE_LANDSCAPE);
+
+  const account = window.Notanext.account;
+
   // ---------- éléments ----------
   const tabEx = document.getElementById('tab-ex');
   const tabLearn = document.getElementById('tab-learn');
+  const navLogin = document.getElementById('nav-login');
+  const navAccount = document.getElementById('nav-account');
   const viewEx = document.getElementById('view-ex');
   const viewLearn = document.getElementById('view-learn');
+  const viewAccount = document.getElementById('view-account');
+  const viewProfile = document.getElementById('view-profile');
   const exGrid = document.getElementById('ex-grid');
   const exPage = document.getElementById('ex-page');
-  const exPanel = document.getElementById('ex-panel');
   const learnPanel = document.getElementById('learn-panel');
   const learnGrid = document.getElementById('learn-grid');
   const learnPage = document.getElementById('learn-page');
+  const gameEl = document.getElementById('game');
 
-  // ---------- routeur (générique, indépendant du contenu des exercices) ----------
-  function buildGrid() {
-    const grid = document.getElementById('card-grid');
+  // ---------- header : état visiteur / membre (aperçu) ----------
+  navLogin.hidden = account.isMember();
+  navAccount.hidden = !account.isMember();
+
+  // ---------- routeur ----------
+  // #/exercer, #/exercer/<jeu>, #/apprendre, #/apprendre/<cours>, #/compte, #/profil.
+  // Le hash est l'unique source de vérité ; `route()` est idempotente (clé `shown`).
+  let shown = null;
+  const setHash = (h) => { if (location.hash !== h) location.hash = h; };
+
+  function showView(name) {
+    viewEx.hidden = name !== 'ex';
+    viewLearn.hidden = name !== 'learn';
+    viewAccount.hidden = name !== 'account';
+    viewProfile.hidden = name !== 'profile';
+    tabEx.classList.toggle('on', name === 'ex');
+    tabLearn.classList.toggle('on', name === 'learn');
+    navLogin.classList.toggle('on', name === 'account');
+    navAccount.classList.toggle('on', name === 'profile');
+  }
+
+  function route() {
+    const [page, arg] = (location.hash.replace(/^#\/?/, '') || 'exercer').split('/');
+    const key = `${page}/${arg || ''}`;
+    if (key === shown) return;
+    shown = key;
+    closeGame();
+    if (page === 'compte') return showView('account');
+    if (page === 'profil') {
+      account.renderProfile(document.getElementById('profile-panel'));
+      return showView('profile');
+    }
+    if (page === 'apprendre') {
+      showView('learn');
+      if (arg && LEARN_CARDS.some((c) => c.id === arg)) return openLearnCard(arg, true);
+      return showLearnGrid(true);
+    }
+    showView('ex');
+    if (arg && EXERCISES.some((e) => e.id === arg)) return openExercise(arg, true);
+    showGrid(true);
+  }
+
+  // ---------- hubs : grille de tuiles (AppTile), commune à tous les hubs ----------
+  const NOTE_ICON = '<svg viewBox="0 0 24 32" width="22" height="30" fill="currentColor" aria-hidden="true"><ellipse cx="8" cy="25" rx="6.5" ry="4.8" transform="rotate(-20 8 25)"/><path d="M13.6 23.2V3" stroke="currentColor" stroke-width="2" fill="none"/></svg>';
+
+  // tiles : [{ title, desc, action, soon? }] ; action = libellé du lien (« Ouvrir », « Commencer »)
+  function buildTiles(grid, tiles) {
     grid.innerHTML = '';
-    EXERCISES.forEach((ex) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'card';
-      btn.innerHTML = `<div class="card-cover">${ex.icon}</div><div class="card-body"><p class="card-title">${ex.title}</p><p class="card-tag">${ex.tag}</p></div>`;
-      btn.addEventListener('click', () => openExercise(ex.id));
-      grid.appendChild(btn);
+    tiles.forEach((t) => {
+      const el = document.createElement(t.soon ? 'div' : 'button');
+      if (!t.soon) el.type = 'button';
+      el.className = 'tile' + (t.soon ? ' soon' : '');
+      el.innerHTML = `<span class="tile-icon">${NOTE_ICON}</span><span class="tile-title">${t.title}</span><span class="tile-desc">${t.desc || ''}</span><span class="tile-go">${t.soon ? 'Bientôt' : t.action}</span>`;
+      if (!t.soon) el.addEventListener('click', t.onOpen);
+      grid.appendChild(el);
     });
   }
 
-  function showGrid() {
-    exGrid.hidden = false;
-    exPage.hidden = true;
+  function buildGrid() {
+    const tiles = EXERCISES.map((ex) => ({ title: ex.title, desc: ex.tag, action: 'Ouvrir', onOpen: () => openExercise(ex.id) }));
+    tiles.push(
+      { title: 'Oreille absolue — deviner', desc: 'Écoute un son, trouve la note.', soon: true },
+      { title: 'Oreille absolue — placer', desc: 'Écoute un son, place-le sur la portée.', soon: true },
+      { title: 'Nouveau jeu', soon: true },
+    );
+    buildTiles(document.getElementById('card-grid'), tiles);
   }
 
-  function openExercise(id) {
+  function showGrid(fromRoute) {
+    closeGame();
+    exGrid.hidden = false;
+    exPage.hidden = true;
+    if (fromRoute !== true) setHash('#/exercer');
+    shown = 'exercer/';
+  }
+
+  function openExercise(id, fromRoute) {
     exGrid.hidden = true;
-    exPage.hidden = false;
+    exPage.hidden = true;
+    if (fromRoute !== true) setHash(`#/exercer/${id}`);
+    shown = `exercer/${id}`;
     mountExercise(EXERCISES.find((e) => e.id === id));
   }
 
-  // "Apprendre" suit exactement le même principe que "S'exercer" : une grille
-  // de cartes, une carte ouvre une page dédiée avec un bouton retour. Ajouter
-  // une future leçon ne demande qu'une entrée dans LEARN_CARDS + un mount*.
+  // "Apprendre" suit le même principe que "S'exercer" : une grille de tuiles,
+  // une tuile ouvre une page dédiée. Ajouter une future leçon ne demande
+  // qu'une entrée dans LEARN_CARDS + un mount*.
   function buildLearnGrid() {
-    const grid = document.getElementById('learn-card-grid');
-    if (grid.childElementCount) return;
-    LEARN_CARDS.forEach((c) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'card';
-      btn.innerHTML = `<div class="card-cover">${c.icon}</div><div class="card-body"><p class="card-title">${c.title}</p><p class="card-tag">${c.tag}</p></div>`;
-      btn.addEventListener('click', () => openLearnCard(c.id));
-      grid.appendChild(btn);
-    });
+    const tiles = LEARN_CARDS.map((c) => ({ title: c.title, desc: c.tag, action: 'Commencer', onOpen: () => openLearnCard(c.id) }));
+    tiles.push({ title: 'Nouveau cours', soon: true });
+    buildTiles(document.getElementById('learn-card-grid'), tiles);
   }
 
-  function showLearnGrid() {
+  function showLearnGrid(fromRoute) {
+    closeGame();
     learnGrid.hidden = false;
     learnPage.hidden = true;
     learnPanel.classList.remove('wide');
+    if (fromRoute !== true) setHash('#/apprendre');
+    shown = 'apprendre/';
   }
 
-  function openLearnCard(id) {
+  function openLearnCard(id, fromRoute) {
     learnGrid.hidden = true;
     learnPage.hidden = false;
+    if (fromRoute !== true) setHash(`#/apprendre/${id}`);
+    shown = `apprendre/${id}`;
     // "Les clés" reste en deux colonnes (portée + FAQ) ; la théorie est un
-    // déroulé plein écran, une section à la fois, plus à l'aise en largeur
-    // standard (comme les pages d'exercice) qu'en panneau large.
+    // déroulé plein écran, une section à la fois.
     learnPanel.classList.toggle('wide', id === 'clefs');
     if (id === 'theory') mountTheoryPage();
     else if (id === 'listen') mountListenPage();
@@ -196,7 +263,6 @@
           <p>${section.text}</p>
           <div class="theory-actions">
             ${theory.renderListen(section.illustration)}
-            <button type="button" class="train-btn" disabled title="Bientôt disponible">S'entraîner sur ce thème</button>
           </div>
           <div class="theory-nav">
             ${prevButton()}
@@ -277,103 +343,214 @@
   }
 
   // ----- Carte "Les bases : écoute et ressens" -----
-  // Menu de 5 mini-jeux d'écoute (js/listen.js) puis une question à la fois :
-  // le son se joue tout seul, feedback immédiat, "Suivant" tire la suivante.
+  // Hub de 5 mini-jeux d'écoute (js/listen.js, tuiles comme les autres hubs), puis
+  // chaque jeu s'ouvre dans le cadre de jeu commun : le son se joue tout seul,
+  // feedback immédiat, "Suivant" tire la suivante.
   function mountListenPage() {
-    function showMenu() {
-      learnPage.innerHTML = `
-        <div class="ex-top">
-          <button type="button" class="backbtn" id="listen-back">&#8592; Apprendre</button>
-          <span class="ex-title">Écoute et ressens</span>
-          <span></span>
-        </div>
-        <div class="listen-menu">
-          ${listen.GAMES.map((g) => `<button type="button" class="quiz-option" data-id="${g.id}">${g.title}</button>`).join('')}
-        </div>
-      `;
-      document.getElementById('listen-back').addEventListener('click', showLearnGrid);
-      learnPage.querySelectorAll('.listen-menu .quiz-option').forEach((btn) => {
-        btn.addEventListener('click', () => startGame(listen.GAMES.find((g) => g.id === btn.dataset.id)));
-      });
+    learnPage.innerHTML = `
+      <div class="ex-top">
+        <button type="button" class="backbtn" id="listen-back">&#8592; Apprendre</button>
+        <span class="ex-title">Écoute et ressens</span>
+        <span></span>
+      </div>
+      <div class="grid" id="listen-grid"></div>
+    `;
+    document.getElementById('listen-back').addEventListener('click', () => showLearnGrid());
+    buildTiles(document.getElementById('listen-grid'), listen.GAMES.map((g) => ({
+      title: g.title, action: 'Jouer', onOpen: () => startListenGame(g),
+    })));
+  }
+
+  function startListenGame(game) {
+    const frame = openFrame({
+      title: game.title,
+      replay: 'stage',
+      answersHtml: game.options.map((o) => `<button type="button" class="quiz-option" data-id="${o.id}">${o.label}</button>`).join(''),
+      showNext: true,
+      onBack: () => closeGame(),
+    });
+    let q = null;
+    const answerBtns = Array.from(frame.answers.querySelectorAll('.quiz-option'));
+
+    function nextQuestion() {
+      q = game.next();
+      answerBtns.forEach((b) => { b.disabled = false; b.className = 'quiz-option'; });
+      frame.setFeedback('');
+      frame.next.hidden = true;
+      q.play();
     }
 
-    function startGame(game) {
-      let score = 0;
-      let q = null;
-      learnPage.innerHTML = `
-        <div class="ex-top">
-          <button type="button" class="backbtn" id="listen-back">&#8592; Écoute</button>
-          <span class="ex-title">${game.title}</span>
-          <span class="ex-score" id="listen-score">0</span>
-        </div>
-        <div class="theory-screen listen-screen">
-          <button type="button" class="replay" id="listen-replay">&#9654; Réécouter</button>
-          <div class="listen-answers">
-            ${game.options.map((o) => `<button type="button" class="quiz-option" data-id="${o.id}">${o.label}</button>`).join('')}
-          </div>
-          <span class="feedback" id="listen-feedback" aria-live="polite">&nbsp;</span>
-          <button type="button" class="btn-primary" id="listen-next" hidden>Suivant &#8594;</button>
-        </div>
-      `;
-      const answerBtns = Array.from(learnPage.querySelectorAll('.listen-answers .quiz-option'));
-      const feedback = document.getElementById('listen-feedback');
-      const nextBtn = document.getElementById('listen-next');
-      const scoreEl = document.getElementById('listen-score');
-
-      function nextQuestion() {
-        q = game.next();
-        answerBtns.forEach((b) => { b.disabled = false; b.className = 'quiz-option'; });
-        feedback.innerHTML = '&nbsp;';
-        feedback.className = 'feedback';
-        nextBtn.hidden = true;
-        q.play();
-      }
-
-      answerBtns.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          const ok = btn.dataset.id === q.answer;
-          answerBtns.forEach((b) => {
-            b.disabled = true;
-            if (b.dataset.id === q.answer) b.classList.add('correct');
-            else if (b === btn) b.classList.add('wrong');
-          });
-          if (ok) {
-            score++;
-            scoreEl.textContent = score;
-            feedback.textContent = CORRECT_PHRASES[Math.floor(Math.random() * CORRECT_PHRASES.length)];
-            feedback.className = 'feedback correct';
-          } else {
-            const label = game.options.find((o) => o.id === q.answer).label;
-            feedback.innerHTML = `C'était <b>${label}</b>`;
-            feedback.className = 'feedback';
-          }
-          nextBtn.hidden = false;
+    answerBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const ok = btn.dataset.id === q.answer;
+        answerBtns.forEach((b) => {
+          b.disabled = true;
+          if (b.dataset.id === q.answer) b.classList.add('correct');
+          else if (b === btn) b.classList.add('wrong');
         });
+        if (ok) frame.setFeedback(CORRECT_PHRASES[Math.floor(Math.random() * CORRECT_PHRASES.length)], 'correct');
+        else frame.setFeedback(`C'était <b>${game.options.find((o) => o.id === q.answer).label}</b>`);
+        frame.next.hidden = false;
+        frame.session.record(ok);
       });
+    });
 
-      document.getElementById('listen-replay').addEventListener('click', () => q && q.play());
-      nextBtn.addEventListener('click', nextQuestion);
-      document.getElementById('listen-back').addEventListener('click', showMenu);
-      nextQuestion();
+    frame.replay.addEventListener('click', () => q && q.play());
+    frame.next.addEventListener('click', nextQuestion);
+    nextQuestion();
+  }
+
+  // ---------- cadre de jeu (commun à tous les jeux) ----------
+  // Une carte sous le header (le logo NotaNext reste accessible) : retour, compteur
+  // « bonnes réponses / total » en haut à droite, réglages propres au jeu, zone
+  // portée (ou zone d'écoute), ligne de feedback, zone de réponse. Sans fin : pas de
+  // manches tant qu'il n'y a pas de comptes.
+  let activeGame = null; // { destroy() } du jeu actuellement affiché
+
+  // ----- orientation (téléphone) : les jeux se jouent en paysage -----
+  // Téléphone tenu en portrait : message « Tourne ton téléphone » pendant 3 s, puis le
+  // jeu se tourne tout seul en paysage. Le bouton de rotation bascule paysage <-> portrait.
+  // Les cours n'utilisent rien de tout cela. Désactivable avec MOBILE_LANDSCAPE.
+  const HINT_MS = 3000;
+  const isPhone = () => Math.min(window.innerWidth, window.innerHeight) <= 500;
+  let orient = null;        // null = automatique ; 'landscape' | 'portrait' = choix du joueur
+  let hintPending = false;
+  let hintTimer = null;
+
+  function applyOrientation() {
+    document.body.classList.toggle('is-phone', isPhone());
+    gameEl.classList.remove('rot-cw', 'rot-ccw', 'show-hint');
+    document.body.classList.remove('game-rotated');
+    if (gameEl.hidden || !MOBILE_LANDSCAPE || !isPhone()) return;
+    const devicePortrait = window.innerHeight > window.innerWidth;
+    if (hintPending && !devicePortrait) { hintPending = false; clearTimeout(hintTimer); }
+    if (hintPending) { gameEl.classList.add('show-hint'); return; }
+    const want = orient || 'landscape';
+    const rot = want === 'landscape' && devicePortrait ? 'rot-cw' : want === 'portrait' && !devicePortrait ? 'rot-ccw' : null;
+    if (rot) {
+      gameEl.classList.add(rot);
+      document.body.classList.add('game-rotated');
     }
+  }
 
-    showMenu();
+  function refreshLayout() {
+    applyOrientation();
+    window.dispatchEvent(new Event('resize')); // les portées recalculent leur largeur
+  }
+
+  function toggleOrientation() {
+    const portraitNow = gameEl.classList.contains('rot-ccw') || (!gameEl.classList.contains('rot-cw') && window.innerHeight > window.innerWidth);
+    orient = portraitNow ? 'landscape' : 'portrait';
+    hintPending = false;
+    clearTimeout(hintTimer);
+    refreshLayout();
+  }
+
+  window.addEventListener('resize', () => { if (!gameEl.hidden) applyOrientation(); });
+  window.addEventListener('orientationchange', () => { if (!gameEl.hidden) refreshLayout(); });
+
+  function closeGame() {
+    if (activeGame && activeGame.destroy) activeGame.destroy();
+    activeGame = null;
+    activeAnswers = null;
+    setPanelPause(null);
+    clearTimeout(hintTimer);
+    hintPending = false;
+    orient = null;
+    gameEl.hidden = true;
+    gameEl.innerHTML = '';
+    gameEl.classList.remove('rot-cw', 'rot-ccw', 'show-hint');
+    document.body.classList.remove('in-game', 'game-rotated');
+  }
+
+  // opts : title, config (HTML des réglages), stageHtml, answersHtml, replay ('config' | 'stage' | null),
+  // showNext, onBack. Renvoie le cadre ; `frame.session.record(ok)` met à jour le compteur.
+  function openFrame(opts) {
+    closeGame();
+    document.body.classList.add('in-game');
+    gameEl.hidden = false;
+    gameEl.innerHTML = `
+      <div class="gf">
+        <div class="gf-top">
+          <button type="button" class="backbtn" id="back">&#8592; Retour</button>
+          <span class="gf-title">${opts.title}</span>
+          <span class="gf-right">
+            <button type="button" class="gf-rotate-btn" id="gf-rotate-btn" aria-label="Changer l'orientation du jeu" title="Changer l'orientation du jeu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="14" rx="1.8"/><path d="M5 20.5h14M17 18.5l2 2-2 2" transform="translate(0 -2)"/></svg></button>
+            <span class="gf-count" id="gf-count" aria-live="polite" title="Bonnes réponses / réponses totales"></span>
+          </span>
+        </div>
+        <div class="gf-config">
+          ${opts.config || ''}
+          ${opts.replay === 'config' ? '<button type="button" class="replay" id="replay">&#9654; Réécouter</button>' : ''}
+        </div>
+        <div class="gf-stage" id="gf-stage">
+          ${opts.replay === 'stage' ? '<button type="button" class="replay big" id="replay">&#9654; Réécouter</button>' : ''}
+          ${opts.stageHtml || ''}
+        </div>
+        <p class="feedback gf-feedback" id="feedback" aria-live="polite">&nbsp;</p>
+        <div class="gf-next"><button type="button" class="btn-primary" id="gf-next" hidden>Suivant &#8594;</button></div>
+        <div class="gf-answers" id="answers">${opts.answersHtml || ''}</div>
+      </div>
+      <div class="gf-hint" role="status">
+        <button type="button" class="backbtn" id="hint-back">&#8592; Retour</button>
+        <div class="gf-hint-body">
+          <svg class="gf-hint-icon" width="84" height="84" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="22" y="10" width="20" height="34" rx="4"/><path d="M30 38h4"/><path d="M50 22a20 20 0 0 1 0 24M50 46l-1.5-6M50 46l6-1"/></svg>
+          <h2>Tourne ton téléphone à l'horizontale</h2>
+          <p>Le jeu passera en horizontal dans quelques secondes.</p>
+        </div>
+      </div>
+    `;
+    const q = (id) => document.getElementById(id);
+    const frame = {
+      root: gameEl.querySelector('.gf'),
+      stage: q('gf-stage'),
+      answers: q('answers'),
+      replay: q('replay'),
+      next: q('gf-next'),
+      feedbackEl: q('feedback'),
+      setFeedback(html, cls) {
+        frame.feedbackEl.innerHTML = html || '&nbsp;';
+        frame.feedbackEl.className = 'feedback gf-feedback' + (cls ? ' ' + cls : '');
+      },
+      setDestroy(fn) { activeGame = { destroy: fn }; },
+    };
+    q('back').addEventListener('click', opts.onBack);
+    q('hint-back').addEventListener('click', opts.onBack);
+    q('gf-rotate-btn').addEventListener('click', toggleOrientation);
+
+    // ----- compteur : bonnes réponses / total -----
+    const countEl = q('gf-count');
+    let good = 0, total = 0;
+    const paint = () => { countEl.textContent = `${good} / ${total}`; };
+    frame.session = {
+      record(ok) { total++; if (ok) good++; paint(); },
+    };
+    paint();
+    activeGame = { destroy: null };
+    frame.setDestroy = (fn) => { activeGame.destroy = fn; };
+
+    // ----- orientation : message 3 s puis rotation automatique (téléphone en portrait) -----
+    orient = null;
+    hintPending = MOBILE_LANDSCAPE && isPhone() && window.innerHeight > window.innerWidth;
+    if (hintPending) {
+      hintTimer = setTimeout(() => { hintPending = false; refreshLayout(); }, HINT_MS);
+    }
+    applyOrientation();
+    return frame;
   }
 
   function setTab(name) {
-    const isEx = name === 'ex';
-    tabEx.classList.toggle('on', isEx);
-    tabLearn.classList.toggle('on', !isEx);
-    viewEx.hidden = !isEx;
-    viewLearn.hidden = isEx;
-    if (isEx) showGrid();
-    else showLearnGrid();
+    if (name === 'ex') { showView('ex'); showGrid(); }
+    else { showView('learn'); showLearnGrid(); }
   }
 
   window.Notanext.app = { setTab, openExercise, openLearnCard };
 
   tabEx.addEventListener('click', () => setTab('ex'));
   tabLearn.addEventListener('click', () => setTab('learn'));
+  navLogin.addEventListener('click', () => setHash('#/compte'));
+  navAccount.addEventListener('click', () => setHash('#/profil'));
+  window.addEventListener('hashchange', route);
 
   // ---------- clavier (global) ----------
   // Une seule configuration (note -> touche), stockée dans le navigateur, partagée
@@ -400,7 +577,7 @@
 
   // Appuyer sur la touche associée = cliquer sur le bouton de réponse correspondant.
   document.addEventListener('keydown', (e) => {
-    if (capturing || !activeAnswers || viewEx.hidden || exPage.hidden) return;
+    if (capturing || !activeAnswers || gameEl.hidden) return;
     if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
     if (e.target && (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT')) return;
     const name = FR.find((n) => keys[n] === e.key.toLowerCase());
@@ -483,62 +660,43 @@
   // ---------- exercice ----------
   function mountExercise(ex) {
     let clefId = 'sol';
-    let score = 0;
-    let streak = 0;
-    activeAnswers = null;
-    setPanelPause(null);
-
-    exPanel.classList.toggle('stretch', ex.mode === 'guess-scroll');
-
-    exPage.innerHTML = `
-      <div class="ex-top">
-        <button type="button" class="backbtn" id="back">&#8592; Exercices</button>
-        <span class="ex-title">${ex.title}</span>
-        <span class="ex-score" id="score">0</span>
-      </div>
-      <div class="ex-config">
+    const isPlace = ex.mode === 'place';
+    const frame = openFrame({
+      title: ex.title,
+      config: `
+        ${isPlace ? '<div class="namebox" id="namebox">–</div>' : ''}
         <select id="clef-sel" aria-label="Choisir une clé">${CLEFS.map((c) => `<option value="${c.id}">${c.label}</option>`).join('')}</select>
-        ${ex.mode === 'guess-scroll' ? `<select id="speed-sel" aria-label="Choisir une vitesse">${SPEED_LABELS.map(([v, label]) => `<option value="${v}"${v === 'intermediaire' ? ' selected' : ''}>${label}</option>`).join('')}</select>` : ''}
-      </div>
-      ${ex.mode === 'place' ? '<div class="namebox" id="namebox">–</div>' : ''}
-      <div class="staff-box"><svg class="staff-svg" id="staff" role="img" aria-label="Portée"></svg></div>
-      <div class="ex-under">
-        <button type="button" class="replay" id="replay">&#9654; Réécouter</button>
-        <span class="feedback" id="feedback" aria-live="polite">&nbsp;</span>
-      </div>
-      ${ex.mode !== 'place' ? '<div class="answers" id="answers"></div>' : ''}
-    `;
+        ${ex.mode === 'guess-scroll' ? `<select id="speed-sel" aria-label="Choisir une vitesse">${SPEED_LABELS.map(([v, label]) => `<option value="${v}"${v === 'intermediaire' ? ' selected' : ''}>${label}</option>`).join('')}</select>` : ''}`,
+      replay: 'config',
+      stageHtml: `<div class="staff-box"><svg class="staff-svg" id="staff" role="img" aria-label="Portée"></svg></div>`,
+      // Placer la note n'a pas de boutons : on réserve leur place pour que la portée ait exactement la même taille que dans les autres jeux.
+      answersHtml: isPlace ? FR.map(() => '<span class="answer-btn spacer" aria-hidden="true">&nbsp;</span>').join('') : '',
+      onBack: () => showGrid(),
+    });
+    const { session } = frame;
 
     const svg = document.getElementById('staff');
-    const scoreEl = document.getElementById('score');
-    const feedbackEl = document.getElementById('feedback');
     const clef = () => clefById(clefId);
 
     function markCorrect() {
-      score++;
-      streak++;
-      scoreEl.textContent = score;
-      feedbackEl.textContent = CORRECT_PHRASES[Math.floor(Math.random() * CORRECT_PHRASES.length)];
-      feedbackEl.className = 'feedback correct';
+      frame.setFeedback(CORRECT_PHRASES[Math.floor(Math.random() * CORRECT_PHRASES.length)], 'correct');
+      session.record(true);
     }
 
     function markWrong(correctName) {
-      streak = 0;
-      feedbackEl.innerHTML = `C'était <b>${correctName}</b>`;
-      feedbackEl.className = 'feedback';
+      frame.setFeedback(`C'était <b>${correctName}</b>`);
+      session.record(false);
     }
+
+    const tone = (note) => playTone(note.freq);
 
     let controller;
     if (ex.mode === 'guess-scroll') controller = mountGuessScroll(svg, clef, markCorrect, markWrong);
     else if (ex.mode === 'guess-window') controller = mountGuessWindow(svg, clef, markCorrect, markWrong);
     else controller = mountPlace(svg, clef, markCorrect, markWrong);
 
-    document.getElementById('back').addEventListener('click', () => {
-      if (controller.destroy) controller.destroy();
-      activeAnswers = null;
-      showGrid();
-    });
-    document.getElementById('replay').addEventListener('click', () => {
+    frame.setDestroy(() => { if (controller.destroy) controller.destroy(); });
+    frame.replay.addEventListener('click', () => {
       const note = controller.currentNote();
       if (note) playTone(note.freq);
     });
@@ -573,7 +731,7 @@
       const scroll = createScrollStaff(svgEl, {
         clef: clefFn(),
         pickNote,
-        onDue: (note) => playTone(note.freq),
+        onDue: tone,
         // Une note qui dépasse le repère sans réponse compte comme une erreur,
         // exactement comme une mauvaise réponse donnée à temps.
         onMiss: (name) => onBad(name),
@@ -610,7 +768,7 @@
       const win = createWindowStaff(svgEl, {
         clef: clefFn(),
         pickNote,
-        onDue: (note) => playTone(note.freq),
+        onDue: tone,
       });
 
       return {
@@ -621,7 +779,7 @@
     }
 
     function buildAnswerButtons(onAnswer) {
-      const answers = document.getElementById('answers');
+      const answers = frame.answers;
       const byName = {};
       FR.forEach((name) => {
         const btn = document.createElement('button');
@@ -643,35 +801,36 @@
       let current = null;
       let locked = false;
       let hoverStep = null; // dernier pas affiché par l'indice de survol
+      let dead = false;
 
       function next() {
+        if (dead) return;
         locked = false;
         hoverStep = null;
         const notes = notesOf(clefFn());
         current = notes[Math.floor(Math.random() * notes.length)];
-        feedbackEl.innerHTML = '&nbsp;';
-        feedbackEl.className = 'feedback';
+        frame.setFeedback('');
         nameBox.textContent = current.name;
         svgEl.classList.add('placing');
-        renderStaff(svgEl, { clef: clefFn() });
+        renderStaff(svgEl, { wide: true, clef: clefFn() });
         playTone(current.freq);
       }
 
       svgEl.addEventListener('mousemove', (e) => {
         if (locked) return;
-        hoverStep = eventToStep(svgEl, e.clientY);
-        renderStaff(svgEl, { clef: clefFn(), ghostStep: hoverStep });
+        hoverStep = eventToStep(svgEl, e.clientY, e.clientX);
+        renderStaff(svgEl, { wide: true, clef: clefFn(), ghostStep: hoverStep });
       });
       svgEl.addEventListener('mouseleave', () => {
         hoverStep = null;
-        if (!locked) renderStaff(svgEl, { clef: clefFn() });
+        if (!locked) renderStaff(svgEl, { wide: true, clef: clefFn() });
       });
       svgEl.addEventListener('click', (e) => {
         if (locked) return;
         locked = true;
         // Toujours placer exactement là où l'indice en pointillés était affiché,
         // plutôt que de recalculer une position potentiellement différente au clic.
-        const step = hoverStep != null ? hoverStep : eventToStep(svgEl, e.clientY);
+        const step = hoverStep != null ? hoverStep : eventToStep(svgEl, e.clientY, e.clientX);
         // Un même nom peut exister à plusieurs positions dans la plage affichée
         // (ex. Do sous la portée et Do au 3e interligne) : toutes comptent comme bonnes.
         const correctSteps = notesOf(clefFn())
@@ -679,6 +838,7 @@
           .map((n) => n.step);
         const ok = correctSteps.includes(step);
         renderStaff(svgEl, {
+          wide: true,
           clef: clefFn(),
           reveal: { correctSteps, correctName: current.name, clickedStep: step, ok },
         });
@@ -691,11 +851,16 @@
         }
       });
 
+      // Rotation / redimensionnement : la portée se redessine à la nouvelle largeur.
+      const onResize = () => { if (!locked) renderStaff(svgEl, { wide: true, clef: clefFn() }); };
+      window.addEventListener('resize', onResize);
+
       next();
 
       return {
         currentNote: () => current,
         onClefChange: next,
+        destroy: () => { dead = true; window.removeEventListener('resize', onResize); },
       };
     }
   }
@@ -725,5 +890,5 @@
 
   buildGrid();
   buildLearnGrid();
-  setTab('ex');
+  route();
 })();
