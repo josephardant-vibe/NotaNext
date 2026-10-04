@@ -21,40 +21,24 @@ window.Notanext = window.Notanext || {};
     return node;
   }
 
-  // Tracés dessinés à la main, calibrés sur les lignes de la portée (STEP/BASE_Y)
-  // plutôt que rendus via un glyphe Unicode musical (𝄞 𝄢 𝄡) dont la position réelle
-  // dépend de la police de secours choisie par le navigateur/l'OS — c'était la
-  // cause du mauvais positionnement (notamment la clé de sol) selon la machine.
-  // Coordonnées locales : (0,0) = le point que `clef.line` doit toucher exactement
-  // (le cœur de la spirale pour sol, entre les 2 points pour fa, le pincement
-  // central pour ut alto/ténor).
-  const CLEF_PATHS = {
-    treble: `M 6,-96 C 22,-92 24,-78 12,-70 C -2,-62 -18,-70 -16,-84 C -14,-95 0,-99 10,-92
-              M 10,-92 C 14,-84 8,-70 -2,-58 C -14,-44 -18,-30 -10,-18 C -4,-9 6,-9 10,-16 C 14,-24 8,-30 3,-27 C -1,-25 0,-19 4,-19
-              M -10,-18 C -15,-18 -18,-5 -13,8 C -7,20 7,25 9,37 C 11,47 2,54 -7,51 C -14,48 -15,40 -10,36 C -7,33 -4,35 -4,38`,
-    bass: 'M -22,-4 C -22,-22 -8,-34 6,-32 C 20,-30 29,-15 26,-1 C 23,13 9,22 -6,22',
-    cclef: 'M -8,-50 C 10,-45 10,-6 -8,0 C 10,6 10,45 -8,50',
+  // Vrais symboles Unicode de notation musicale (𝄞 U+1D11E, 𝄢 U+1D122, 𝄡 U+1D121)
+  // rendus comme du texte avec la police Noto Music (chargée dans index.html) :
+  // leur forme est celle du fondeur, pas un tracé approximatif. `dy` ajuste la
+  // ligne de base pour que la note de référence de la clé tombe pile sur
+  // `clef.line` (calibré visuellement, voir js/staff.js).
+  const CLEF_GLYPHS = {
+    treble: { char: '\u{1D11E}', x: 32, dy: 18 },
+    bass:   { char: '\u{1D122}', x: 32, dy: 79 },
+    cclef:  { char: '\u{1D121}', x: 32, dy: 48 },
   };
-  const CLEF_OFFSET_X = { treble: 22, bass: 24, cclef: 22 };
-  // Décalage vertical fin : le repère (0,0) du tracé lui-même ne tombe pas
-  // toujours exactement sur son point notable (spirale/pince) une fois dessiné
-  // à la main ; ce petit ajustement corrige l'écart, calibré visuellement.
-  const CLEF_OFFSET_Y = { treble: 18, bass: 0, cclef: 0 };
+  const CLEF_FONT_SIZE = 96; // 4 interlignes (1 interligne = 2 * STEP)
 
   function drawClef(svg, clef) {
-    const y = yOf(clef.line) + CLEF_OFFSET_Y[clef.shape];
-    const g = el('g', { class: 'clef-glyph', transform: `translate(${2 + CLEF_OFFSET_X[clef.shape]},${y})` });
-    g.appendChild(el('path', { d: CLEF_PATHS[clef.shape] }));
-    if (clef.shape === 'bass') {
-      g.appendChild(el('circle', { class: 'clef-dot', cx: 30, cy: -13, r: 3.2 }));
-      g.appendChild(el('circle', { class: 'clef-dot', cx: 30, cy: 10, r: 3.2 }));
-    }
-    if (clef.shape === 'cclef') {
-      g.appendChild(el('line', { class: 'clef-bar', x1: -20, x2: -20, y1: -50, y2: 50 }));
-      g.appendChild(el('line', { x1: 16, x2: 16, y1: -50, y2: 50 }));
-      g.appendChild(el('line', { x1: 24, x2: 24, y1: -50, y2: 50 }));
-    }
-    svg.appendChild(g);
+    const cfg = CLEF_GLYPHS[clef.shape];
+    const y = yOf(clef.line) + cfg.dy;
+    const t = el('text', { class: 'clef-glyph', x: cfg.x, y, 'font-size': CLEF_FONT_SIZE, 'text-anchor': 'middle' });
+    t.textContent = cfg.char;
+    svg.appendChild(t);
   }
 
   function drawLedgers(svg, step, cx) {
