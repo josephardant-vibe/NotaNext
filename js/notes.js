@@ -5,6 +5,24 @@ window.Notanext = window.Notanext || {};
 (function () {
   const FR = ['Do', 'Ré', 'Mi', 'Fa', 'Sol', 'La', 'Si'];
 
+  // ----- Notation d'affichage (réglage global, mémorisé dans le navigateur) -----
+  // En interne les notes gardent leur nom français (fréquences, touches, quiz) ; seul
+  // `label(nom)` traduit ce qui est affiché. Les textes de leçons restent en français.
+  const EN_NAMES = { Do: 'C', Ré: 'D', Mi: 'E', Fa: 'F', Sol: 'G', La: 'A', Si: 'B' };
+  const NOTATION_KEY = 'notanext.notation';
+  // Ordre d'affichage des boutons de réponse : l'ordre normal, 4 en haut, 3 centrés dessous.
+  const ANSWER_ORDER = ['Do', 'Ré', 'Mi', 'Fa', 'Sol', 'La', 'Si'];
+  let notation = 'fr';
+  try { if (localStorage.getItem(NOTATION_KEY) === 'en') notation = 'en'; } catch (e) { /* stockage indisponible : français */ }
+
+  const getNotation = () => notation;
+  function setNotation(value) {
+    notation = value === 'en' ? 'en' : 'fr';
+    try { localStorage.setItem(NOTATION_KEY, notation); } catch (e) { /* valable pour la session */ }
+    window.dispatchEvent(new Event('notanext:notation'));
+  }
+  const label = (name) => (notation === 'en' ? EN_NAMES[name] || name : name);
+
   const FREQ = {
     Mi2: 82.41, Fa2: 87.31, Sol2: 98.0, La2: 110.0, Si2: 123.47,
     Do3: 130.81, Ré3: 146.83, Mi3: 164.81, Fa3: 174.61, Sol3: 196.0, La3: 220.0, Si3: 246.94,
@@ -61,6 +79,18 @@ window.Notanext = window.Notanext || {};
       tag: 'On te donne un nom, place la note sur la portée.',
       mode: 'place',
       icon: '<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><ellipse cx="13" cy="29" rx="9" ry="6.5" transform="rotate(-18 13 29)" stroke-dasharray="3 3"/><line x1="21" y1="27" x2="21" y2="7" stroke-dasharray="3 3"/></svg>',
+    },
+    {
+      id: 'ear-guess',
+      title: 'Oreille absolue — deviner',
+      tag: 'Écoute un son, trouve la note.',
+      mode: 'ear-guess',
+    },
+    {
+      id: 'ear-place',
+      title: 'Oreille absolue — placer',
+      tag: 'Écoute un son, place-le sur la portée.',
+      mode: 'ear-place',
     },
   ];
 
@@ -218,6 +248,6 @@ window.Notanext = window.Notanext || {};
   };
 
   window.Notanext.data = {
-    FR, FREQ, CLEFS, clefById, notesOf, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS, THEORY_SECTIONS,
+    FR, ANSWER_ORDER, label, getNotation, setNotation, FREQ, CLEFS, clefById, notesOf, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS, THEORY_SECTIONS,
   };
 })();

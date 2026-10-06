@@ -1,5 +1,6 @@
-// Portée à fenêtre glissante (3 notes visibles), utilisée par l'exercice "Deviner la note".
-// Contrairement à la version "défilement continu", il n'y a aucune animation liée au temps :
+// Portée à fenêtre glissante, utilisée par l'exercice "Deviner la note" : la note repérée par
+// le trait + les 7 notes à venir sont toutes affichées (la précédente reste un cran avant le
+// trait, le temps d'afficher son résultat). Contrairement à la version "défilement continu", il n'y a aucune animation liée au temps :
 // la vue n'avance que lorsqu'une réponse est donnée.
 window.Notanext = window.Notanext || {};
 
@@ -8,9 +9,11 @@ window.Notanext = window.Notanext || {};
   const { STEP, BASE_Y } = window.Notanext.staff.geometry;
   const { drawClef } = window.Notanext.staff;
 
-  const WINDOW_SIZE = 3;          // notes visibles simultanément (la 2e est la cible)
+  const WINDOW_SIZE = 9;          // 1 précédente + la cible (indice 1) + 7 à venir
   const TARGET_INDEX = 1;
-  const SLOT_GAP = 100;           // écart entre deux emplacements (unités de viewBox)
+  const LEFT_X = 105;             // 1er emplacement : juste après la clé (qui finit vers x = 69)
+  const RIGHT_MARGIN = 34;
+  const MIN_GAP = 40;             // écart minimal entre deux notes ; sur une boîte étroite les dernières sortent du cadre
   const VB_HEIGHT = 180;
   const OFFSCREEN_X = -20;        // là où glisse (puis disparaît) la note qui sort
   const TRANSITION_MS = 350;
@@ -60,17 +63,14 @@ window.Notanext = window.Notanext || {};
     // Géométrie : la portée occupe toute la largeur de la boîte (même ratio que le défilement
     // continu) ; les 3 emplacements sont placés autour du repère, à l'écart de la clé.
     let vbW = 420;
-    let SLOTS_X = [0, 0, 0];
+    let GAP = MIN_GAP;
+    let SLOTS_X = [];
     function layout() {
       const w = svg.clientWidth, h = svg.clientHeight;
       if (w && h) vbW = VB_HEIGHT * (w / h);
-      const target = Math.round(vbW * 0.42);
-      if (target - SLOT_GAP >= 95) SLOTS_X = [target - SLOT_GAP, target, target + SLOT_GAP];
-      else {
-        // Boîte étroite (téléphone en portrait) : les 3 emplacements se partagent la place après la clé.
-        const lo = 92, hi = vbW - 24;
-        SLOTS_X = [lo, Math.round((lo + hi) / 2), hi];
-      }
+      // Les emplacements se partagent toute la largeur après la clé.
+      GAP = Math.max(MIN_GAP, (vbW - RIGHT_MARGIN - LEFT_X) / (WINDOW_SIZE - 1));
+      SLOTS_X = Array.from({ length: WINDOW_SIZE }, (_, i) => Math.round(LEFT_X + i * GAP));
       svg.setAttribute('viewBox', `0 -24 ${vbW} ${VB_HEIGHT}`);
     }
     layout();
@@ -86,8 +86,8 @@ window.Notanext = window.Notanext || {};
       );
     }
 
-    // Au départ (montage ou changement de clé), rien n'est encore "passé" : seule la
-    // cible et les notes à venir sont visibles, l'emplacement avant le repère reste vide.
+    // Au départ (montage ou changement de clé), rien n'est encore "passé" : la cible et
+    // ses 7 notes à venir sont visibles, l'emplacement avant le repère reste vide.
     function fillWindow() {
       notesLayer.innerHTML = '';
       entries = new Array(WINDOW_SIZE).fill(null);
@@ -129,7 +129,7 @@ window.Notanext = window.Notanext || {};
           y: yOf(target.note.step) + 4.5,
           class: 'side-label ' + (isCorrect ? 'ok' : 'no'),
         });
-        label.textContent = correctName;
+        label.textContent = window.Notanext.data.label(correctName);
         target.group.appendChild(label);
 
         const leaving = entries[0];
@@ -142,8 +142,12 @@ window.Notanext = window.Notanext || {};
           entries[i].group.setAttribute('transform', `translate(${SLOTS_X[i - 1]},0)`);
         }
         const freshNote = pickNote();
-        const freshGroup = createNoteGroup(freshNote, SLOTS_X[WINDOW_SIZE - 1]);
+        // La nouvelle note entre par la droite (hors cadre) et glisse jusqu'au dernier emplacement.
+        const lastX = SLOTS_X[WINDOW_SIZE - 1];
+        const freshGroup = createNoteGroup(freshNote, lastX + GAP);
         notesLayer.appendChild(freshGroup);
+        freshGroup.getBoundingClientRect(); // fixe la position de départ avant la transition
+        freshGroup.setAttribute('transform', `translate(${lastX},0)`);
 
         entries = entries.slice(1).concat([{ note: freshNote, group: freshGroup }]);
 

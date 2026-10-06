@@ -79,6 +79,13 @@ window.Notanext = window.Notanext || {};
     if (opts.ghostStep != null) {
       drawLedgers(svg, opts.ghostStep, NOTE_X);
       svg.appendChild(noteAt(NOTE_X, opts.ghostStep, 'ghost'));
+      // Nom de la note sous le curseur, écrit sur la note ; au toucher, juste au-dessus (le doigt la cacherait).
+      if (opts.ghostLabel) {
+        const above = !!opts.ghostLabelAbove;
+        const t = el('text', { x: NOTE_X, y: yOf(opts.ghostStep) + (above ? -20 : 4), class: 'ghost-label' + (above ? ' above' : ''), 'text-anchor': 'middle' });
+        t.textContent = opts.ghostLabel;
+        svg.appendChild(t);
+      }
     }
 
     if (opts.note) {
@@ -108,7 +115,7 @@ window.Notanext = window.Notanext || {};
         drawLedgers(svg, step, correctX);
         svg.appendChild(noteAt(correctX, step, 'note-head reveal-correct'));
         const label = el('text', { x: correctX + 20, y: yOf(step) + 4.5, class: 'side-label ok' });
-        label.textContent = correctName;
+        label.textContent = window.Notanext.data.label(correctName);
         svg.appendChild(label);
       });
       return null;
@@ -132,7 +139,7 @@ window.Notanext = window.Notanext || {};
         }
         svg.appendChild(g);
         const t = el('text', { x: cx + 11, y: cy + 3.5, class: 'learn-label' });
-        t.textContent = nt.name;
+        t.textContent = window.Notanext.data.label(nt.name);
         svg.appendChild(t);
       });
     }

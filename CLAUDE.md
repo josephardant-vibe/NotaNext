@@ -8,6 +8,9 @@ déployée sur Netlify depuis GitHub (josephardant-vibe/NotaNext).
   accent), or/laiton distinct pour score/série, vert = bonne réponse
   uniquement, gris = mauvaise réponse/neutre. Jamais de violet ni de bleu
   générique.
+- Exception validée (5 oct. 2026) : les pictogrammes d'instruments (choix
+  d'instrument) sont autorisés, chacun avec sa teinte « classe » propre
+  (ébène, acajou, ardoise, laiton, noyer) ; limitée au choix d'instrument.
 - Un seul panneau "verre" (Liquid Glass) par écran, jamais un effet par
   bouton. Aucune ombre portée ailleurs.
 - Icônes : uniquement des têtes de note, jamais de pictogramme de portée.

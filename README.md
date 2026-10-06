@@ -8,15 +8,23 @@ Déployée sur Netlify depuis ce dépôt.
 
 ## Fonctionnalités
 
-**Page d'accueil** — affichée à la première visite seulement (mémorisée dans le
-navigateur), avec une démo interactive, la méthode et un aperçu des jeux et des cours.
+**Page d'accueil** — l'adresse du site l'ouvre toujours (réglage
+`REDIRIGER_VISITEURS_REVENANTS` dans `js/home.js` pour rétablir « première visite seulement »), avec une démo interactive, la méthode et un aperçu des jeux et des cours.
 
 **S'exercer**
 - *Deviner la note* — fenêtre de trois notes, trouve celle repérée par le trait.
 - *Deviner la note – défilement continu* — les notes défilent, vitesse réglable
   (Débutant → Expert).
 - *Placer la note* — un nom est donné, clique sa position sur la portée.
+- *Oreille absolue — deviner* — un son, 7 notes en cercle autour d'un bouton rond ; les
+  touches du clavier configurées restent valables.
+- *Oreille absolue — placer* — un son, on place la note sur la portée (clic, ou toucher et
+  glisser sur mobile) ; option « Afficher le nom de la note ».
 - Quatre clés au choix : sol, fa, ut alto, ut ténor (symboles Unicode, police Noto Music).
+
+**Instruments** — piano (défaut), violon, flûte, trompette, guitare : menu dans la ligne de
+réglages des jeux, choix mémorisé. Échantillons libres de droit dans `audio/` (≈ 65 à 150 Ko par
+instrument, seul l'instrument choisi est chargé) ; licences et crédits dans `CREDITS.md`.
 
 **Apprendre**
 - *Les bases : écoute et ressens* — 5 mini-jeux d'écoute pure (aigu/grave, long/court,
@@ -27,7 +35,9 @@ navigateur), avec une démo interactive, la méthode et un aperçu des jeux et d
 
 **Clavier personnalisable** — le bouton clavier de la barre associe une touche à chaque
 note (Do à Si) ; la configuration est enregistrée dans le navigateur (`localStorage`)
-et partagée par tous les jeux à boutons de réponse.
+et partagée par tous les jeux à boutons de réponse. Le même panneau règle la
+**notation** (Français Do Ré Mi… ou Anglais C D E…, mémorisée aussi) et propose un
+remplissage automatique des touches.
 
 ## Lancer en local
 
@@ -46,12 +56,14 @@ style.css         tous les styles (palette et polices définies dans :root)
 netlify.toml      configuration de déploiement
 js/
   notes.js        données : clés, exercices, cartes Apprendre, théorie, FAQ
-  audio.js        synthèse sonore Web Audio (hauteur, durée, volume)
+  audio.js        synthèse sonore Web Audio + lecture des échantillons d'instruments
+  instrument-menu.js menu de choix d'instrument (icônes et teintes)
   staff.js        portée statique + clés (glyphes Unicode)
   scroll-staff.js portée à défilement continu
   window-staff.js portée à fenêtre de trois notes
   theory.js       illustrations interactives de la théorie
   listen.js       mini-jeux d'écoute
+  ear.js          jeux d'oreille absolue (deviner, placer)
   game.js         navigation, exercices, leçons, clavier
   home.js         page d'accueil (démo, jeux, cours, mémoire de visite)
 ```

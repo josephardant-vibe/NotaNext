@@ -450,6 +450,17 @@ select {
   font-weight: 700;
 }
 
+.head-label {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--ink);
+  pointer-events: none;
+}
+
+/* Défilement continu : la prochaine note à deviner est cerclée. */
+.scroll-note.is-target .note-head { stroke: var(--accent-dark); stroke-width: 2.2; }
+
 .side-label.ok { fill: var(--success); }
 .side-label.no { fill: var(--grey-ind); }
 
@@ -948,14 +959,35 @@ select {
   inset: 0;
   z-index: 20;
   display: flex;
+  padding: 12px;
   background: var(--paper);
-  overflow: auto;
+  overflow: hidden;
 }
+
+/* Page « Clavier » : même carte que les jeux (.gf), fond animé identique. */
+.kbd-card { position: relative; z-index: 1; overflow: auto; }
+
+.seg-wrap { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; }
+.seg-label { font-size: 14px; font-weight: 500; }
+.seg { display: flex; gap: 6px; }
+.seg-btn {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+}
+.seg-btn:hover { border-color: var(--accent); }
+.seg-btn.on { border-color: var(--accent); color: var(--accent-dark); }
 
 .kbd-panel {
   margin: auto;
   width: 100%;
-  max-width: 340px;
+  max-width: 360px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1106,8 +1138,17 @@ body.is-home .shell {
   }
 }
 
+/* Le titre « Comment NotaNext fonctionne » doit apparaître en bas de la première vue :
+   le hero est raccourci de la hauteur de ce titre (marge haute + titre + respiration). */
+.home {
+  --comment-pt: clamp(28px, 3.5vw, 48px);
+  --comment-h2: calc(clamp(30px, 4vw, 48px) * 1.1);
+}
+
+#comment { padding-top: var(--comment-pt); }
+
 .home-hero {
-  min-height: calc(100dvh - 68px);
+  min-height: calc(100dvh - 68px - var(--comment-pt) - var(--comment-h2) - 28px);
   display: flex;
   flex-direction: column;
 }
@@ -1686,6 +1727,19 @@ body.is-phone .gf-rotate-btn { display: inline-flex; }
   gap: 10px;
 }
 
+/* Bloc portée : sélecteur de clé au-dessus à gauche, puis la portée. */
+.stage-row {
+  flex: 0 0 80%;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+.clef-side { flex: 0 0 auto; align-self: flex-start; }
+.gf .stage-row .staff-box { flex: 1 1 0; min-height: 0; width: 100%; }
+
 /* Même dimensions pour la portée de tous les jeux : pleine largeur de la carte,
    hauteur = 80 % de l'ancienne portée (qui remplissait toute la zone). */
 .gf .staff-box {
@@ -1713,6 +1767,15 @@ body.is-phone .gf-rotate-btn { display: inline-flex; }
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
 }
+
+/* Boutons de notes : 4 en haut (Do Mi Sol Si), 3 centrés dessous (Ré Fa La). */
+.gf-answers:has(.answer-btn) {
+  grid-template-columns: repeat(8, 1fr);
+  width: min(100%, 560px);
+  margin-inline: auto;
+}
+.gf-answers:has(.answer-btn) .answer-btn { grid-column: span 2; }
+.gf-answers:has(.answer-btn) .answer-btn:nth-child(5) { grid-column: 2 / span 2; }
 
 .gf-answers .answer-btn,
 .gf-answers .quiz-option {
@@ -1782,25 +1845,31 @@ body.game-rotated .nav { display: none; }
   .gf { gap: 4px; padding: 8px 16px; }
   .gf-title { display: none; }
   .gf-count { font-size: 20px; }
-  .gf-answers { gap: 6px; grid-template-columns: repeat(7, 1fr); }
-  .gf-answers .answer-btn, .gf-answers .quiz-option { padding: 7px 0; font-size: 14px; }
+  .gf-answers { gap: 6px; }
+  .gf-answers .answer-btn, .gf-answers .quiz-option { padding: 5px 0; font-size: 14px; }
+  .gf .stage-row { flex-basis: 100%; }
   .gf .key-hint { display: none; }
   .gf-feedback { font-size: 15px; min-height: 1.3em; }
   .gf-config { min-height: 0; }
   .gf-config select, .gf-config .replay { padding-top: 4px; padding-bottom: 4px; font-size: 12px; }
   .gf-config .namebox { height: 30px; }
+  .stage-row { gap: 3px; }
+  .clef-side select { font-size: 11px; padding: 3px 18px 3px 7px; background-position: right 6px center; }
 }
 
 .game.rot-cw .gf { gap: 4px; padding: 8px 16px; }
 .game.rot-cw .gf-title { display: none; }
 .game.rot-cw .gf-count { font-size: 20px; }
-.game.rot-cw .gf-answers { gap: 6px; grid-template-columns: repeat(7, 1fr); }
-.game.rot-cw .gf-answers .answer-btn, .game.rot-cw .gf-answers .quiz-option { padding: 7px 0; font-size: 14px; }
+.game.rot-cw .gf-answers { gap: 6px; }
+.game.rot-cw .gf-answers .answer-btn, .game.rot-cw .gf-answers .quiz-option { padding: 5px 0; font-size: 14px; }
+.game.rot-cw .gf .stage-row { flex-basis: 100%; }
 .game.rot-cw .gf .key-hint { display: none; }
 .game.rot-cw .gf-feedback { font-size: 15px; min-height: 1.3em; }
 .game.rot-cw .gf-config { min-height: 0; }
 .game.rot-cw .gf-config select, .game.rot-cw .gf-config .replay { padding-top: 4px; padding-bottom: 4px; font-size: 12px; }
 .game.rot-cw .gf-config .namebox { height: 30px; }
+.game.rot-cw .stage-row { gap: 3px; }
+.game.rot-cw .clef-side select { font-size: 11px; padding: 3px 18px 3px 7px; background-position: right 6px center; }
 
 /* ---------- PAGES COQUILLES : COMPTE & PROFIL ---------- */
 .page-panel { max-width: 860px; height: auto; max-height: 100%; align-self: flex-start; margin-top: clamp(0px, 3vh, 28px); }
@@ -1897,3 +1966,182 @@ body.game-rotated .nav { display: none; }
   .app-user { margin-left: 0; }
   .nav button.nav-kbd { display: none; }
 }
+
+/* ---------- CHOIX D'INSTRUMENT ---------- */
+.gf-config { position: relative; z-index: 5; }
+.inst-menu { position: relative; }
+.inst-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 12px 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+}
+.inst-trigger:hover { border-color: var(--accent); }
+.inst-trigger svg:last-child { color: var(--muted); }
+.inst-ico { display: inline-flex; }
+.inst-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 100%;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.inst-list li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px 8px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.inst-list li:hover, .inst-list li:focus-visible { background: rgba(184, 80, 47, 0.08); outline: none; }
+.inst-list li[aria-selected="true"] { background: rgba(184, 80, 47, 0.12); color: var(--accent-dark); }
+.inst-note { font-size: 12px; color: var(--muted); }
+@media (max-height: 520px) {
+  .inst-trigger { padding: 3px 9px 3px 8px; font-size: 12px; }
+  .inst-ico svg { width: 16px; height: 16px; }
+  .inst-list li { padding: 5px 10px 5px 8px; font-size: 13px; }
+  .inst-note { display: none; }
+}
+.game.rot-cw .inst-trigger { padding: 3px 9px 3px 8px; font-size: 12px; }
+.game.rot-cw .inst-ico svg { width: 16px; height: 16px; }
+.game.rot-cw .inst-list li { padding: 5px 10px 5px 8px; font-size: 13px; }
+.game.rot-cw .inst-note { display: none; }
+
+/* ---------- OREILLE ABSOLUE ---------- */
+/* Deviner : 7 notes en cercle autour du bouton rond. */
+.ear-wheel {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  max-height: 420px;
+  aspect-ratio: 1;
+  align-self: center;
+  container-type: size;
+}
+.ear-note {
+  position: absolute;
+  width: 22%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font: inherit;
+  font-size: max(12px, 5cqw);
+  font-weight: 500;
+  color: var(--ink);
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+.ear-note:hover { border-color: #c9bfad; background: #f7f4ee; }
+.ear-note.good { border-color: var(--success); background: rgba(63, 125, 82, 0.14); color: var(--success); animation: earPop 0.5s ease; }
+.ear-note.bad { border-color: var(--grey-ind); background: #e6e2da; color: var(--grey-ind); }
+.ear-note.reveal { border-color: var(--success); background: rgba(63, 125, 82, 0.14); color: var(--success); outline: 2px solid rgba(63, 125, 82, 0.35); outline-offset: 3px; }
+.ear-note.good { outline: 2px solid rgba(63, 125, 82, 0.35); outline-offset: 3px; }
+@keyframes earPop { 0% { transform: translate(-50%, -50%) scale(1); } 40% { transform: translate(-50%, -50%) scale(1.14); } 100% { transform: translate(-50%, -50%) scale(1); } }
+
+.ear-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 27%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+}
+.ear-play:hover { background: var(--accent-dark); }
+.ear-play svg { width: 42%; height: 42%; margin-left: 6%; }
+
+/* Placer : bouton rond au-dessus de la portée. */
+.ear-stage {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.ear-stage .ear-play.small { position: static; transform: none; flex: 0 0 auto; width: 54px; height: 54px; }
+.gf .ear-stage .stage-row { flex: 1 1 0; }
+
+.switch { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.switch-track { position: relative; width: 38px; height: 22px; border-radius: 999px; background: var(--border); transition: background 0.15s; flex: 0 0 auto; }
+.switch-thumb { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.15s; }
+.switch input:checked + .switch-track { background: var(--accent); }
+.switch input:checked + .switch-track .switch-thumb { transform: translateX(16px); }
+.switch input:focus-visible + .switch-track { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.ghost-label { font-family: "IBM Plex Sans", sans-serif; font-size: 11px; font-weight: 700; fill: var(--ink); pointer-events: none; }
+.ghost-label.above { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; font-size: 13px; }
+
+/* Choix d'instrument en 5 grands boutons (Oreille absolue — deviner). */
+.gf-answers:has(.inst-row) { display: block; width: 100%; }
+.inst-row { display: flex; justify-content: center; gap: 10px; }
+.inst-big {
+  flex: 1 1 0;
+  max-width: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  background: #fff;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.inst-big .inst-ico svg { width: 26px; height: 26px; }
+.inst-big:hover { border-color: #c9bfad; }
+.inst-big.on { border-color: var(--accent); background: rgba(184, 80, 47, 0.08); color: var(--accent-dark); }
+
+@media (max-height: 520px) {
+  .ear-stage { flex-direction: row; align-items: stretch; gap: 10px; }
+  .ear-stage .ear-play.small { width: 40px; height: 40px; align-self: center; }
+  .ear-guess .gf-feedback { position: absolute; right: 6%; top: 50%; transform: translateY(-50%); max-width: 22%; }
+  .inst-row { gap: 6px; }
+  .inst-big { flex-direction: row; justify-content: center; gap: 6px; padding: 4px 4px; font-size: 12px; }
+  .inst-big .inst-ico svg { width: 16px; height: 16px; }
+  .switch { font-size: 12px; }
+}
+.game.rot-cw .ear-stage { flex-direction: row; align-items: stretch; gap: 10px; }
+.game.rot-cw .ear-stage .ear-play.small { width: 40px; height: 40px; align-self: center; }
+.game.rot-cw .ear-guess .gf-feedback { position: absolute; right: 6%; top: 50%; transform: translateY(-50%); max-width: 22%; }
+.game.rot-cw .inst-row { gap: 6px; }
+.game.rot-cw .inst-big { flex-direction: row; justify-content: center; gap: 6px; padding: 4px 4px; font-size: 12px; }
+.game.rot-cw .inst-big .inst-ico svg { width: 16px; height: 16px; }
+.game.rot-cw .switch { font-size: 12px; }

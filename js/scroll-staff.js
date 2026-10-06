@@ -119,20 +119,35 @@ window.Notanext = window.Notanext || {};
       notes.push(entry);
       const wasEmpty = queue.length === 0;
       queue.push(entry);
-      if (wasEmpty && onDue) onDue(note);
+      if (wasEmpty) {
+        paintTarget();
+        if (onDue) onDue(note);
+      }
+    }
+
+    // Le nom de la note s'écrit dans la tête de note pendant une seconde, juste ou non.
+    function flashName(entry) {
+      const label = el('text', {
+        x: 0,
+        y: yOf(entry.note.step) + 4,
+        class: 'head-label',
+        'text-anchor': 'middle',
+      });
+      label.textContent = window.Notanext.data.label(entry.note.name);
+      entry.group.appendChild(label);
+      setTimeout(() => label.remove(), 1000);
+    }
+
+    // La note à deviner (la plus ancienne non tranchée) est cerclée : on répond dans l'ordre d'arrivée.
+    function paintTarget() {
+      notes.forEach((n) => n.group.classList.toggle('is-target', queue[0] === n));
     }
 
     function markMissed(entry) {
       entry.state = 'missed';
       const ellipse = entry.group.querySelector('.note-head');
       ellipse.classList.add('reveal-wrong');
-      const label = el('text', {
-        x: 20,
-        y: yOf(entry.note.step) + 4.5,
-        class: 'side-label no',
-      });
-      label.textContent = entry.note.name;
-      entry.group.appendChild(label);
+      flashName(entry);
       if (onMiss) onMiss(entry.note.name);
     }
 
@@ -156,6 +171,7 @@ window.Notanext = window.Notanext || {};
         if (n.state === 'pending' && n.x < MARKER_X && queue[0] === n) {
           markMissed(n);
           queue.shift();
+          paintTarget();
           if (queue.length && onDue) onDue(queue[0].note);
         }
         if (n.x < EXIT_MARGIN) {
@@ -188,14 +204,9 @@ window.Notanext = window.Notanext || {};
 
         const ellipse = entry.group.querySelector('.note-head');
         ellipse.classList.add(isCorrect ? 'reveal-correct' : 'reveal-wrong');
-        const label = el('text', {
-          x: 20,
-          y: yOf(entry.note.step) + 4.5,
-          class: 'side-label ' + (isCorrect ? 'ok' : 'no'),
-        });
-        label.textContent = correctName;
-        entry.group.appendChild(label);
+        flashName(entry);
 
+        paintTarget();
         if (queue.length && onDue) onDue(queue[0].note);
       },
       currentNote() {

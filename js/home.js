@@ -1,7 +1,11 @@
-// Page d'accueil : affichée uniquement à la première visite sur cet appareil
-// (mémoire locale du navigateur), puis directement "S'exercer" aux chargements
-// suivants. Le logo de la barre de l'app permet d'y revenir à la demande.
+// Page d'accueil : l'adresse du site l'ouvre toujours (un lien direct vers une page
+// de l'app, #/exercer/place par exemple, ouvre cette page). Le logo de la barre de
+// l'app permet d'y revenir à la demande.
+// Réglage unique : passer REDIRIGER_VISITEURS_REVENANTS à true rétablit l'ancien
+// comportement (accueil à la première visite seulement, puis directement « S'exercer »),
+// à réactiver quand les comptes existeront.
 (function () {
+  const REDIRIGER_VISITEURS_REVENANTS = false;
   const { app } = window.Notanext;
   const VISITED_KEY = 'notanext.visited';
 
@@ -112,8 +116,8 @@
     { title: 'Deviner la note', desc: 'Une note sur la portée, trouve son nom.', open: { exercise: 'guess-window' }, offset: 0, notes: [150] },
     { title: 'Défilement continu', desc: "Les notes défilent, réponds sans t'arrêter.", open: { exercise: 'guess-scroll' }, offset: 1, notes: [100, 150, 200] },
     { title: 'Placer la note', desc: 'On te donne un nom, place la note sur la portée.', open: { exercise: 'place' }, offset: 2, notes: [150] },
-    { title: 'Oreille absolue — deviner', desc: 'Écoute un son, trouve la note.', soon: true, notes: [150] },
-    { title: 'Oreille absolue — placer', desc: 'Écoute un son, place-le sur la portée.', soon: true, notes: [150] },
+    { title: 'Oreille absolue — deviner', desc: 'Écoute un son, trouve la note.', open: { exercise: 'ear-guess' }, offset: 0, notes: [150] },
+    { title: 'Oreille absolue — placer', desc: 'Écoute un son, place-le sur la portée.', open: { exercise: 'ear-place' }, offset: 1, notes: [150] },
   ];
   const INK = '#211d18';
   const SOON_NOTE = '#b9a892';
@@ -187,10 +191,14 @@
   });
 
   let seen = false;
-  try { seen = !!localStorage.getItem(VISITED_KEY); } catch (e) { /* stockage indisponible : on réaffiche l'accueil */ }
+  if (REDIRIGER_VISITEURS_REVENANTS) {
+    try { seen = !!localStorage.getItem(VISITED_KEY); } catch (e) { /* stockage indisponible : on réaffiche l'accueil */ }
+  }
   // Un lien direct vers une page de l'app (#/compte, #/profil…) n'affiche pas l'accueil.
   if (!seen && !location.hash.startsWith('#/')) {
     showHome();
-    try { localStorage.setItem(VISITED_KEY, '1'); } catch (e) { /* idem */ }
+    if (REDIRIGER_VISITEURS_REVENANTS) {
+      try { localStorage.setItem(VISITED_KEY, '1'); } catch (e) { /* idem */ }
+    }
   }
 })();

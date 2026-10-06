@@ -1,7 +1,7 @@
 // Application : navigation (onglets, grille de cartes, pages d'exercice) et logique des exercices.
 (function () {
-  const { data, staff, scrollStaff, windowStaff, playTone, theory, listen } = window.Notanext;
-  const { CLEFS, clefById, notesOf, FR, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS, THEORY_SECTIONS } = data;
+  const { data, staff, scrollStaff, windowStaff, playTone, playNote, instruments, instrumentMenu, theory, listen } = window.Notanext;
+  const { CLEFS, clefById, notesOf, FR, ANSWER_ORDER, label, getNotation, setNotation, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS, THEORY_SECTIONS } = data;
   const { renderStaff, eventToStep } = staff;
   const { createScrollStaff, SPEED_LEVELS } = scrollStaff;
   const { createWindowStaff } = windowStaff;
@@ -105,11 +105,7 @@
 
   function buildGrid() {
     const tiles = EXERCISES.map((ex) => ({ title: ex.title, desc: ex.tag, action: 'Ouvrir', onOpen: () => openExercise(ex.id) }));
-    tiles.push(
-      { title: 'Oreille absolue — deviner', desc: 'Écoute un son, trouve la note.', soon: true },
-      { title: 'Oreille absolue — placer', desc: 'Écoute un son, place-le sur la portée.', soon: true },
-      { title: 'Nouveau jeu', soon: true },
-    );
+    tiles.push({ title: 'Nouveau jeu', soon: true });
     buildTiles(document.getElementById('card-grid'), tiles);
   }
 
@@ -470,7 +466,7 @@
     document.body.classList.add('in-game');
     gameEl.hidden = false;
     gameEl.innerHTML = `
-      <div class="gf">
+      <div class="gf ${opts.cls || ''}">
         <div class="gf-top">
           <button type="button" class="backbtn" id="back">&#8592; Retour</button>
           <span class="gf-title">${opts.title}</span>
@@ -482,6 +478,7 @@
         <div class="gf-config">
           ${opts.config || ''}
           ${opts.replay === 'config' ? '<button type="button" class="replay" id="replay">&#9654; Réécouter</button>' : ''}
+          ${opts.configAfter || ''}
         </div>
         <div class="gf-stage" id="gf-stage">
           ${opts.replay === 'stage' ? '<button type="button" class="replay big" id="replay">&#9654; Réécouter</button>' : ''}
@@ -546,6 +543,14 @@
 
   window.Notanext.app = { setTab, openExercise, openLearnCard };
 
+  // Boîte à outils pour les jeux écrits dans d'autres fichiers (js/ear.js).
+  const kit = {
+    openFrame,
+    showGrid: () => showGrid(),
+    CORRECT_PHRASES,
+    setActiveAnswers(map) { activeAnswers = map; refreshKeyHints(); },
+  };
+
   tabEx.addEventListener('click', () => setTab('ex'));
   tabLearn.addEventListener('click', () => setTab('learn'));
   navLogin.addEventListener('click', () => setHash('#/compte'));
@@ -575,6 +580,14 @@
     });
   }
 
+  // Changement de notation : boutons de réponse et repères de « Les clés » se mettent à jour.
+  window.addEventListener('notanext:notation', () => {
+    if (activeAnswers) {
+      FR.forEach((n) => { const el = activeAnswers[n] && activeAnswers[n].querySelector('.ans-name'); if (el) el.textContent = label(n); });
+    }
+    if (document.getElementById('learn-staff') && !learnPage.hidden) drawLearn();
+  });
+
   // Appuyer sur la touche associée = cliquer sur le bouton de réponse correspondant.
   document.addEventListener('keydown', (e) => {
     if (capturing || !activeAnswers || gameEl.hidden) return;
@@ -586,29 +599,52 @@
     activeAnswers[name].click();
   });
 
+  // Remplissage automatique : notation anglaise = la lettre de la note (c d e f g a b) ;
+  // notation française = rangée du milieu, de gauche à droite (a s d f g h j).
+  const AUTO_KEYS = { fr: ['a', 's', 'd', 'f', 'g', 'h', 'j'], en: ['c', 'd', 'e', 'f', 'g', 'a', 'b'] };
+
+  // Page « Clavier » : même carte que les jeux (bouton Retour en haut), par-dessus l'écran.
   function openKeyPanel() {
     if (document.querySelector('.kbd-overlay')) return;
     if (pauseHook) pauseHook(true);
     const overlay = document.createElement('div');
     overlay.className = 'kbd-overlay';
     overlay.innerHTML = `
-      <div class="kbd-panel">
-        <h2>Clavier</h2>
-        <p>Clique une note, puis appuie sur la touche de ton choix. Valable pour tous les jeux à boutons.</p>
-        <div class="kbd-rows">
-          ${FR.map((n) => `<div class="kbd-row"><span>${n}</span><button type="button" class="kbd-key" data-note="${n}"></button></div>`).join('')}
+      <div class="bg" aria-hidden="true"></div>
+      <div class="gf kbd-card">
+        <div class="gf-top">
+          <button type="button" class="backbtn" id="kbd-done">&#8592; Retour</button>
+          <span class="gf-title">Clavier</span>
+          <span class="gf-right"></span>
         </div>
-        <div class="theory-nav">
-          <button type="button" class="btn-secondary" id="kbd-reset">Tout effacer</button>
-          <button type="button" class="btn-primary" id="kbd-done">Terminé</button>
+        <div class="kbd-panel">
+          <div class="seg-wrap">
+            <span class="seg-label">Notation</span>
+            <div class="seg" role="group" aria-label="Notation">
+              <button type="button" class="seg-btn" data-notation="fr">Français</button>
+              <button type="button" class="seg-btn" data-notation="en">Anglais</button>
+            </div>
+          </div>
+          <p>Clique une note, puis appuie sur la touche de ton choix. Valable pour tous les jeux à boutons.</p>
+          <div class="kbd-rows">
+            ${FR.map((n) => `<div class="kbd-row"><span class="kbd-name" data-note="${n}"></span><button type="button" class="kbd-key" data-note="${n}"></button></div>`).join('')}
+          </div>
+          <div class="theory-nav">
+            <button type="button" class="btn-secondary" id="kbd-reset">Tout effacer</button>
+            <button type="button" class="btn-secondary" id="kbd-auto">Remplir automatiquement</button>
+          </div>
         </div>
       </div>
     `;
     document.body.appendChild(overlay);
     const keyBtns = Array.from(overlay.querySelectorAll('.kbd-key'));
+    const nameEls = Array.from(overlay.querySelectorAll('.kbd-name'));
+    const segBtns = Array.from(overlay.querySelectorAll('.seg-btn'));
     let waiting = null;
 
     function paint() {
+      segBtns.forEach((b) => b.classList.toggle('on', b.dataset.notation === getNotation()));
+      nameEls.forEach((el) => { el.textContent = label(el.dataset.note); });
       keyBtns.forEach((b) => {
         const active = b === waiting;
         b.classList.toggle('waiting', active);
@@ -641,8 +677,22 @@
       capturing = true;
       paint();
     }));
+    segBtns.forEach((b) => b.addEventListener('click', () => {
+      setNotation(b.dataset.notation);
+      paint();
+    }));
     overlay.querySelector('#kbd-reset').addEventListener('click', () => {
       keys = {};
+      saveKeys();
+      refreshKeyHints();
+      paint();
+    });
+    overlay.querySelector('#kbd-auto').addEventListener('click', () => {
+      const list = AUTO_KEYS[getNotation()];
+      keys = {};
+      FR.forEach((n, i) => { keys[n] = list[i]; });
+      waiting = null;
+      capturing = false;
       saveKeys();
       refreshKeyHints();
       paint();
@@ -659,18 +709,21 @@
 
   // ---------- exercice ----------
   function mountExercise(ex) {
+    if (ex.mode === 'ear-guess') return window.Notanext.ear.mountGuess(ex, kit);
+    if (ex.mode === 'ear-place') return window.Notanext.ear.mountPlace(ex, kit);
     let clefId = 'sol';
     const isPlace = ex.mode === 'place';
     const frame = openFrame({
       title: ex.title,
       config: `
         ${isPlace ? '<div class="namebox" id="namebox">–</div>' : ''}
-        <select id="clef-sel" aria-label="Choisir une clé">${CLEFS.map((c) => `<option value="${c.id}">${c.label}</option>`).join('')}</select>
         ${ex.mode === 'guess-scroll' ? `<select id="speed-sel" aria-label="Choisir une vitesse">${SPEED_LABELS.map(([v, label]) => `<option value="${v}"${v === 'intermediaire' ? ' selected' : ''}>${label}</option>`).join('')}</select>` : ''}`,
       replay: 'config',
-      stageHtml: `<div class="staff-box"><svg class="staff-svg" id="staff" role="img" aria-label="Portée"></svg></div>`,
+      configAfter: `${instrumentMenu.html()}<span class="inst-note" id="inst-note" hidden></span>`,
+      // Le sélecteur de clé est à gauche de la portée, centré en hauteur.
+      stageHtml: `<div class="stage-row"><div class="clef-side"><select id="clef-sel" aria-label="Choisir une clé">${CLEFS.map((c) => `<option value="${c.id}">${c.label}</option>`).join('')}</select></div><div class="staff-box"><svg class="staff-svg" id="staff" role="img" aria-label="Portée"></svg></div></div>`,
       // Placer la note n'a pas de boutons : on réserve leur place pour que la portée ait exactement la même taille que dans les autres jeux.
-      answersHtml: isPlace ? FR.map(() => '<span class="answer-btn spacer" aria-hidden="true">&nbsp;</span>').join('') : '',
+      answersHtml: isPlace ? ANSWER_ORDER.map(() => '<span class="answer-btn spacer" aria-hidden="true">&nbsp;</span>').join('') : '',
       onBack: () => showGrid(),
     });
     const { session } = frame;
@@ -684,24 +737,42 @@
     }
 
     function markWrong(correctName) {
-      frame.setFeedback(`C'était <b>${correctName}</b>`);
+      frame.setFeedback(`C'était <b>${label(correctName)}</b>`);
       session.record(false);
     }
 
-    const tone = (note) => playTone(note.freq);
+    const tone = (note) => playNote(note.freq);
 
     let controller;
     if (ex.mode === 'guess-scroll') controller = mountGuessScroll(svg, clef, markCorrect, markWrong);
     else if (ex.mode === 'guess-window') controller = mountGuessWindow(svg, clef, markCorrect, markWrong);
     else controller = mountPlace(svg, clef, markCorrect, markWrong);
 
-    frame.setDestroy(() => { if (controller.destroy) controller.destroy(); });
+    // Menu d'instrument + avertissement si certaines notes de la clé sont jouées à l'octave.
+    const unmountMenu = instrumentMenu.mount(frame.root);
+    const noteEl = document.getElementById('inst-note');
+    function paintFoldNote() {
+      const fold = instruments.needsFold(instruments.get(), notesOf(clef()).map((n) => n.freq));
+      noteEl.hidden = !fold;
+      noteEl.textContent = fold ? 'Notes hors tessiture jouées à l\'octave' : '';
+      noteEl.title = fold ? 'Cet instrument ne couvre pas toute la clé : les notes trop graves ou trop aiguës sont jouées une octave plus haut ou plus bas.' : '';
+    }
+    window.addEventListener('notanext:instrument', paintFoldNote);
+    instruments.load(instruments.get()).catch(() => {});
+    paintFoldNote();
+
+    frame.setDestroy(() => {
+      unmountMenu();
+      window.removeEventListener('notanext:instrument', paintFoldNote);
+      if (controller.destroy) controller.destroy();
+    });
     frame.replay.addEventListener('click', () => {
       const note = controller.currentNote();
-      if (note) playTone(note.freq);
+      if (note) playNote(note.freq);
     });
     document.getElementById('clef-sel').addEventListener('change', (e) => {
       clefId = e.target.value;
+      paintFoldNote();
       controller.onClefChange();
     });
     const speedSel = document.getElementById('speed-sel');
@@ -781,11 +852,12 @@
     function buildAnswerButtons(onAnswer) {
       const answers = frame.answers;
       const byName = {};
-      FR.forEach((name) => {
+      ANSWER_ORDER.forEach((name) => {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'answer-btn';
-        btn.innerHTML = `${name}<span class="key-hint"></span>`;
+        btn.dataset.note = name;
+        btn.innerHTML = `<span class="ans-name">${label(name)}</span><span class="key-hint"></span>`;
         btn.addEventListener('click', () => onAnswer(name));
         answers.appendChild(btn);
         byName[name] = btn;
@@ -810,10 +882,10 @@
         const notes = notesOf(clefFn());
         current = notes[Math.floor(Math.random() * notes.length)];
         frame.setFeedback('');
-        nameBox.textContent = current.name;
+        nameBox.textContent = label(current.name);
         svgEl.classList.add('placing');
         renderStaff(svgEl, { wide: true, clef: clefFn() });
-        playTone(current.freq);
+        playNote(current.freq);
       }
 
       svgEl.addEventListener('mousemove', (e) => {
@@ -851,6 +923,10 @@
         }
       });
 
+      // Changement de notation en cours de partie : le nom demandé se met à jour.
+      const onNotation = () => { if (current) nameBox.textContent = label(current.name); };
+      window.addEventListener('notanext:notation', onNotation);
+
       // Rotation / redimensionnement : la portée se redessine à la nouvelle largeur.
       const onResize = () => { if (!locked) renderStaff(svgEl, { wide: true, clef: clefFn() }); };
       window.addEventListener('resize', onResize);
@@ -860,7 +936,7 @@
       return {
         currentNote: () => current,
         onClefChange: next,
-        destroy: () => { dead = true; window.removeEventListener('resize', onResize); },
+        destroy: () => { dead = true; window.removeEventListener('resize', onResize); window.removeEventListener('notanext:notation', onNotation); },
       };
     }
   }
