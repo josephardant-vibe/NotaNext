@@ -10,12 +10,10 @@
   const VISITED_KEY = 'notanext.visited';
 
   const home = document.getElementById('view-home');
-  const exPage = document.getElementById('ex-page');
 
   function showHome() {
-    // Quitte proprement un exercice en cours (le défilement continu tourne tout seul).
-    const back = document.getElementById('back');
-    if (back && !exPage.hidden) back.click();
+    // Quitte proprement un jeu en cours (le défilement continu tourne tout seul).
+    app.closeGame();
     document.body.classList.add('is-home');
     home.hidden = false;
     home.scrollTop = 0;

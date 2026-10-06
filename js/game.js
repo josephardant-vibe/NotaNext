@@ -541,7 +541,7 @@
     else { showView('learn'); showLearnGrid(); }
   }
 
-  window.Notanext.app = { setTab, openExercise, openLearnCard };
+  window.Notanext.app = { setTab, openExercise, openLearnCard, closeGame };
 
   // Boîte à outils pour les jeux écrits dans d'autres fichiers (js/ear.js).
   const kit = {
@@ -599,9 +599,8 @@
     activeAnswers[name].click();
   });
 
-  // Remplissage automatique : notation anglaise = la lettre de la note (c d e f g a b) ;
-  // notation française = rangée du milieu, de gauche à droite (a s d f g h j).
-  const AUTO_KEYS = { fr: ['a', 's', 'd', 'f', 'g', 'h', 'j'], en: ['c', 'd', 'e', 'f', 'g', 'a', 'b'] };
+  // Remplissage automatique : la lettre de la note anglaise (c d e f g a b), quelle que soit la notation affichée.
+  const AUTO_KEYS = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
 
   // Page « Clavier » : même carte que les jeux (bouton Retour en haut), par-dessus l'écran.
   function openKeyPanel() {
@@ -688,9 +687,8 @@
       paint();
     });
     overlay.querySelector('#kbd-auto').addEventListener('click', () => {
-      const list = AUTO_KEYS[getNotation()];
       keys = {};
-      FR.forEach((n, i) => { keys[n] = list[i]; });
+      FR.forEach((n, i) => { keys[n] = AUTO_KEYS[i]; });
       waiting = null;
       capturing = false;
       saveKeys();

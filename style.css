@@ -1056,7 +1056,8 @@ body.is-home {
 body.is-home .bg,
 body.is-home .bg-icons,
 body.is-home .nav,
-body.is-home .shell {
+body.is-home .shell,
+body.is-home .game {
   display: none;
 }
 
