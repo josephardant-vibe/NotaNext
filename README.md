@@ -12,19 +12,23 @@ Déployée sur Netlify depuis ce dépôt.
 `REDIRIGER_VISITEURS_REVENANTS` dans `js/home.js` pour rétablir « première visite seulement »), avec une démo interactive, la méthode et un aperçu des jeux et des cours.
 
 **S'exercer**
-- *Deviner la note* — fenêtre de trois notes, trouve celle repérée par le trait.
+- *Deviner la note* — huit notes sur la portée (celle repérée par le trait et les sept à venir), trouve le nom de celle repérée.
 - *Deviner la note – défilement continu* — les notes défilent, vitesse réglable
-  (Débutant → Expert).
+  (Débutant → Expert) ; on répond dans l'ordre d'arrivée, la prochaine note est cerclée et son
+  nom s'écrit un instant dans la tête de note.
 - *Placer la note* — un nom est donné, clique sa position sur la portée.
 - *Oreille absolue — deviner* — un son, 7 notes en cercle autour d'un bouton rond ; les
   touches du clavier configurées restent valables.
 - *Oreille absolue — placer* — un son, on place la note sur la portée (clic, ou toucher et
-  glisser sur mobile) ; option « Afficher le nom de la note ».
+  glisser sur mobile) ; seule la position exacte (octave comprise) est juste, et seules les notes
+  que l'instrument joue à leur vraie hauteur sont proposées ; option « Afficher le nom de la note ».
 - Quatre clés au choix : sol, fa, ut alto, ut ténor (symboles Unicode, police Noto Music).
 
 **Instruments** — piano (défaut), violon, flûte, trompette, guitare : menu dans la ligne de
 réglages des jeux, choix mémorisé. Échantillons libres de droit dans `audio/` (≈ 65 à 150 Ko par
-instrument, seul l'instrument choisi est chargé) ; licences et crédits dans `CREDITS.md`.
+instrument, seul l'instrument choisi est chargé), hauteurs mesurées et corrigées ; licences et
+crédits dans `CREDITS.md`. Les jeux de lecture jouent à l'octave une note hors de la tessiture
+de l'instrument, et le signalent.
 
 **Apprendre**
 - *Les bases : écoute et ressens* — 5 mini-jeux d'écoute pure (aigu/grave, long/court,
@@ -54,6 +58,10 @@ python3 -m http.server 8000
 index.html        page unique : accueil, onglets S'exercer / Apprendre
 style.css         tous les styles (palette et polices définies dans :root)
 netlify.toml      configuration de déploiement
+audio/            échantillons d'instruments (un dossier par instrument)
+docs/             documents du projet (mémoire du projet, 3 oct. 2026)
+CREDITS.md        licences et crédits des sons
+CLAUDE.md         mémo projet : charte visuelle et règles de travail
 js/
   notes.js        données : clés, exercices, cartes Apprendre, théorie, FAQ
   audio.js        synthèse sonore Web Audio + lecture des échantillons d'instruments
@@ -77,7 +85,15 @@ Ajouter un exercice, une clé ou une leçon = une entrée dans `js/notes.js`
   vert pour la bonne réponse uniquement, gris pour la mauvaise réponse / le neutre.
 - Un seul panneau « verre » par écran, aucune ombre portée ailleurs.
 - Polices : Fraunces (titres, score) et IBM Plex Sans (texte, boutons).
-- Icônes : uniquement des têtes de note.
+- Icônes : uniquement des têtes de note (exception : pictogrammes du choix d'instrument).
+
+## Organisation Git
+
+- `main` : la version publiée (Netlify déploie depuis cette branche).
+- Une branche par chantier, nommée `feature/<sujet>` (ou `fix/<sujet>`), créée depuis `main`, puis
+  fusionnée dans `main` et supprimée.
+- Étiquettes : `archive-v0` (première version), `v2.0` (espace jeux v2 : notation, instruments,
+  oreille absolue).
 
 ## Sources
 
