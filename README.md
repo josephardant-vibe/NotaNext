@@ -1,7 +1,6 @@
 # NotaNext
 
-Web app d'apprentissage du solfège — lecture de notes, clés, théorie de base et
-entraînement de l'oreille. HTML / CSS / JavaScript « vanilla », sans framework ni
+Web app d'apprentissage du solfège — lecture de notes, clés et entraînement de l'oreille. HTML / CSS / JavaScript « vanilla », sans framework ni
 étape de build : tout tourne dans le navigateur, sans compte ni installation.
 
 Déployée sur Netlify depuis ce dépôt.
@@ -11,7 +10,7 @@ Déployée sur Netlify depuis ce dépôt.
 **Page d'accueil** — l'adresse du site l'ouvre toujours (réglage
 `REDIRIGER_VISITEURS_REVENANTS` dans `js/home.js` pour rétablir « première visite seulement »), avec une démo interactive, la méthode et un aperçu des jeux et des cours.
 
-**Se connecter** — « Ton espace personnel arrive bientôt », avec une animation en boucle
+**Se connecter** (bouton « Comptes bientôt ») — « Ton espace personnel arrive bientôt », avec une animation en boucle
 (un petit personnage court sur une portée, les notes touchées passent au vert ; `js/runner.js`,
 en SVG, sans image). Pas de formulaire : les comptes ne sont pas encore ouverts.
 
@@ -38,12 +37,12 @@ instrument, seul l'instrument choisi est chargé), hauteurs mesurées et corrig�
 crédits dans `CREDITS.md`. Les jeux de lecture jouent à l'octave une note hors de la tessiture
 de l'instrument, et le signalent.
 
-**Apprendre**
-- *Les bases : écoute et ressens* — 5 mini-jeux d'écoute pure (aigu/grave, long/court,
-  fort/doux, pareil/différent, combien de sons).
-- *Les clés* — repères sur la portée, notes cliquables et FAQ clé par clé.
-- *Théorie de base & notation* — notes, valeurs, silences, mesure, altérations, avec
-  illustrations sonores et quiz de rappel (réponses mélangées à chaque lancement).
+**Apprendre** — *Les clés* : repères sur la portée, notes cliquables et FAQ clé par clé.
+(Les cours « Écoute et ressens » et « Théorie de base » ont été retirés pour l'instant.)
+
+**Accessibilité clavier** — les jeux « placer » se jouent aux flèches (haut/bas) et à Entrée, le menu
+d'instrument et le panneau Clavier aussi. Le réglage « Rotation automatique sur téléphone » se coupe
+dans le panneau Clavier ou depuis le message de rotation.
 
 **Clavier personnalisable** — le bouton clavier de la barre associe une touche à chaque
 note (Do à Si) ; la configuration est enregistrée dans le navigateur (`localStorage`)
@@ -77,16 +76,13 @@ js/
   staff.js        portée statique + clés (glyphes Unicode)
   scroll-staff.js portée à défilement continu
   window-staff.js portée à fenêtre de trois notes
-  theory.js       illustrations interactives de la théorie
-  listen.js       mini-jeux d'écoute
   ear.js          jeux d'oreille absolue (deviner, placer)
   runner.js       animation de la page Se connecter (coureur sur la portée)
   game.js         navigation, exercices, leçons, clavier
   home.js         page d'accueil (démo, jeux, cours, mémoire de visite)
 ```
 
-Ajouter un exercice, une clé ou une leçon = une entrée dans `js/notes.js`
-(ou `js/listen.js` pour un jeu d'écoute).
+Ajouter un exercice, une clé ou une leçon = une entrée dans `js/notes.js`.
 
 ## Charte visuelle
 

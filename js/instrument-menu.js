@@ -20,10 +20,12 @@ window.Notanext = window.Notanext || {};
   const label = (id) => instruments.INSTRUMENTS[id].label;
   const iconHtml = (id) => `<span class="inst-ico" style="color:${META[id].color}">${META[id].icon}</span>`;
 
+  let uid = 0;
   function html() {
+    const listId = 'inst-list-' + (++uid);
     return `<div class="inst-menu">
-      <button type="button" class="inst-trigger" aria-haspopup="listbox" aria-expanded="false" aria-label="Choisir un instrument"></button>
-      <ul class="inst-list" role="listbox" aria-label="Instrument" hidden>
+      <button type="button" class="inst-trigger" aria-haspopup="listbox" aria-expanded="false" aria-controls="${listId}" aria-label="Choisir un instrument"></button>
+      <ul class="inst-list" id="${listId}" role="listbox" aria-label="Instrument" hidden>
         ${instruments.LIST.map((id) => `<li role="option" data-id="${id}" tabindex="-1">${iconHtml(id)}<span>${label(id)}</span></li>`).join('')}
       </ul>
     </div>`;
@@ -42,16 +44,29 @@ window.Notanext = window.Notanext || {};
       options.forEach((o) => o.setAttribute('aria-selected', String(o.dataset.id === id)));
     };
     const close = () => { list.hidden = true; trigger.setAttribute('aria-expanded', 'false'); };
-    const open = () => { list.hidden = false; trigger.setAttribute('aria-expanded', 'true'); };
+    // À l'ouverture, le focus entre dans la liste, sur l'instrument actuel (utilisable au clavier).
+    const open = (focusIndex) => {
+      list.hidden = false;
+      trigger.setAttribute('aria-expanded', 'true');
+      const current = options.findIndex((o) => o.dataset.id === instruments.get());
+      options[focusIndex != null ? focusIndex : Math.max(0, current)].focus();
+    };
 
     trigger.addEventListener('click', () => (list.hidden ? open() : close()));
-    options.forEach((o) => {
+    trigger.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); open(); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); open(options.length - 1); }
+    });
+    options.forEach((o, i) => {
       const choose = () => { instruments.set(o.dataset.id); close(); trigger.focus(); };
       o.addEventListener('click', choose);
       o.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(); }
-        else if (e.key === 'ArrowDown' && o.nextElementSibling) { e.preventDefault(); o.nextElementSibling.focus(); }
-        else if (e.key === 'ArrowUp' && o.previousElementSibling) { e.preventDefault(); o.previousElementSibling.focus(); }
+        else if (e.key === 'ArrowDown') { e.preventDefault(); options[Math.min(i + 1, options.length - 1)].focus(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); options[Math.max(i - 1, 0)].focus(); }
+        else if (e.key === 'Home') { e.preventDefault(); options[0].focus(); }
+        else if (e.key === 'End') { e.preventDefault(); options[options.length - 1].focus(); }
+        else if (e.key === 'Tab') close();
       });
     });
     const onDoc = (e) => { if (!menu.contains(e.target)) close(); };

@@ -1,8 +1,8 @@
 // Application : navigation (onglets, grille de cartes, pages d'exercice) et logique des exercices.
 (function () {
-  const { data, staff, scrollStaff, windowStaff, playTone, playNote, instruments, instrumentMenu, theory, listen } = window.Notanext;
-  const { CLEFS, clefById, notesOf, FR, ANSWER_ORDER, label, getNotation, setNotation, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS, THEORY_SECTIONS } = data;
-  const { renderStaff, eventToStep } = staff;
+  const { data, staff, scrollStaff, windowStaff, playTone, playNote, instruments, instrumentMenu } = window.Notanext;
+  const { CLEFS, clefById, notesOf, FR, ANSWER_ORDER, label, getNotation, setNotation, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS } = data;
+  const { renderStaff, eventToStep, attachKeyboard } = staff;
   const { createScrollStaff, SPEED_LEVELS } = scrollStaff;
   const { createWindowStaff } = windowStaff;
 
@@ -27,17 +27,20 @@
   const MOBILE_LANDSCAPE = true;
   document.body.classList.toggle('landscape-only', MOBILE_LANDSCAPE);
 
-  const account = window.Notanext.account;
+  // Réglage du joueur : « Rotation automatique » (mémorisé). Désactivée, les jeux et la section
+  // Apprendre gardent l'orientation du téléphone. Modifiable dans Clavier ou depuis le message de rotation.
+  const ROTATE_KEY = 'notanext.autorotate';
+  let autoRotate = true;
+  try { autoRotate = localStorage.getItem(ROTATE_KEY) !== '0'; } catch (e) { /* activée */ }
+  const rotationOn = () => MOBILE_LANDSCAPE && autoRotate;
 
   // ---------- éléments ----------
   const tabEx = document.getElementById('tab-ex');
   const tabLearn = document.getElementById('tab-learn');
   const navLogin = document.getElementById('nav-login');
-  const navAccount = document.getElementById('nav-account');
   const viewEx = document.getElementById('view-ex');
   const viewLearn = document.getElementById('view-learn');
   const viewAccount = document.getElementById('view-account');
-  const viewProfile = document.getElementById('view-profile');
   const exGrid = document.getElementById('ex-grid');
   const exPage = document.getElementById('ex-page');
   const learnPanel = document.getElementById('learn-panel');
@@ -45,12 +48,8 @@
   const learnPage = document.getElementById('learn-page');
   const gameEl = document.getElementById('game');
 
-  // ---------- header : état visiteur / membre (aperçu) ----------
-  navLogin.hidden = account.isMember();
-  navAccount.hidden = !account.isMember();
-
   // ---------- routeur ----------
-  // #/exercer, #/exercer/<jeu>, #/apprendre, #/apprendre/<cours>, #/compte, #/profil.
+  // #/exercer, #/exercer/<jeu>, #/apprendre, #/apprendre/<cours>, #/compte.
   // Le hash est l'unique source de vérité ; `route()` est idempotente (clé `shown`).
   let shown = null;
   const setHash = (h) => { if (location.hash !== h) location.hash = h; };
@@ -59,11 +58,9 @@
     viewEx.hidden = name !== 'ex';
     viewLearn.hidden = name !== 'learn';
     viewAccount.hidden = name !== 'account';
-    viewProfile.hidden = name !== 'profile';
     tabEx.classList.toggle('on', name === 'ex');
     tabLearn.classList.toggle('on', name === 'learn');
     navLogin.classList.toggle('on', name === 'account');
-    navAccount.classList.toggle('on', name === 'profile');
     currentView = name;
     applyLearnOrientation();
   }
@@ -75,10 +72,6 @@
     shown = key;
     closeGame();
     if (page === 'compte') return showView('account');
-    if (page === 'profil') {
-      account.renderProfile(document.getElementById('profile-panel'));
-      return showView('profile');
-    }
     if (page === 'apprendre') {
       showView('learn');
       if (arg && LEARN_CARDS.some((c) => c.id === arg)) return openLearnCard(arg, true);
@@ -132,7 +125,6 @@
   // qu'une entrée dans LEARN_CARDS + un mount*.
   function buildLearnGrid() {
     const tiles = LEARN_CARDS.map((c) => ({ title: c.title, desc: c.tag, action: 'Commencer', onOpen: () => openLearnCard(c.id) }));
-    tiles.push({ title: 'Nouveau cours', soon: true });
     buildTiles(document.getElementById('learn-card-grid'), tiles);
   }
 
@@ -150,12 +142,9 @@
     learnPage.hidden = false;
     if (fromRoute !== true) setHash(`#/apprendre/${id}`);
     shown = `apprendre/${id}`;
-    // "Les clés" reste en deux colonnes (portée + FAQ) ; la théorie est un
-    // déroulé plein écran, une section à la fois.
-    learnPanel.classList.toggle('wide', id === 'clefs');
-    if (id === 'theory') mountTheoryPage();
-    else if (id === 'listen') mountListenPage();
-    else mountClefsPage();
+    // "Les clés" : deux colonnes (portée + FAQ).
+    learnPanel.classList.add('wide');
+    mountClefsPage();
   }
 
   // ----- Carte "Les clés" (clé + portée annotée + FAQ, inchangé) -----
@@ -181,223 +170,6 @@
     buildLearn();
   }
 
-  // ----- Carte "Théorie de base & notation" -----
-  // Déroulé plein écran, une section à la fois : contenu (illustration +
-  // texte, son déjà branché par js/theory.js) puis quiz de rappel pour cette
-  // section, avant de passer à la suivante. `THEORY_SECTIONS` reste la seule
-  // source de vérité (titre, texte, illustration, quiz) ; ce qui suit ne fait
-  // que la parcourir pas à pas, une future section n'y change rien.
-  function mountTheoryPage() {
-    const N = THEORY_SECTIONS.length;
-    const TOTAL_STEPS = N * 2; // section i : pas 2i = contenu, 2i+1 = quiz
-    let step = 0;
-
-    // Ordre des choix mélangé à chaque démarrage de la leçon (Fisher-Yates),
-    // puis figé pendant le parcours pour que "Précédent" retrouve le même quiz.
-    const quizzes = THEORY_SECTIONS.map((section) => {
-      const { question, options, correctIndex } = section.quiz;
-      const order = options.map((_, i) => i);
-      for (let i = order.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [order[i], order[j]] = [order[j], order[i]];
-      }
-      return { question, options: order.map((i) => options[i]), correctIndex: order.indexOf(correctIndex) };
-    });
-    const chosen = new Array(N).fill(null); // choix déjà fait par quiz (index affiché)
-    const score = () => quizzes.filter((q, i) => chosen[i] === q.correctIndex).length;
-
-    learnPage.innerHTML = `
-      <div class="theory-run">
-        <div class="theory-run-top" id="theory-run-top"></div>
-        <div class="theory-run-body" id="theory-run-body"></div>
-      </div>
-    `;
-    const topEl = document.getElementById('theory-run-top');
-    const bodyEl = document.getElementById('theory-run-body');
-
-    function renderTop(label) {
-      const pct = Math.round((Math.min(step, TOTAL_STEPS) / TOTAL_STEPS) * 100);
-      topEl.innerHTML = `
-        <button type="button" class="backbtn" id="theory-exit">&#8592; Apprendre</button>
-        <div class="theory-progress" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100">
-          <div class="theory-progress-fill" style="width:${pct}%"></div>
-        </div>
-        ${label ? `<span class="theory-step-label">${label}</span>` : ''}
-      `;
-      document.getElementById('theory-exit').addEventListener('click', showLearnGrid);
-    }
-
-    function goNext() {
-      step++;
-      render();
-    }
-
-    function goPrev() {
-      step--;
-      render();
-    }
-
-    const prevButton = () => (step > 0 ? '<button type="button" class="btn-secondary" id="theory-prev">&#8592; Précédent</button>' : '');
-    function bindPrev() {
-      const btn = document.getElementById('theory-prev');
-      if (btn) btn.addEventListener('click', goPrev);
-    }
-
-    function render() {
-      if (step >= TOTAL_STEPS) return renderRecap();
-      const sectionIndex = Math.floor(step / 2);
-      const isQuiz = step % 2 === 1;
-      const section = THEORY_SECTIONS[sectionIndex];
-      renderTop(`${isQuiz ? 'Quiz' : 'Section'} ${sectionIndex + 1} sur ${N}`);
-      if (isQuiz) renderQuiz(section, sectionIndex);
-      else renderContent(section);
-    }
-
-    function renderContent(section) {
-      bodyEl.innerHTML = `
-        <div class="theory-screen theory-content" id="theory-illustration">
-          <div class="theory-run-icon">${theory.renderIcon(section.illustration)}</div>
-          <h2>${section.title}</h2>
-          <p>${section.text}</p>
-          <div class="theory-actions">
-            ${theory.renderListen(section.illustration)}
-          </div>
-          <div class="theory-nav">
-            ${prevButton()}
-            <button type="button" class="btn-primary" id="theory-next">Suivant &#8594;</button>
-          </div>
-        </div>
-      `;
-      theory.mount(document.getElementById('theory-illustration'), section.illustration);
-      document.getElementById('theory-next').addEventListener('click', goNext);
-      bindPrev();
-    }
-
-    function renderQuiz(section, sectionIndex) {
-      const { question, options, correctIndex } = quizzes[sectionIndex];
-      bodyEl.innerHTML = `
-        <div class="theory-screen theory-quiz">
-          <h2>${question}</h2>
-          <div class="quiz-options">
-            ${options.map((opt, i) => `<button type="button" class="quiz-option" data-i="${i}">${opt}</button>`).join('')}
-          </div>
-          <div class="quiz-explain" id="quiz-explain" hidden>
-            <p></p>
-          </div>
-          <div class="theory-nav">
-            ${prevButton()}
-            <button type="button" class="btn-primary" id="theory-next" hidden>Suivant &#8594;</button>
-          </div>
-        </div>
-      `;
-      const optionBtns = Array.from(bodyEl.querySelectorAll('.quiz-option'));
-      const explain = document.getElementById('quiz-explain');
-      const nextBtn = document.getElementById('theory-next');
-      nextBtn.addEventListener('click', goNext);
-      bindPrev();
-
-      // Affiche le résultat (aussi utilisé en revenant sur un quiz déjà répondu).
-      function showResult(pick) {
-        optionBtns.forEach((b, i) => {
-          b.disabled = true;
-          if (i === correctIndex) b.classList.add('correct');
-          else if (i === pick) b.classList.add('wrong');
-        });
-        // Explication : le texte déjà écrit pour cette notion, façon code de la route.
-        explain.querySelector('p').textContent = section.text;
-        explain.hidden = false;
-        nextBtn.hidden = false;
-      }
-
-      if (chosen[sectionIndex] != null) return showResult(chosen[sectionIndex]);
-
-      optionBtns.forEach((btn) => {
-        btn.addEventListener('click', () => {
-          chosen[sectionIndex] = Number(btn.dataset.i);
-          showResult(chosen[sectionIndex]);
-        }, { once: true });
-      });
-    }
-
-    function renderRecap() {
-      topEl.innerHTML = '<button type="button" class="backbtn" id="theory-exit">&#8592; Apprendre</button>';
-      document.getElementById('theory-exit').addEventListener('click', showLearnGrid);
-      bodyEl.innerHTML = `
-        <div class="theory-screen theory-recap">
-          <h2>Récap</h2>
-          <p class="theory-recap-score">${score()} / ${N}</p>
-          <p>Bonnes réponses au quiz de rappel.</p>
-          <div class="theory-nav">
-            ${prevButton()}
-            <button type="button" class="btn-primary" id="theory-finish">Retour à Apprendre</button>
-          </div>
-        </div>
-      `;
-      document.getElementById('theory-finish').addEventListener('click', showLearnGrid);
-      bindPrev();
-    }
-
-    render();
-  }
-
-  // ----- Carte "Les bases : écoute et ressens" -----
-  // Hub de 5 mini-jeux d'écoute (js/listen.js, tuiles comme les autres hubs), puis
-  // chaque jeu s'ouvre dans le cadre de jeu commun : le son se joue tout seul,
-  // feedback immédiat, "Suivant" tire la suivante.
-  function mountListenPage() {
-    learnPage.innerHTML = `
-      <div class="ex-top">
-        <button type="button" class="backbtn" id="listen-back">&#8592; Apprendre</button>
-        <span class="ex-title">Écoute et ressens</span>
-        <span></span>
-      </div>
-      <div class="grid" id="listen-grid"></div>
-    `;
-    document.getElementById('listen-back').addEventListener('click', () => showLearnGrid());
-    buildTiles(document.getElementById('listen-grid'), listen.GAMES.map((g) => ({
-      title: g.title, action: 'Jouer', onOpen: () => startListenGame(g),
-    })));
-  }
-
-  function startListenGame(game) {
-    const frame = openFrame({
-      title: game.title,
-      replay: 'stage',
-      answersHtml: game.options.map((o) => `<button type="button" class="quiz-option" data-id="${o.id}">${o.label}</button>`).join(''),
-      showNext: true,
-      onBack: () => closeGame(),
-    });
-    let q = null;
-    const answerBtns = Array.from(frame.answers.querySelectorAll('.quiz-option'));
-
-    function nextQuestion() {
-      q = game.next();
-      answerBtns.forEach((b) => { b.disabled = false; b.className = 'quiz-option'; });
-      frame.setFeedback('');
-      frame.next.hidden = true;
-      q.play();
-    }
-
-    answerBtns.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const ok = btn.dataset.id === q.answer;
-        answerBtns.forEach((b) => {
-          b.disabled = true;
-          if (b.dataset.id === q.answer) b.classList.add('correct');
-          else if (b === btn) b.classList.add('wrong');
-        });
-        if (ok) frame.setFeedback(CORRECT_PHRASES[Math.floor(Math.random() * CORRECT_PHRASES.length)], 'correct');
-        else frame.setFeedback(`C'était <b>${game.options.find((o) => o.id === q.answer).label}</b>`);
-        frame.next.hidden = false;
-        frame.session.record(ok);
-      });
-    });
-
-    frame.replay.addEventListener('click', () => q && q.play());
-    frame.next.addEventListener('click', nextQuestion);
-    nextQuestion();
-  }
-
   // ---------- cadre de jeu (commun à tous les jeux) ----------
   // Une carte sous le header (le logo NotaNext reste accessible) : retour, compteur
   // « bonnes réponses / total » en haut à droite, réglages propres au jeu, zone
@@ -420,7 +192,7 @@
     document.body.classList.toggle('is-phone', isPhone());
     gameEl.classList.remove('rot-cw', 'rot-ccw', 'show-hint');
     document.body.classList.remove('game-rotated', 'game-portrait');
-    if (gameEl.hidden || !MOBILE_LANDSCAPE || !isPhone()) return;
+    if (gameEl.hidden || !rotationOn() || !isPhone()) return;
     const devicePortrait = window.innerHeight > window.innerWidth;
     const deviceOk = gamePref === 'portrait' ? devicePortrait : !devicePortrait;
     if (hintPending && deviceOk) { hintPending = false; clearTimeout(hintTimer); }
@@ -444,7 +216,7 @@
 
   function applyLearnOrientation() {
     const landscape = window.innerWidth > window.innerHeight;
-    const applies = MOBILE_LANDSCAPE && isPhone() && landscape && currentView === 'learn' && gameEl.hidden && !document.body.classList.contains('is-home');
+    const applies = rotationOn() && isPhone() && landscape && currentView === 'learn' && gameEl.hidden && !document.body.classList.contains('is-home');
     if (!applies) {
       clearTimeout(learnTimer);
       learnState = null;
@@ -459,6 +231,17 @@
     appEl.classList.toggle('rot-ccw', learnState === 'rot');
     document.body.classList.toggle('app-hint-on', learnState === 'hint');
   }
+
+  function setAutoRotate(value) {
+    autoRotate = value;
+    try { localStorage.setItem(ROTATE_KEY, value ? '1' : '0'); } catch (e) { /* valable pour la session */ }
+    clearTimeout(hintTimer);
+    hintPending = false;
+    orient = null;
+    refreshLayout();
+  }
+
+  document.getElementById('app-hint-keep').addEventListener('click', () => setAutoRotate(false));
 
   function refreshLayout() {
     applyLearnOrientation();
@@ -528,6 +311,7 @@
           <svg class="gf-hint-icon" width="84" height="84" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="22" y="10" width="20" height="34" rx="4"/><path d="M30 38h4"/><path d="M50 22a20 20 0 0 1 0 24M50 46l-1.5-6M50 46l6-1"/></svg>
           <h2>${opts.portrait ? 'Tourne ton téléphone à la verticale' : 'Tourne ton téléphone à l\'horizontale'}</h2>
           <p>Le jeu passera en ${opts.portrait ? 'vertical' : 'horizontal'} dans quelques secondes.</p>
+          <button type="button" class="backbtn hint-keep" id="hint-keep">Garder cette orientation</button>
         </div>
       </div>
     `;
@@ -547,6 +331,7 @@
     };
     q('back').addEventListener('click', opts.onBack);
     q('hint-back').addEventListener('click', opts.onBack);
+    q('hint-keep').addEventListener('click', () => setAutoRotate(false));
     q('gf-rotate-btn').addEventListener('click', toggleOrientation);
 
     // ----- compteur : bonnes réponses / total -----
@@ -564,7 +349,7 @@
     orient = null;
     gamePref = opts.portrait ? 'portrait' : 'landscape';
     const devicePortrait = window.innerHeight > window.innerWidth;
-    hintPending = MOBILE_LANDSCAPE && isPhone() && (gamePref === 'portrait' ? !devicePortrait : devicePortrait);
+    hintPending = rotationOn() && isPhone() && (gamePref === 'portrait' ? !devicePortrait : devicePortrait);
     if (hintPending) {
       hintTimer = setTimeout(() => { hintPending = false; refreshLayout(); }, HINT_MS);
     }
@@ -591,7 +376,7 @@
   tabEx.addEventListener('click', () => setTab('ex'));
   tabLearn.addEventListener('click', () => setTab('learn'));
   navLogin.addEventListener('click', () => setHash('#/compte'));
-  navAccount.addEventListener('click', () => setHash('#/profil'));
+  document.getElementById('account-back').addEventListener('click', () => setTab('ex'));
   window.addEventListener('hashchange', route);
 
   // ---------- clavier (global) ----------
@@ -642,15 +427,16 @@
   // Page « Clavier » : même carte que les jeux (bouton Retour en haut), par-dessus l'écran.
   function openKeyPanel() {
     if (document.querySelector('.kbd-overlay')) return;
+    const opener = document.activeElement;
     if (pauseHook) pauseHook(true);
     const overlay = document.createElement('div');
     overlay.className = 'kbd-overlay';
     overlay.innerHTML = `
       <div class="bg" aria-hidden="true"></div>
-      <div class="gf kbd-card">
+      <div class="gf kbd-card" role="dialog" aria-modal="true" aria-labelledby="kbd-title">
         <div class="gf-top">
           <button type="button" class="backbtn" id="kbd-done">&#8592; Retour</button>
-          <span class="gf-title">Clavier</span>
+          <h2 class="gf-title" id="kbd-title">Clavier</h2>
           <span class="gf-right"></span>
         </div>
         <div class="kbd-panel">
@@ -661,6 +447,7 @@
               <button type="button" class="seg-btn" data-notation="en">Anglais</button>
             </div>
           </div>
+          <label class="switch"><input type="checkbox" id="kbd-rotate" role="switch"${autoRotate ? ' checked' : ''}><span class="switch-track"><span class="switch-thumb"></span></span><span>Rotation automatique sur téléphone</span></label>
           <p>Clique une note, puis appuie sur la touche de ton choix. Valable pour tous les jeux à boutons.</p>
           <div class="kbd-rows">
             ${FR.map((n) => `<div class="kbd-row"><span class="kbd-name" data-note="${n}"></span><button type="button" class="kbd-key" data-note="${n}"></button></div>`).join('')}
@@ -732,13 +519,28 @@
       refreshKeyHints();
       paint();
     });
-    overlay.querySelector('#kbd-done').addEventListener('click', () => {
+    overlay.querySelector('#kbd-rotate').addEventListener('change', (e) => setAutoRotate(e.target.checked));
+    // Fermeture : le focus revient sur le bouton qui a ouvert le panneau.
+    function closePanel() {
       document.removeEventListener('keydown', onCapture, true);
       capturing = false;
       overlay.remove();
       if (pauseHook) pauseHook(false);
+      if (opener && opener.focus) opener.focus();
+    }
+    overlay.querySelector('#kbd-done').addEventListener('click', closePanel);
+    // Clavier : Échap ferme (sauf en attente d'une touche) ; Tab reste dans le panneau.
+    overlay.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !waiting) { e.preventDefault(); closePanel(); return; }
+      if (e.key !== 'Tab') return;
+      const items = Array.from(overlay.querySelectorAll('button, input, select, a[href]')).filter((el) => !el.disabled && el.offsetParent !== null || el.id === 'kbd-rotate');
+      if (!items.length) return;
+      const first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     });
     paint();
+    overlay.querySelector('#kbd-done').focus();
   }
   document.getElementById('nav-kbd').addEventListener('click', openKeyPanel);
 
@@ -914,6 +716,7 @@
         if (dead) return;
         locked = false;
         hoverStep = null;
+        kb.reset();
         const notes = notesOf(clefFn());
         current = notes[Math.floor(Math.random() * notes.length)];
         frame.setFeedback('');
@@ -932,12 +735,10 @@
         hoverStep = null;
         if (!locked) renderStaff(svgEl, { wide: true, clef: clefFn() });
       });
-      svgEl.addEventListener('click', (e) => {
+      // Valide une position (clic, ou Entrée au clavier).
+      function commit(step) {
         if (locked) return;
         locked = true;
-        // Toujours placer exactement là où l'indice en pointillés était affiché,
-        // plutôt que de recalculer une position potentiellement différente au clic.
-        const step = hoverStep != null ? hoverStep : eventToStep(svgEl, e.clientY, e.clientX);
         // Un même nom peut exister à plusieurs positions dans la plage affichée
         // (ex. Do sous la portée et Do au 3e interligne) : toutes comptent comme bonnes.
         const correctSteps = notesOf(clefFn())
@@ -956,6 +757,18 @@
           onBad(current.name);
           setTimeout(next, 1200);
         }
+      }
+      svgEl.addEventListener('click', (e) => {
+        if (locked) return;
+        // Toujours placer exactement là où l'indice en pointillés était affiché,
+        // plutôt que de recalculer une position potentiellement différente au clic.
+        commit(hoverStep != null ? hoverStep : eventToStep(svgEl, e.clientY, e.clientX));
+      });
+      // Clavier : flèches pour déplacer la note fantôme, Entrée pour valider.
+      const kb = attachKeyboard(svgEl, {
+        isLocked: () => locked,
+        onMove: (step) => { hoverStep = step; renderStaff(svgEl, { wide: true, clef: clefFn(), ghostStep: step }); },
+        onCommit: commit,
       });
 
       // Changement de notation en cours de partie : le nom demandé se met à jour.

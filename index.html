@@ -33,7 +33,7 @@
             <h1>Apprends à lire la musique.<br><em>Puis à l'entendre.</em></h1>
             <p>Maîtrise les notes, développe ton oreille et progresse à ton rythme grâce à une pratique interactive.</p>
             <div class="home-cta">
-              <a href="#" class="home-btn" data-go="ex">Commencer gratuitement
+              <a href="#" class="home-btn" data-go="ex" data-exercise="guess-window">Commencer gratuitement
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
               </a>
               <span>Directement dans ton navigateur, sans installation.</span>
@@ -111,8 +111,7 @@
         <button type="button" id="tab-learn">Apprendre</button>
       </nav>
       <div class="app-user">
-        <button type="button" id="nav-login" class="app-login">Se connecter</button>
-        <button type="button" id="nav-account" class="app-member" hidden><span class="avatar" id="nav-initial">M</span><span>Mon compte</span></button>
+        <button type="button" id="nav-login" class="app-login">Comptes bientôt</button>
       </div>
     </header>
 
@@ -143,13 +142,10 @@
     <!-- Page « Se connecter » : les comptes arrivent bientôt (animation js/runner.js). -->
     <div class="shell" id="view-account" hidden>
       <div class="panel page-panel">
+        <button type="button" class="backbtn account-back" id="account-back">&#8592; S'exercer</button>
         <h1 class="page-title">Ton espace personnel arrive bientôt</h1>
         <svg class="runner" id="runner" role="img" aria-label="Un petit bonhomme court sur la ligne du bas d'une portée, saute sur certaines notes, en touche d'autres de la main et glisse sous d'autres ; les notes touchées deviennent vertes"></svg>
       </div>
-    </div>
-
-    <div class="shell" id="view-profile" hidden>
-      <div class="panel page-panel" id="profile-panel"></div>
     </div>
   </div>
 
@@ -159,6 +155,7 @@
       <svg class="gf-hint-icon" width="84" height="84" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="22" y="10" width="20" height="34" rx="4"/><path d="M30 38h4"/><path d="M50 22a20 20 0 0 1 0 24M50 46l-1.5-6M50 46l6-1"/></svg>
       <h2>Tourne ton téléphone à la verticale</h2>
       <p>Cette section passera en vertical dans quelques secondes.</p>
+      <button type="button" class="backbtn" id="app-hint-keep">Garder cette orientation</button>
     </div>
   </div>
 
@@ -171,8 +168,6 @@
   <script src="js/staff.js"></script>
   <script src="js/scroll-staff.js"></script>
   <script src="js/window-staff.js"></script>
-  <script src="js/theory.js"></script>
-  <script src="js/listen.js"></script>
   <script src="js/runner.js"></script>
   <script src="js/account.js"></script>
   <script src="js/ear.js"></script>

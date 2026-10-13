@@ -157,8 +157,54 @@ window.Notanext = window.Notanext || {};
     return Math.max(-2, Math.min(8, Math.round((BASE_Y - y) / STEP)));
   }
 
+  // Description parlée d'une position sur la portée (step 0 = ligne du bas, -1 = sous la 1re ligne).
+  function describeStep(step) {
+    if (step <= -2) return 'ligne supplémentaire sous la portée';
+    if (step === -1) return 'sous la première ligne';
+    if (step % 2 === 0) { const n = step / 2 + 1; return (n === 1 ? '1re' : n + 'e') + ' ligne'; }
+    const n = (step + 1) / 2;
+    return (n === 1 ? '1er' : n + 'e') + ' interligne';
+  }
+
+  // Rend une portée « à placer » utilisable au clavier : focalisable, flèches haut/bas pour déplacer
+  // la note fantôme, Début/Fin pour les extrêmes, Entrée ou Espace pour valider. Exposée comme un
+  // curseur (slider) avec la position décrite à voix haute.
+  // opts : { onMove(step), onCommit(step), isLocked(), extra(step) -> texte ajouté à la description }
+  function attachKeyboard(svg, opts) {
+    let step = 4;
+    svg.setAttribute('tabindex', '0');
+    svg.setAttribute('role', 'slider');
+    svg.setAttribute('aria-orientation', 'vertical');
+    svg.setAttribute('aria-valuemin', '-2');
+    svg.setAttribute('aria-valuemax', '8');
+    svg.setAttribute('aria-label', 'Portée : place la note. Flèches haut et bas pour la déplacer, Entrée pour valider.');
+    const announce = () => {
+      const extra = opts.extra ? opts.extra(step) : '';
+      svg.setAttribute('aria-valuenow', String(step));
+      svg.setAttribute('aria-valuetext', describeStep(step) + (extra ? ' : ' + extra : ''));
+    };
+    announce();
+    svg.addEventListener('keydown', (e) => {
+      if (opts.isLocked()) return;
+      let next = null;
+      if (e.key === 'ArrowUp' || e.key === 'ArrowRight') next = Math.min(8, step + 1);
+      else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') next = Math.max(-2, step - 1);
+      else if (e.key === 'Home') next = -2;
+      else if (e.key === 'End') next = 8;
+      else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); opts.onCommit(step); return; }
+      if (next == null) return;
+      e.preventDefault();
+      step = next;
+      announce();
+      opts.onMove(step);
+    });
+    return { reset() { step = 4; announce(); } };
+  }
+
   window.Notanext.staff = {
     renderStaff,
+    describeStep,
+    attachKeyboard,
     eventToStep,
     drawClef,
     geometry: { STEP, BASE_Y, X0, X1, VIEWBOX, LINE_STEPS },

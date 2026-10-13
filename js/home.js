@@ -31,7 +31,8 @@
   document.querySelectorAll('[data-go]').forEach((a) => {
     a.addEventListener('click', (e) => {
       e.preventDefault();
-      enterApp(a.dataset.go);
+      // data-exercise : ouvre directement ce jeu (ex. « Commencer gratuitement » → Deviner la note).
+      enterApp(a.dataset.go, a.dataset.exercise ? { exercise: a.dataset.exercise } : undefined);
     });
   });
 
@@ -169,9 +170,7 @@
 
   // ----- "Les cours" : bandeau défilant -----
   const COURSES = [
-    { title: 'Les bases : écoute et ressens', desc: "Cinq mini-jeux d'écoute : aigu, durée, volume, répétition, comptage.", open: { learn: 'listen' } },
     { title: 'Les clés', desc: "Clé de sol, clé de fa, clé d'ut : lire une portée quelle que soit la clé.", open: { learn: 'clefs' } },
-    { title: 'Théorie de base & notation', desc: 'Valeurs de notes, silences, mesures : les bases pour lire un rythme.', open: { learn: 'theory' } },
   ];
   const coursesEl = document.getElementById('home-courses');
   COURSES.forEach((c) => {

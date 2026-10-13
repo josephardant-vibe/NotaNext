@@ -5,7 +5,7 @@ window.Notanext = window.Notanext || {};
 (function () {
   const { data, staff, playNote, instruments, instrumentMenu } = window.Notanext;
   const { FR, FREQ, label, CLEFS, clefById, notesOf } = data;
-  const { renderStaff, eventToStep } = staff;
+  const { renderStaff, eventToStep, attachKeyboard } = staff;
 
   const PLAY_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>';
   const rand = (list) => list[Math.floor(Math.random() * list.length)];
@@ -142,6 +142,7 @@ window.Notanext = window.Notanext || {};
       if (dead) return;
       clearTimeout(timer);
       hoverStep = null;
+      kb.reset();
       const notes = pool();
       noteEl.hidden = notes.length === notesOf(clef()).length;
       noteEl.textContent = noteEl.hidden ? '' : `${notes.length} ${notes.length > 1 ? 'notes jouables' : 'note jouable'} avec cet instrument`;
@@ -190,6 +191,14 @@ window.Notanext = window.Notanext || {};
     svg.addEventListener('click', (e) => {
       if (locked) return;
       commit(hoverStep != null ? hoverStep : stepOf(e));
+    });
+
+    // Clavier : flèches pour déplacer la note fantôme, Entrée pour valider (le nom n'est annoncé que si l'option est active).
+    const kb = attachKeyboard(svg, {
+      isLocked: () => locked,
+      onMove: (step) => drawGhost(step, false),
+      onCommit: commit,
+      extra: (step) => (namesOn ? nameAt(step) : ''),
     });
 
     namesBox.addEventListener('change', () => {

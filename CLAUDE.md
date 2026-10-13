@@ -29,7 +29,9 @@ déployée sur Netlify depuis GitHub (josephardant-vibe/NotaNext).
   inventé librement.
 
 ## Structure actuelle
-- index.html, style.css, netlify.toml, js/ (notes.js = données
-  pédagogiques, theory.js = rendu des illustrations, game.js = logique).
-- Onglets : S'exercer (3 jeux) / Apprendre (cartes plein écran, quiz de
-  fin de section).
+- index.html, style.css, netlify.toml, js/ (notes.js = données, game.js =
+  navigation et jeux, ear.js = oreille absolue, runner.js = animation de la
+  page Se connecter), audio/ (échantillons), docs/.
+- Onglets : S'exercer (5 jeux) / Apprendre (« Les clés » seulement pour
+  l'instant). Pas de profil ni de comptes : la page Se connecter annonce
+  « Comptes bientôt ».
