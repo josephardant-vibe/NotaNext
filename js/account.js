@@ -1,6 +1,6 @@
 // Compte (APERÇU) : aucun vrai compte n'existe encore. Ce fichier gère
 //  - l'état « visiteur / membre » (le mode membre n'existe qu'en aperçu : ?apercu=membre),
-//  - la coquille « Créer un compte » (collecte d'email Netlify Forms) et la coquille « Profil »
+//  - la page « Se connecter » (animation du coureur, js/runner.js) et la coquille « Profil »
 //    (données FICTIVES, aucune logique réelle).
 window.Notanext = window.Notanext || {};
 
@@ -55,30 +55,9 @@ window.Notanext = window.Notanext || {};
     `;
   }
 
-  // ----- Formulaire « Me prévenir » (Netlify Forms) -----
-  function bindNotifyForm() {
-    const form = document.getElementById('notify-form');
-    const status = document.getElementById('notify-status');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      status.className = 'notify-status';
-      status.textContent = '';
-      try {
-        const res = await fetch('/', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams(new FormData(form)).toString(),
-        });
-        if (!res.ok) throw new Error(String(res.status));
-        form.reset();
-        status.classList.add('ok');
-        status.textContent = "Merci, on te prévient dès l'ouverture des comptes.";
-      } catch (err) {
-        status.textContent = "L'envoi n'a pas abouti. Réessaie dans un instant.";
-      }
-    });
-  }
+  // ----- Page « Se connecter » : animation du coureur -----
+  const runnerSvg = document.getElementById('runner');
+  if (runnerSvg && window.Notanext.runner) window.Notanext.runner.mount(runnerSvg);
 
-  window.Notanext.account = { isMember, renderProfile, bindNotifyForm };
-  bindNotifyForm();
+  window.Notanext.account = { isMember, renderProfile };
 })();

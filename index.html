@@ -99,65 +99,67 @@
     <footer class="home-footer"><a href="mailto:contact@notanext.app">contact@notanext.app</a></footer>
   </section>
 
-  <header class="nav app-header" id="app-header">
-    <button type="button" id="nav-home" class="nav-home" aria-label="Accueil">NotaNext</button>
-    <nav class="app-tabs" aria-label="Navigation de l'app">
-      <button type="button" id="tab-ex" class="on">S'exercer</button>
-      <button type="button" id="nav-kbd" class="nav-kbd" aria-label="Configurer le clavier" title="Configurer le clavier">
-        <svg width="22" height="16" viewBox="0 0 22 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="1" y="1.5" width="20" height="13" rx="2.5"/><path d="M5 5.5h1M9 5.5h1M13 5.5h1M17 5.5h1M5 8.5h1M9 8.5h1M13 8.5h1M17 8.5h1M6.5 11.5h9"/></svg>
-      </button>
-      <button type="button" id="tab-learn">Apprendre</button>
-    </nav>
-    <div class="app-user">
-      <button type="button" id="nav-login" class="app-login">Se connecter</button>
-      <button type="button" id="nav-account" class="app-member" hidden><span class="avatar" id="nav-initial">M</span><span>Mon compte</span></button>
-    </div>
-  </header>
-
-  <div class="shell" id="view-ex">
-    <div class="panel" id="ex-panel">
-      <div id="ex-grid">
-        <div class="grid-head">
-          <h1>S'exercer</h1>
-        </div>
-        <div class="grid" id="card-grid"></div>
+  <!-- Application (barre + vues) : un seul bloc, pour pouvoir le tourner en portrait sur téléphone. -->
+  <div class="app" id="app">
+    <header class="nav app-header" id="app-header">
+      <button type="button" id="nav-home" class="nav-home" aria-label="Accueil">NotaNext</button>
+      <nav class="app-tabs" aria-label="Navigation de l'app">
+        <button type="button" id="tab-ex" class="on">S'exercer</button>
+        <button type="button" id="nav-kbd" class="nav-kbd" aria-label="Configurer le clavier" title="Configurer le clavier">
+          <svg width="22" height="16" viewBox="0 0 22 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="1" y="1.5" width="20" height="13" rx="2.5"/><path d="M5 5.5h1M9 5.5h1M13 5.5h1M17 5.5h1M5 8.5h1M9 8.5h1M13 8.5h1M17 8.5h1M6.5 11.5h9"/></svg>
+        </button>
+        <button type="button" id="tab-learn">Apprendre</button>
+      </nav>
+      <div class="app-user">
+        <button type="button" id="nav-login" class="app-login">Se connecter</button>
+        <button type="button" id="nav-account" class="app-member" hidden><span class="avatar" id="nav-initial">M</span><span>Mon compte</span></button>
       </div>
-      <div class="ex-page" id="ex-page" hidden></div>
-    </div>
-  </div>
+    </header>
 
-  <div class="shell" id="view-learn" hidden>
-    <div class="panel" id="learn-panel">
-      <div id="learn-grid">
-        <div class="grid-head">
-          <h1>Apprendre</h1>
+    <div class="shell" id="view-ex">
+      <div class="panel" id="ex-panel">
+        <div id="ex-grid">
+          <div class="grid-head">
+            <h1>S'exercer</h1>
+          </div>
+          <div class="grid" id="card-grid"></div>
         </div>
-        <div class="grid" id="learn-card-grid"></div>
+        <div class="ex-page" id="ex-page" hidden></div>
       </div>
-      <div class="ex-page" id="learn-page" hidden></div>
     </div>
-  </div>
 
-  <!-- Coquille « Créer un compte / Se connecter » : le formulaire est dans le HTML
-       statique pour que Netlify le détecte au déploiement (activation à faire côté Netlify). -->
-  <div class="shell" id="view-account" hidden>
-    <div class="panel page-panel">
-      <h1 class="page-title">Les comptes arrivent bientôt, laisse ton email</h1>
-      <form name="prevenir" method="POST" data-netlify="true" netlify-honeypot="bot-field" class="notify" id="notify-form">
-        <input type="hidden" name="form-name" value="prevenir">
-        <p class="hp" aria-hidden="true"><label>Ne pas remplir : <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
-        <div class="notify-row">
-          <input type="email" name="email" id="notify-email" placeholder="ton@email.fr" aria-label="Ton email" autocomplete="email" required>
-          <button type="submit" class="btn-primary">Me prévenir</button>
+    <div class="shell" id="view-learn" hidden>
+      <div class="panel" id="learn-panel">
+        <div id="learn-grid">
+          <div class="grid-head">
+            <h1>Apprendre</h1>
+          </div>
+          <div class="grid" id="learn-card-grid"></div>
         </div>
-        <p class="notify-info">Ton email sert uniquement à te prévenir de l'ouverture des comptes. Rien d'autre.</p>
-        <p class="notify-status" id="notify-status" role="status" aria-live="polite"></p>
-      </form>
+        <div class="ex-page" id="learn-page" hidden></div>
+      </div>
+    </div>
+
+    <!-- Page « Se connecter » : les comptes arrivent bientôt (animation js/runner.js). -->
+    <div class="shell" id="view-account" hidden>
+      <div class="panel page-panel">
+        <h1 class="page-title">Ton espace personnel arrive bientôt</h1>
+        <svg class="runner" id="runner" role="img" aria-label="Un petit bonhomme court sur la ligne du bas d'une portée, saute sur certaines notes, en touche d'autres de la main et glisse sous d'autres ; les notes touchées deviennent vertes"></svg>
+      </div>
+    </div>
+
+    <div class="shell" id="view-profile" hidden>
+      <div class="panel page-panel" id="profile-panel"></div>
     </div>
   </div>
 
-  <div class="shell" id="view-profile" hidden>
-    <div class="panel page-panel" id="profile-panel"></div>
+  <!-- Message « Tourne ton téléphone » avant la rotation de la section Apprendre (téléphone en paysage) -->
+  <div class="app-hint" role="status">
+    <div>
+      <svg class="gf-hint-icon" width="84" height="84" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="22" y="10" width="20" height="34" rx="4"/><path d="M30 38h4"/><path d="M50 22a20 20 0 0 1 0 24M50 46l-1.5-6M50 46l6-1"/></svg>
+      <h2>Tourne ton téléphone à la verticale</h2>
+      <p>Cette section passera en vertical dans quelques secondes.</p>
+    </div>
   </div>
 
   <!-- Écran de jeu : cadre commun à tous les jeux, rempli par js/game.js -->
@@ -171,6 +173,7 @@
   <script src="js/window-staff.js"></script>
   <script src="js/theory.js"></script>
   <script src="js/listen.js"></script>
+  <script src="js/runner.js"></script>
   <script src="js/account.js"></script>
   <script src="js/ear.js"></script>
   <script src="js/game.js"></script>

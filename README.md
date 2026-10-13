@@ -11,6 +11,14 @@ Déployée sur Netlify depuis ce dépôt.
 **Page d'accueil** — l'adresse du site l'ouvre toujours (réglage
 `REDIRIGER_VISITEURS_REVENANTS` dans `js/home.js` pour rétablir « première visite seulement »), avec une démo interactive, la méthode et un aperçu des jeux et des cours.
 
+**Se connecter** — « Ton espace personnel arrive bientôt », avec une animation en boucle
+(un petit personnage court sur une portée, les notes touchées passent au vert ; `js/runner.js`,
+en SVG, sans image). Pas de formulaire : les comptes ne sont pas encore ouverts.
+
+**Mobile** — les jeux se tournent en paysage, sauf l'oreille absolue et toute la section
+Apprendre qui se tournent en portrait (message « Tourne ton téléphone » 3 s, puis rotation
+d'affichage ; un site ne peut pas verrouiller l'orientation).
+
 **S'exercer**
 - *Deviner la note* — huit notes sur la portée (celle repérée par le trait et les sept à venir), trouve le nom de celle repérée.
 - *Deviner la note – défilement continu* — les notes défilent, vitesse réglable
@@ -72,6 +80,7 @@ js/
   theory.js       illustrations interactives de la théorie
   listen.js       mini-jeux d'écoute
   ear.js          jeux d'oreille absolue (deviner, placer)
+  runner.js       animation de la page Se connecter (coureur sur la portée)
   game.js         navigation, exercices, leçons, clavier
   home.js         page d'accueil (démo, jeux, cours, mémoire de visite)
 ```

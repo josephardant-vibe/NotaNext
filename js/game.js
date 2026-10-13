@@ -64,6 +64,8 @@
     tabLearn.classList.toggle('on', name === 'learn');
     navLogin.classList.toggle('on', name === 'account');
     navAccount.classList.toggle('on', name === 'profile');
+    currentView = name;
+    applyLearnOrientation();
   }
 
   function route() {
@@ -410,26 +412,56 @@
   const HINT_MS = 3000;
   const isPhone = () => Math.min(window.innerWidth, window.innerHeight) <= 500;
   let orient = null;        // null = automatique ; 'landscape' | 'portrait' = choix du joueur
+  let gamePref = 'landscape'; // orientation voulue par le jeu en cours (l'oreille absolue se joue en portrait)
   let hintPending = false;
   let hintTimer = null;
 
   function applyOrientation() {
     document.body.classList.toggle('is-phone', isPhone());
     gameEl.classList.remove('rot-cw', 'rot-ccw', 'show-hint');
-    document.body.classList.remove('game-rotated');
+    document.body.classList.remove('game-rotated', 'game-portrait');
     if (gameEl.hidden || !MOBILE_LANDSCAPE || !isPhone()) return;
     const devicePortrait = window.innerHeight > window.innerWidth;
-    if (hintPending && !devicePortrait) { hintPending = false; clearTimeout(hintTimer); }
+    const deviceOk = gamePref === 'portrait' ? devicePortrait : !devicePortrait;
+    if (hintPending && deviceOk) { hintPending = false; clearTimeout(hintTimer); }
     if (hintPending) { gameEl.classList.add('show-hint'); return; }
-    const want = orient || 'landscape';
+    const want = orient || gamePref;
     const rot = want === 'landscape' && devicePortrait ? 'rot-cw' : want === 'portrait' && !devicePortrait ? 'rot-ccw' : null;
     if (rot) {
       gameEl.classList.add(rot);
       document.body.classList.add('game-rotated');
+      if (rot === 'rot-ccw') document.body.classList.add('game-portrait');
     }
   }
 
+  // ----- section Apprendre : portrait sur téléphone -----
+  // Téléphone tenu en paysage : même mécanique que les jeux, message 3 s puis rotation du bloc
+  // « barre + vues » en portrait. Un site ne peut pas verrouiller l'orientation : c'est une rotation d'affichage.
+  const appEl = document.getElementById('app');
+  let currentView = 'ex';
+  let learnState = null; // null | 'hint' | 'rot'
+  let learnTimer = null;
+
+  function applyLearnOrientation() {
+    const landscape = window.innerWidth > window.innerHeight;
+    const applies = MOBILE_LANDSCAPE && isPhone() && landscape && currentView === 'learn' && gameEl.hidden && !document.body.classList.contains('is-home');
+    if (!applies) {
+      clearTimeout(learnTimer);
+      learnState = null;
+      appEl.classList.remove('rot-ccw');
+      document.body.classList.remove('app-hint-on');
+      return;
+    }
+    if (learnState === null) {
+      learnState = 'hint';
+      learnTimer = setTimeout(() => { learnState = 'rot'; applyLearnOrientation(); window.dispatchEvent(new Event('resize')); }, HINT_MS);
+    }
+    appEl.classList.toggle('rot-ccw', learnState === 'rot');
+    document.body.classList.toggle('app-hint-on', learnState === 'hint');
+  }
+
   function refreshLayout() {
+    applyLearnOrientation();
     applyOrientation();
     window.dispatchEvent(new Event('resize')); // les portées recalculent leur largeur
   }
@@ -442,8 +474,8 @@
     refreshLayout();
   }
 
-  window.addEventListener('resize', () => { if (!gameEl.hidden) applyOrientation(); });
-  window.addEventListener('orientationchange', () => { if (!gameEl.hidden) refreshLayout(); });
+  window.addEventListener('resize', () => { if (!gameEl.hidden) applyOrientation(); applyLearnOrientation(); });
+  window.addEventListener('orientationchange', () => { refreshLayout(); });
 
   function closeGame() {
     if (activeGame && activeGame.destroy) activeGame.destroy();
@@ -453,10 +485,12 @@
     clearTimeout(hintTimer);
     hintPending = false;
     orient = null;
+    gamePref = 'landscape';
     gameEl.hidden = true;
     gameEl.innerHTML = '';
     gameEl.classList.remove('rot-cw', 'rot-ccw', 'show-hint');
-    document.body.classList.remove('in-game', 'game-rotated');
+    document.body.classList.remove('in-game', 'game-rotated', 'game-portrait');
+    applyLearnOrientation();
   }
 
   // opts : title, config (HTML des réglages), stageHtml, answersHtml, replay ('config' | 'stage' | null),
@@ -492,8 +526,8 @@
         <button type="button" class="backbtn" id="hint-back">&#8592; Retour</button>
         <div class="gf-hint-body">
           <svg class="gf-hint-icon" width="84" height="84" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="22" y="10" width="20" height="34" rx="4"/><path d="M30 38h4"/><path d="M50 22a20 20 0 0 1 0 24M50 46l-1.5-6M50 46l6-1"/></svg>
-          <h2>Tourne ton téléphone à l'horizontale</h2>
-          <p>Le jeu passera en horizontal dans quelques secondes.</p>
+          <h2>${opts.portrait ? 'Tourne ton téléphone à la verticale' : 'Tourne ton téléphone à l\'horizontale'}</h2>
+          <p>Le jeu passera en ${opts.portrait ? 'vertical' : 'horizontal'} dans quelques secondes.</p>
         </div>
       </div>
     `;
@@ -528,11 +562,14 @@
 
     // ----- orientation : message 3 s puis rotation automatique (téléphone en portrait) -----
     orient = null;
-    hintPending = MOBILE_LANDSCAPE && isPhone() && window.innerHeight > window.innerWidth;
+    gamePref = opts.portrait ? 'portrait' : 'landscape';
+    const devicePortrait = window.innerHeight > window.innerWidth;
+    hintPending = MOBILE_LANDSCAPE && isPhone() && (gamePref === 'portrait' ? !devicePortrait : devicePortrait);
     if (hintPending) {
       hintTimer = setTimeout(() => { hintPending = false; refreshLayout(); }, HINT_MS);
     }
     applyOrientation();
+    applyLearnOrientation();
     return frame;
   }
 

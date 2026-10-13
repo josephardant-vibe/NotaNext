@@ -1150,6 +1150,7 @@ body.is-home .game {
 
 .home-hero {
   min-height: calc(100dvh - 68px - var(--comment-pt) - var(--comment-h2) - 28px);
+  flex-shrink: 0; /* ne jamais se compresser sous la hauteur de son contenu (la démo débordait sur téléphone) */
   display: flex;
   flex-direction: column;
 }
@@ -1842,20 +1843,20 @@ body.game-rotated .nav { display: none; }
 
 /* Écran bas (téléphone en paysage, ou jeu tourné de force) : cadre compact */
 @media (max-height: 520px) {
-  .nav { padding-top: 8px; padding-bottom: 4px; }
-  .gf { gap: 4px; padding: 8px 16px; }
-  .gf-title { display: none; }
-  .gf-count { font-size: 20px; }
-  .gf-answers { gap: 6px; }
-  .gf-answers .answer-btn, .gf-answers .quiz-option { padding: 5px 0; font-size: 14px; }
-  .gf .stage-row { flex-basis: 100%; }
-  .gf .key-hint { display: none; }
-  .gf-feedback { font-size: 15px; min-height: 1.3em; }
-  .gf-config { min-height: 0; }
-  .gf-config select, .gf-config .replay { padding-top: 4px; padding-bottom: 4px; font-size: 12px; }
-  .gf-config .namebox { height: 30px; }
-  .stage-row { gap: 3px; }
-  .clef-side select { font-size: 11px; padding: 3px 18px 3px 7px; background-position: right 6px center; }
+  body:not(.game-portrait) .nav { padding-top: 8px; padding-bottom: 4px; }
+  body:not(.game-portrait) .gf { gap: 4px; padding: 8px 16px; }
+  body:not(.game-portrait) .gf-title { display: none; }
+  body:not(.game-portrait) .gf-count { font-size: 20px; }
+  body:not(.game-portrait) .gf-answers { gap: 6px; }
+  body:not(.game-portrait) .gf-answers .answer-btn, body:not(.game-portrait) .gf-answers .quiz-option { padding: 5px 0; font-size: 14px; }
+  body:not(.game-portrait) .gf .stage-row { flex-basis: 100%; }
+  body:not(.game-portrait) .gf .key-hint { display: none; }
+  body:not(.game-portrait) .gf-feedback { font-size: 15px; min-height: 1.3em; }
+  body:not(.game-portrait) .gf-config { min-height: 0; }
+  body:not(.game-portrait) .gf-config select, body:not(.game-portrait) .gf-config .replay { padding-top: 4px; padding-bottom: 4px; font-size: 12px; }
+  body:not(.game-portrait) .gf-config .namebox { height: 30px; }
+  body:not(.game-portrait) .stage-row { gap: 3px; }
+  body:not(.game-portrait) .clef-side select { font-size: 11px; padding: 3px 18px 3px 7px; background-position: right 6px center; }
 }
 
 .game.rot-cw .gf { gap: 4px; padding: 8px 16px; }
@@ -1881,25 +1882,13 @@ body.game-rotated .nav { display: none; }
   margin-bottom: 28px;
 }
 
-.notify { display: flex; flex-direction: column; gap: 12px; }
-.notify-row { display: flex; flex-wrap: wrap; gap: 12px; }
-
-.notify input[type="email"] {
-  flex: 1 1 260px;
-  font: inherit;
-  font-size: 16px;
-  padding: 13px 20px;
-  color: var(--ink);
-  background: #fff;
-  border: 1.5px solid var(--border);
-  border-radius: 999px;
+.page-title { text-align: center; }
+.runner {
+  display: block;
+  width: 100%;
+  height: clamp(220px, 36vw, 340px);
+  overflow: hidden;
 }
-
-.notify input[type="email"]:focus { outline: none; border-color: var(--accent); }
-.notify-info { margin: 0; font-size: 13px; color: var(--muted); }
-.notify-status { margin: 0; min-height: 1.4em; font-size: 14px; color: var(--muted); }
-.notify-status.ok { color: var(--success); }
-.hp { position: absolute; left: -9999px; }
 
 .preview-banner {
   align-self: flex-start;
@@ -2015,10 +2004,10 @@ body.game-rotated .nav { display: none; }
 .inst-list li[aria-selected="true"] { background: rgba(184, 80, 47, 0.12); color: var(--accent-dark); }
 .inst-note { font-size: 12px; color: var(--muted); }
 @media (max-height: 520px) {
-  .inst-trigger { padding: 3px 9px 3px 8px; font-size: 12px; }
-  .inst-ico svg { width: 16px; height: 16px; }
-  .inst-list li { padding: 5px 10px 5px 8px; font-size: 13px; }
-  .inst-note { display: none; }
+  body:not(.game-portrait) .inst-trigger { padding: 3px 9px 3px 8px; font-size: 12px; }
+  body:not(.game-portrait) .inst-ico svg { width: 16px; height: 16px; }
+  body:not(.game-portrait) .inst-list li { padding: 5px 10px 5px 8px; font-size: 13px; }
+  body:not(.game-portrait) .inst-note { display: none; }
 }
 .game.rot-cw .inst-trigger { padding: 3px 9px 3px 8px; font-size: 12px; }
 .game.rot-cw .inst-ico svg { width: 16px; height: 16px; }
@@ -2131,13 +2120,13 @@ body.game-rotated .nav { display: none; }
 .inst-big.on { border-color: var(--accent); background: rgba(184, 80, 47, 0.08); color: var(--accent-dark); }
 
 @media (max-height: 520px) {
-  .ear-stage { flex-direction: row; align-items: stretch; gap: 10px; }
-  .ear-stage .ear-play.small { width: 40px; height: 40px; align-self: center; }
-  .ear-guess .gf-feedback { position: absolute; right: 6%; top: 50%; transform: translateY(-50%); max-width: 22%; }
-  .inst-row { gap: 6px; }
-  .inst-big { flex-direction: row; justify-content: center; gap: 6px; padding: 4px 4px; font-size: 12px; }
-  .inst-big .inst-ico svg { width: 16px; height: 16px; }
-  .switch { font-size: 12px; }
+  body:not(.game-portrait) .ear-stage { flex-direction: row; align-items: stretch; gap: 10px; }
+  body:not(.game-portrait) .ear-stage .ear-play.small { width: 40px; height: 40px; align-self: center; }
+  body:not(.game-portrait) .ear-guess .gf-feedback { position: absolute; right: 6%; top: 50%; transform: translateY(-50%); max-width: 22%; }
+  body:not(.game-portrait) .inst-row { gap: 6px; }
+  body:not(.game-portrait) .inst-big { flex-direction: row; justify-content: center; gap: 6px; padding: 4px 4px; font-size: 12px; }
+  body:not(.game-portrait) .inst-big .inst-ico svg { width: 16px; height: 16px; }
+  body:not(.game-portrait) .switch { font-size: 12px; }
 }
 .game.rot-cw .ear-stage { flex-direction: row; align-items: stretch; gap: 10px; }
 .game.rot-cw .ear-stage .ear-play.small { width: 40px; height: 40px; align-self: center; }
@@ -2146,3 +2135,51 @@ body.game-rotated .nav { display: none; }
 .game.rot-cw .inst-big { flex-direction: row; justify-content: center; gap: 6px; padding: 4px 4px; font-size: 12px; }
 .game.rot-cw .inst-big .inst-ico svg { width: 16px; height: 16px; }
 .game.rot-cw .switch { font-size: 12px; }
+
+/* ---------- APPLICATION : BLOC TOURNABLE (Apprendre en portrait sur téléphone) ---------- */
+.app { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+body.in-game .app { flex: 0 0 auto; }
+body.is-home .app { display: none; }
+
+.app.rot-ccw {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  width: 100dvh;
+  height: 100dvw;
+  transform-origin: top left;
+  transform: translateY(100dvh) rotate(-90deg);
+}
+
+/* Les requêtes de largeur voient l'écran (paysage) : on rejoue ici celles qui visent un écran étroit. */
+.app.rot-ccw .grid { grid-template-columns: 1fr; }
+.app.rot-ccw .tile { min-height: 0; }
+.app.rot-ccw .learn-layout { flex-direction: column; height: auto; }
+.app.rot-ccw .nav { gap: 8px; padding-inline: 14px; }
+.app.rot-ccw .nav button { font-size: 13px; white-space: nowrap; }
+.app.rot-ccw .nav .nav-home { font-size: 18px; }
+.app.rot-ccw .app-tabs { gap: 8px; }
+.app.rot-ccw .app-user { margin-left: 0; }
+.app.rot-ccw .nav button.nav-kbd { display: none; }
+
+/* Message « Tourne ton téléphone » avant la rotation d'Apprendre */
+.app-hint {
+  position: fixed;
+  inset: 0;
+  z-index: 11;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  text-align: center;
+  background: var(--paper);
+}
+body.app-hint-on .app-hint { display: flex; }
+.app-hint h2 { margin: 10px 0 8px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 26px; line-height: 1.15; }
+.app-hint p { margin: 0; color: var(--muted); }
+.app-hint .gf-hint-icon { color: var(--accent); animation: tilt 1.6s ease-in-out infinite; }
+
+/* Oreille absolue — placer : en portrait la portée garde des proportions lisibles (pas d'étirement en hauteur). */
+.ear-place .stage-row { justify-content: center; }
+.gf.ear-place .stage-row .staff-box { flex: 0 1 auto; width: 100%; aspect-ratio: 2 / 1; max-height: 100%; }

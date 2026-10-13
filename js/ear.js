@@ -23,6 +23,7 @@ window.Notanext = window.Notanext || {};
     const frame = kit.openFrame({
       title: ex.title,
       cls: 'ear-guess',
+      portrait: true,
       stageHtml: `<div class="ear-wheel">${circle}<button type="button" class="ear-play" id="ear-play" aria-label="Jouer ou rejouer le son">${PLAY_ICON}</button></div>`,
       answersHtml: instrumentMenu.bigRowHtml(),
       onBack: () => kit.showGrid(),
@@ -89,6 +90,7 @@ window.Notanext = window.Notanext || {};
     const frame = kit.openFrame({
       title: ex.title,
       cls: 'ear-place',
+      portrait: true,
       config: `<label class="switch"><input type="checkbox" id="ear-names" role="switch"${namesOn ? ' checked' : ''}><span class="switch-track"><span class="switch-thumb"></span></span><span>Afficher le nom de la note</span></label>`,
       configAfter: `${instrumentMenu.html()}<span class="inst-note" id="inst-note" hidden></span>`,
       stageHtml: `<div class="ear-stage">

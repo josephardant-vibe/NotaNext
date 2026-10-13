@@ -11,6 +11,10 @@ déployée sur Netlify depuis GitHub (josephardant-vibe/NotaNext).
 - Exception validée (5 oct. 2026) : les pictogrammes d'instruments (choix
   d'instrument) sont autorisés, chacun avec sa teinte « classe » propre
   (ébène, acajou, ardoise, laiton, noyer) ; limitée au choix d'instrument.
+- Exception validée (13 oct. 2026) : la page « Se connecter » affiche une
+  animation illustrée (petit personnage cuivre qui court sur une portée, notes
+  qui passent au vert quand il les touche) ; ni pictogramme ni vert « bonne
+  réponse » ailleurs. Animation fournie par le propriétaire (js/runner.js).
 - Un seul panneau "verre" (Liquid Glass) par écran, jamais un effet par
   bouton. Aucune ombre portée ailleurs.
 - Icônes : uniquement des têtes de note, jamais de pictogramme de portée.
