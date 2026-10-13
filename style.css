@@ -94,9 +94,9 @@ body {
   position: relative;
   z-index: 3;
   flex: 0 0 auto;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr; /* logo à gauche, onglets au milieu, compte à droite */
   align-items: center;
-  justify-content: space-between;
   gap: 16px;
   padding: 18px clamp(16px, 4vw, 56px) 8px;
 }
@@ -135,14 +135,15 @@ body {
 .nav button.nav-kbd {
   display: flex;
   align-items: center;
-  color: var(--muted);
+  gap: 6px;
 }
 
-.app-user { margin-left: clamp(8px, 2vw, 28px); }
+.app-tabs { justify-self: center; }
+.app-user { justify-self: end; }
 
 /* Retour à l'accueil depuis l'app. */
 .nav .nav-home {
-  margin-right: auto;
+  justify-self: start;
   padding: 0;
   border: 0;
   font-family: "Fraunces", Georgia, serif;
@@ -208,14 +209,17 @@ h1 {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 18px;
 }
+@media (min-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } }
 
 .tile {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  /* sous-grille : icône, titre, description et lien s'alignent d'une tuile à l'autre */
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  justify-items: start;
   gap: 6px;
   min-height: 188px;
   padding: 22px 24px 20px;
@@ -871,8 +875,10 @@ body.is-home .game {
   .home-nav {
     order: 3;
     flex-basis: 100%;
-    justify-content: flex-start;
-    overflow-x: auto;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2px 8px;
+    font-size: clamp(11px, 3.2vw, 13.5px);
     padding-bottom: 8px;
   }
 }
@@ -1819,12 +1825,11 @@ body.is-home .app { display: none; }
 .app.rot-ccw .grid { grid-template-columns: 1fr; }
 .app.rot-ccw .tile { min-height: 0; }
 .app.rot-ccw .learn-layout { flex-direction: column; height: auto; }
-.app.rot-ccw .nav { gap: 8px; padding-inline: 14px; }
-.app.rot-ccw .nav button { font-size: 13px; white-space: nowrap; }
-.app.rot-ccw .nav .nav-home { font-size: 18px; }
-.app.rot-ccw .app-tabs { gap: 8px; }
-.app.rot-ccw .app-user { margin-left: 0; }
-.app.rot-ccw .nav button.nav-kbd { display: none; }
+.app.rot-ccw .nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 8px; padding-inline: 14px; }
+.app.rot-ccw .nav .nav-home { order: 1; font-size: 18px; }
+.app.rot-ccw .app-user { order: 2; }
+.app.rot-ccw .app-tabs { order: 3; flex-basis: 100%; justify-content: space-between; gap: 8px; }
+.app.rot-ccw .nav button { font-size: 14px; white-space: nowrap; }
 
 /* Message « Tourne ton téléphone » avant la rotation d'Apprendre */
 .app-hint {
@@ -1859,3 +1864,16 @@ body.app-hint-on .app-hint { display: flex; }
 .hint-keep { margin-top: 18px; }
 .app-hint .backbtn { margin-top: 18px; }
 .kbd-panel .switch { align-self: flex-start; }
+
+/* ---------- EN-TÊTE SUR TÉLÉPHONE : deux lignes (logo + compte, puis onglets) ---------- */
+@media (max-width: 520px) {
+  .nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 8px; padding-inline: 14px; }
+  .nav .nav-home { order: 1; font-size: 18px; }
+  .app-user { order: 2; }
+  .app-tabs { order: 3; flex-basis: 100%; justify-content: space-between; gap: 8px; }
+  .nav button { font-size: 14px; white-space: nowrap; }
+}
+
+/* Les titres de page des écrans de jeu et de cours sont de vrais titres (h1) : même aspect qu'avant. */
+h1.gf-title { margin: 0; }
+.learn-left h1 { font-size: 28px; margin: 0 0 8px; }

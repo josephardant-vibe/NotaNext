@@ -52,6 +52,15 @@
   // #/exercer, #/exercer/<jeu>, #/apprendre, #/apprendre/<cours>, #/compte.
   // Le hash est l'unique source de vérité ; `route()` est idempotente (clé `shown`).
   let shown = null;
+  let booted = false;
+  // Titre de l'onglet = l'écran affiché (WCAG 2.4.2) ; le titre de l'écran reçoit le focus (annonce vocale).
+  const BRAND = 'NotaNext';
+  const setTitle = (t) => { document.title = t ? `${BRAND} — ${t}` : BRAND; };
+  function focusHeading(el) {
+    if (!booted || !el) return;
+    el.setAttribute('tabindex', '-1');
+    el.focus({ preventScroll: true });
+  }
   const setHash = (h) => { if (location.hash !== h) location.hash = h; };
 
   function showView(name) {
@@ -66,12 +75,25 @@
   }
 
   function route() {
-    const [page, arg] = (location.hash.replace(/^#\/?/, '') || 'exercer').split('/');
+    const [page, arg] = (location.hash.replace(/^#\/?/, '') || 'accueil').split('/');
+    // L'accueil a sa propre adresse (#/accueil) : le bouton Retour du navigateur y ramène.
+    const home = window.Notanext.home;
+    if (page === 'accueil') {
+      closeGame();
+      shown = 'accueil/';
+      if (home) home.show();
+      return;
+    }
+    if (home) home.hide();
     const key = `${page}/${arg || ''}`;
     if (key === shown) return;
     shown = key;
     closeGame();
-    if (page === 'compte') return showView('account');
+    if (page === 'compte') {
+      showView('account');
+      setTitle('Comptes bientôt');
+      return focusHeading(document.querySelector('#view-account .page-title'));
+    }
     if (page === 'apprendre') {
       showView('learn');
       if (arg && LEARN_CARDS.some((c) => c.id === arg)) return openLearnCard(arg, true);
@@ -99,7 +121,7 @@
   }
 
   function buildGrid() {
-    const tiles = EXERCISES.map((ex) => ({ title: ex.title, desc: ex.tag, action: 'Ouvrir', onOpen: () => openExercise(ex.id) }));
+    const tiles = EXERCISES.map((ex) => ({ title: ex.title, desc: ex.tag, action: 'Jouer', onOpen: () => openExercise(ex.id) }));
     tiles.push({ title: 'Nouveau jeu', soon: true });
     buildTiles(document.getElementById('card-grid'), tiles);
   }
@@ -110,6 +132,8 @@
     exPage.hidden = true;
     if (fromRoute !== true) setHash('#/exercer');
     shown = 'exercer/';
+    setTitle("S'exercer");
+    focusHeading(exGrid.querySelector('h1'));
   }
 
   function openExercise(id, fromRoute) {
@@ -135,6 +159,8 @@
     learnPanel.classList.remove('wide');
     if (fromRoute !== true) setHash('#/apprendre');
     shown = 'apprendre/';
+    setTitle('Apprendre');
+    focusHeading(learnGrid.querySelector('h1'));
   }
 
   function openLearnCard(id, fromRoute) {
@@ -145,6 +171,8 @@
     // "Les clés" : deux colonnes (portée + FAQ).
     learnPanel.classList.add('wide');
     mountClefsPage();
+    setTitle(LEARN_CARDS.find((c) => c.id === id).title);
+    focusHeading(learnPage.querySelector('h1'));
   }
 
   // ----- Carte "Les clés" (clé + portée annotée + FAQ, inchangé) -----
@@ -153,7 +181,7 @@
       <button type="button" class="backbtn" id="learn-back">&#8592; Apprendre</button>
       <div class="learn-layout">
         <div class="learn-left">
-          <h2>Les clés</h2>
+          <h1>Les clés</h1>
           <select id="learn-clef" aria-label="Choisir une clé"></select>
           <p class="learn-hint">Clique une note pour l'entendre.</p>
           <div class="learn-staff">
@@ -181,7 +209,7 @@
   // Téléphone tenu en portrait : message « Tourne ton téléphone » pendant 3 s, puis le
   // jeu se tourne tout seul en paysage. Le bouton de rotation bascule paysage <-> portrait.
   // Les cours n'utilisent rien de tout cela. Désactivable avec MOBILE_LANDSCAPE.
-  const HINT_MS = 3000;
+  const HINT_MS = 2100; // 30 % plus court qu'avant (3 s)
   const isPhone = () => Math.min(window.innerWidth, window.innerHeight) <= 500;
   let orient = null;        // null = automatique ; 'landscape' | 'portrait' = choix du joueur
   let gamePref = 'landscape'; // orientation voulue par le jeu en cours (l'oreille absolue se joue en portrait)
@@ -281,12 +309,13 @@
   function openFrame(opts) {
     closeGame();
     document.body.classList.add('in-game');
+    setTitle(opts.title);
     gameEl.hidden = false;
     gameEl.innerHTML = `
       <div class="gf ${opts.cls || ''}">
         <div class="gf-top">
-          <button type="button" class="backbtn" id="back">&#8592; Retour</button>
-          <span class="gf-title">${opts.title}</span>
+          <button type="button" class="backbtn" id="back">&#8592; S'exercer</button>
+          <h1 class="gf-title" id="gf-heading">${opts.title}</h1>
           <span class="gf-right">
             <button type="button" class="gf-rotate-btn" id="gf-rotate-btn" aria-label="Changer l'orientation du jeu" title="Changer l'orientation du jeu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="14" rx="1.8"/><path d="M5 20.5h14M17 18.5l2 2-2 2" transform="translate(0 -2)"/></svg></button>
             <span class="gf-count" id="gf-count" aria-live="polite" title="Bonnes réponses / réponses totales"></span>
@@ -306,7 +335,7 @@
         <div class="gf-answers" id="answers">${opts.answersHtml || ''}</div>
       </div>
       <div class="gf-hint" role="status">
-        <button type="button" class="backbtn" id="hint-back">&#8592; Retour</button>
+        <button type="button" class="backbtn" id="hint-back">&#8592; S'exercer</button>
         <div class="gf-hint-body">
           <svg class="gf-hint-icon" width="84" height="84" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="22" y="10" width="20" height="34" rx="4"/><path d="M30 38h4"/><path d="M50 22a20 20 0 0 1 0 24M50 46l-1.5-6M50 46l6-1"/></svg>
           <h2>${opts.portrait ? 'Tourne ton téléphone à la verticale' : 'Tourne ton téléphone à l\'horizontale'}</h2>
@@ -329,6 +358,7 @@
       },
       setDestroy(fn) { activeGame = { destroy: fn }; },
     };
+    focusHeading(q('gf-heading'));
     q('back').addEventListener('click', opts.onBack);
     q('hint-back').addEventListener('click', opts.onBack);
     q('hint-keep').addEventListener('click', () => setAutoRotate(false));
@@ -815,4 +845,5 @@
   buildGrid();
   buildLearnGrid();
   route();
+  booted = true;
 })();

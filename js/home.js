@@ -11,13 +11,25 @@
 
   const home = document.getElementById('view-home');
 
+  const HOME_TITLE = 'NotaNext — Apprends à lire la musique';
+
   function showHome() {
     // Quitte proprement un jeu en cours (le défilement continu tourne tout seul).
     app.closeGame();
     document.body.classList.add('is-home');
     home.hidden = false;
     home.scrollTop = 0;
+    document.title = HOME_TITLE;
   }
+
+  function hideHome() {
+    if (home.hidden) return;
+    document.body.classList.remove('is-home');
+    home.hidden = true;
+  }
+
+  // Le routeur (js/game.js) affiche et masque l'accueil selon l'adresse (#/accueil).
+  window.Notanext.home = { show: showHome, hide: hideHome };
 
   // `open` : { exercise: id } ou { learn: id } pour ouvrir directement un jeu / un cours.
   function enterApp(tab, open) {
@@ -43,7 +55,11 @@
       document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
     });
   });
-  document.getElementById('nav-home').addEventListener('click', showHome);
+  // Le logo ramène à l'accueil par son adresse propre : le bouton Retour du navigateur fonctionne.
+  document.getElementById('nav-home').addEventListener('click', () => {
+    if (location.hash !== '#/accueil') location.hash = '#/accueil';
+    else showHome();
+  });
 
   // ----- démo interactive du hero : mini "Deviner la note" en boucle -----
   const NAMES = ['Mi', 'Fa', 'Sol', 'La', 'Si', 'Do', 'Ré']; // pas 0 = Mi (ligne du bas)
@@ -138,7 +154,7 @@
       </svg>
       <div class="home-tile-foot">
         <span class="home-tile-msg">${t.soon ? '' : 'Quelle est cette note ?'}</span>
-        ${t.soon ? '<span class="home-soon" aria-disabled="true">Bientôt</span>' : '<a href="#" class="home-try">Essayer</a>'}
+        ${t.soon ? '<span class="home-soon" aria-disabled="true">Bientôt</span>' : '<a href="#" class="home-try">Jouer</a>'}
       </div>`;
     if (!t.soon) {
       el.querySelector('.home-try').addEventListener('click', (e) => {
@@ -177,7 +193,7 @@
     const a = document.createElement('a');
     a.href = '#';
     a.className = 'home-course';
-    a.innerHTML = `<span class="home-course-kicker">Cours</span><h3>${c.title}</h3><p>${c.desc}</p><span class="home-try">Ouvrir</span>`;
+    a.innerHTML = `<span class="home-course-kicker">Cours</span><h3>${c.title}</h3><p>${c.desc}</p><span class="home-try">Commencer</span>`;
     a.style.textDecoration = 'none';
     a.style.color = 'inherit';
     a.addEventListener('click', (e) => {
@@ -191,8 +207,8 @@
   if (REDIRIGER_VISITEURS_REVENANTS) {
     try { seen = !!localStorage.getItem(VISITED_KEY); } catch (e) { /* stockage indisponible : on réaffiche l'accueil */ }
   }
-  // Un lien direct vers une page de l'app (#/compte, #/profil…) n'affiche pas l'accueil.
-  if (!seen && !location.hash.startsWith('#/')) {
+  // Un lien direct vers une page de l'app (#/exercer, #/compte…) n'affiche pas l'accueil.
+  if (!seen && (!location.hash.startsWith('#/') || location.hash === '#/accueil')) {
     showHome();
     if (REDIRIGER_VISITEURS_REVENANTS) {
       try { localStorage.setItem(VISITED_KEY, '1'); } catch (e) { /* idem */ }
