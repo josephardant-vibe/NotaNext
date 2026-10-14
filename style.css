@@ -1,6 +1,7 @@
 :root {
   --paper: #faf6ef;
   --ink: #211d18;
+  --control-border: #8a8177; /* bordure des boutons et champs : ≥ 3:1 sur le fond (WCAG 1.4.11) */
   --muted: #6f665c;         /* texte secondaire : 5,2:1 sur le fond (WCAG 1.4.3) */
   --border: #e4ddd0;
   --accent: #b8502f;        /* cuivre — interface (titre, onglet actif, note, survols) */
@@ -289,7 +290,7 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--control-border);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.7);
   font: inherit;
@@ -324,7 +325,7 @@ select {
   font-size: 13px;
   font-weight: 500;
   padding: 7px 26px 7px 10px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 8px;
   color: var(--ink);
   background: rgba(255, 255, 255, 0.72) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236f665c' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") no-repeat right 9px center;
@@ -474,7 +475,7 @@ select {
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--control-border);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.7);
   font: inherit;
@@ -517,14 +518,14 @@ select {
   font-weight: 500;
   color: var(--ink);
   background: #fff;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--control-border);
   border-radius: 8px;
   cursor: pointer;
   transition: border-color 0.12s, background 0.12s;
 }
 
 .answer-btn:hover {
-  border-color: #c9bfad;
+  border-color: var(--accent);
   background: #f7f4ee;
 }
 
@@ -717,7 +718,7 @@ select {
   font-size: 13px;
   font-weight: 600;
   padding: 7px 14px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--control-border);
   border-radius: 999px;
   background: #fff;
   color: var(--ink);
@@ -774,7 +775,7 @@ select {
   font-size: 13px;
   font-weight: 600;
   padding: 7px 12px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--control-border);
   border-radius: 8px;
   background: #fff;
   color: var(--ink);
@@ -1441,7 +1442,7 @@ body.in-game .shell { display: none; }
   justify-content: center;
   width: 34px;
   height: 34px;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--control-border);
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.7);
   color: var(--ink);
@@ -1637,7 +1638,7 @@ body.game-rotated .nav { display: none; }
   font-size: 13px;
   font-weight: 500;
   padding: 6px 12px 6px 10px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 8px;
   color: var(--ink);
   background: rgba(255, 255, 255, 0.72);
@@ -1709,12 +1710,12 @@ body.game-rotated .nav { display: none; }
   font-weight: 500;
   color: var(--ink);
   background: #fff;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--control-border);
   border-radius: 50%;
   cursor: pointer;
   transition: border-color 0.12s, background 0.12s;
 }
-.ear-note:hover { border-color: #c9bfad; background: #f7f4ee; }
+.ear-note:hover { border-color: var(--accent); background: #f7f4ee; }
 .ear-note.good { border-color: var(--success); background: rgba(63, 125, 82, 0.14); color: var(--success); animation: earPop 0.5s ease; }
 .ear-note.bad { border-color: var(--grey-ind); background: #e6e2da; color: var(--grey-text); }
 .ear-note.reveal { border-color: var(--success); background: rgba(63, 125, 82, 0.14); color: var(--success); outline: 2px solid rgba(63, 125, 82, 0.35); outline-offset: 3px; }
@@ -1755,7 +1756,7 @@ body.game-rotated .nav { display: none; }
 
 .switch { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; cursor: pointer; }
 .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.switch-track { position: relative; width: 38px; height: 22px; border-radius: 999px; background: var(--border); transition: background 0.15s; flex: 0 0 auto; }
+.switch-track { position: relative; width: 38px; height: 22px; border-radius: 999px; background: var(--control-border); transition: background 0.15s; flex: 0 0 auto; }
 .switch-thumb { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform 0.15s; }
 .switch input:checked + .switch-track { background: var(--accent); }
 .switch input:checked + .switch-track .switch-thumb { transform: translateX(16px); }
@@ -1780,12 +1781,12 @@ body.game-rotated .nav { display: none; }
   font-weight: 500;
   color: var(--ink);
   background: #fff;
-  border: 1.5px solid var(--border);
+  border: 1.5px solid var(--control-border);
   border-radius: 10px;
   cursor: pointer;
 }
 .inst-big .inst-ico svg { width: 26px; height: 26px; }
-.inst-big:hover { border-color: #c9bfad; }
+.inst-big:hover { border-color: var(--accent); }
 .inst-big.on { border-color: var(--accent); background: rgba(184, 80, 47, 0.08); color: var(--accent-dark); }
 
 @media (max-height: 520px) {
@@ -1877,3 +1878,15 @@ body.app-hint-on .app-hint { display: flex; }
 /* Les titres de page des écrans de jeu et de cours sont de vrais titres (h1) : même aspect qu'avant. */
 h1.gf-title { margin: 0; }
 .learn-left h1 { font-size: 28px; margin: 0 0 8px; }
+
+.runner-pause { align-self: center; margin-top: 10px; }
+
+/* « Réduire les animations » : plus de mouvement en boucle (fond, aperçus, flèche de rotation). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -182,7 +182,9 @@
     });
   }
   paintTiles();
-  setInterval(() => { tick++; paintTiles(); }, 1800);
+  // Les aperçus des jeux tournent en boucle, sauf si le visiteur a demandé de réduire les animations.
+  const reduceMotion = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduceMotion) setInterval(() => { tick++; paintTiles(); }, 1800);
 
   // ----- "Les cours" : bandeau défilant -----
   const COURSES = [

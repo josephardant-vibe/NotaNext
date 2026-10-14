@@ -1,7 +1,7 @@
 // Animation de la page « Se connecter » : un petit bonhomme court sur la ligne du bas d'une portée,
 // saute sur certaines notes, en touche d'autres de la main et glisse sous d'autres ; les notes
 // touchées deviennent vertes. Dessinée en SVG, animée image par image (requestAnimationFrame),
-// aucune image ni dépendance. Conçue sur maquette (Notanext Connexion), portée ici en JS simple.
+// aucune image ni dépendance. Conçue sur maquette (NotaNext Connexion), portée ici en JS simple.
 // Respecte « réduire les animations » (pose fixe) et se met en veille quand la page est masquée.
 window.Notanext = window.Notanext || {};
 
@@ -188,18 +188,29 @@ window.Notanext = window.Notanext || {};
       BE.forEach((b, i) => b.setAttribute('transform', 'translate(' + f(30 + M.md(M.bo + M.bs * i - M.V * t - 30, M.L)) + ' 0)'));
     }
 
-    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { draw(1.0); return () => window.removeEventListener('resize', fit); }
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      draw(1.0);
+      const still = () => window.removeEventListener('resize', fit);
+      still.reduced = true; // pose fixe : pas de bouton pause
+      return still;
+    }
 
-    let raf = 0, timer = 0, stopped = false;
+    // Horloge virtuelle : elle s'arrête quand l'animation est en pause (WCAG 2.2.2).
+    let raf = 0, timer = 0, stopped = false, paused = false, clock = 0, last = performance.now();
     function loop() {
       if (stopped) return;
+      const now = performance.now();
       // Page masquée (autre onglet de l'app) : on ne dessine rien et on revérifie plus tard.
-      if (!svg.clientWidth) { timer = setTimeout(loop, 300); return; }
-      draw(((performance.now() / 1000) * M.RATE) % M.T);
+      if (!svg.clientWidth) { last = now; timer = setTimeout(loop, 300); return; }
+      if (!paused) clock += ((now - last) / 1000) * M.RATE;
+      last = now;
+      draw(clock % M.T);
       raf = requestAnimationFrame(loop);
     }
     loop();
-    return () => { stopped = true; cancelAnimationFrame(raf); clearTimeout(timer); window.removeEventListener('resize', fit); };
+    const stop = () => { stopped = true; cancelAnimationFrame(raf); clearTimeout(timer); window.removeEventListener('resize', fit); };
+    stop.setPaused = (v) => { paused = v; };
+    return stop;
   }
 
   window.Notanext.runner = { mount };
