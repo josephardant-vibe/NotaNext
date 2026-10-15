@@ -462,8 +462,7 @@
     const overlay = document.createElement('div');
     overlay.className = 'kbd-overlay';
     overlay.innerHTML = `
-      <div class="bg" aria-hidden="true"></div>
-      <div class="gf kbd-card" role="dialog" aria-modal="true" aria-labelledby="kbd-title">
+      <div class="gf kbd-card" role="dialog" aria-labelledby="kbd-title">
         <div class="gf-top">
           <button type="button" class="backbtn" id="kbd-done">&#8592; Retour</button>
           <h2 class="gf-title" id="kbd-title">Clavier</h2>
@@ -489,6 +488,11 @@
         </div>
       </div>
     `;
+    // La barre du haut reste visible : le panneau commence juste en dessous (sauf si elle est masquée).
+    const header = document.getElementById('app-header');
+    const headerBottom = header && header.offsetParent !== null && !appEl.classList.contains('rot-ccw') ? header.getBoundingClientRect().bottom : 0;
+    overlay.style.setProperty('--kbd-top', Math.max(0, Math.round(headerBottom)) + 'px');
+    document.body.classList.add('kbd-open');
     document.body.appendChild(overlay);
     const keyBtns = Array.from(overlay.querySelectorAll('.kbd-key'));
     const nameEls = Array.from(overlay.querySelectorAll('.kbd-name'));
@@ -555,24 +559,26 @@
       document.removeEventListener('keydown', onCapture, true);
       capturing = false;
       overlay.remove();
+      document.body.classList.remove('kbd-open');
+      header.removeEventListener('click', onHeaderClick);
+      closeKeyPanelFn = null;
       if (pauseHook) pauseHook(false);
       if (opener && opener.focus) opener.focus();
     }
+    closeKeyPanelFn = closePanel;
+    // Un clic sur un onglet de la barre (S'exercer, Apprendre…) ferme le panneau ; l'icône Clavier le referme aussi.
+    function onHeaderClick(e) { if (!e.target.closest('#nav-kbd')) closePanel(); }
+    header.addEventListener('click', onHeaderClick);
     overlay.querySelector('#kbd-done').addEventListener('click', closePanel);
-    // Clavier : Échap ferme (sauf en attente d'une touche) ; Tab reste dans le panneau.
+    // Clavier : Échap ferme (sauf en attente d'une touche). Fenêtre non modale : Tab peut rejoindre la barre.
     overlay.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !waiting) { e.preventDefault(); closePanel(); return; }
-      if (e.key !== 'Tab') return;
-      const items = Array.from(overlay.querySelectorAll('button, input, select, a[href]')).filter((el) => !el.disabled && el.offsetParent !== null || el.id === 'kbd-rotate');
-      if (!items.length) return;
-      const first = items[0], last = items[items.length - 1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      if (e.key === 'Escape' && !waiting) { e.preventDefault(); closePanel(); }
     });
     paint();
     overlay.querySelector('#kbd-done').focus();
   }
-  document.getElementById('nav-kbd').addEventListener('click', openKeyPanel);
+  let closeKeyPanelFn = null;
+  document.getElementById('nav-kbd').addEventListener('click', () => (closeKeyPanelFn ? closeKeyPanelFn() : openKeyPanel()));
 
   // ---------- exercice ----------
   function mountExercise(ex) {

@@ -699,13 +699,16 @@ select {
 
 .kbd-overlay {
   position: fixed;
-  inset: 0;
+  inset: var(--kbd-top, 0px) 0 0 0; /* sous la barre du haut, qui reste visible */
   z-index: 20;
   display: flex;
-  padding: 12px;
-  background: var(--paper);
+  padding: 0 12px 12px;
+  background: transparent;
   overflow: hidden;
 }
+/* Pendant que le panneau est ouvert, l'écran dessous est masqué (il garde son état). */
+body.kbd-open .shell,
+body.kbd-open .game { visibility: hidden; }
 
 /* Page « Clavier » : même carte que les jeux (.gf), fond animé identique. */
 .kbd-card { position: relative; z-index: 1; overflow: auto; }
