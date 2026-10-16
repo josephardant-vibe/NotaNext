@@ -67,7 +67,8 @@ python3 -m http.server 8000
 ```
 index.html        page unique : accueil, onglets S'exercer / Apprendre
 style.css         tous les styles (palette et polices définies dans :root)
-netlify.toml      configuration de déploiement
+netlify.toml      configuration de déploiement (cache, en-têtes)
+fonts/            polices hébergées (Fraunces, IBM Plex Sans, Noto Music)
 audio/            échantillons d'instruments (un dossier par instrument)
 docs/             documents du projet (mémoire du projet, 3 oct. 2026)
 CREDITS.md        licences et crédits des sons

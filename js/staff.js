@@ -31,7 +31,7 @@ window.Notanext = window.Notanext || {};
   // ligne de base pour que la note de référence de la clé tombe pile sur
   // `clef.line` (calibré visuellement, voir js/staff.js).
   const CLEF_GLYPHS = {
-    treble: { char: '\u{1D11E}', x: 32, dy: 18 },
+    treble: { char: '\u{1D11E}', x: 32, dy: 21 },
     bass:   { char: '\u{1D122}', x: 32, dy: 79 },
     cclef:  { char: '\u{1D121}', x: 32, dy: 48 },
   };
