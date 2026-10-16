@@ -4,7 +4,7 @@ window.Notanext = window.Notanext || {};
 
 (function () {
   const { data, staff, playNote, instruments, instrumentMenu } = window.Notanext;
-  const { FR, FREQ, label, CLEFS, clefById, notesOf } = data;
+  const { FR, FREQ, label, CLEFS, clefById, notesOf, createPicker } = data;
   const { renderStaff, eventToStep, attachKeyboard } = staff;
 
   const PLAY_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>';
@@ -34,18 +34,18 @@ window.Notanext = window.Notanext || {};
     kit.setActiveAnswers(byName);
 
     let current = null;
-    let previous = null;
     let locked = false;
     let dead = false;
     let timer = null;
+    // Une note ratée revient dès que possible (après une autre note).
+    const picker = createPicker(() => FR.map((n) => ({ name: n })), { minGap: 1 });
     const play = () => { if (current) playNote(FREQ[current + '4']); };
 
     function next() {
       if (dead) return;
       locked = false;
       Object.values(byName).forEach((b) => { b.classList.remove('good', 'bad', 'reveal'); });
-      do { current = rand(FR); } while (current === previous);
-      previous = current;
+      current = picker.next().name;
       frame.setFeedback('');
       play();
     }
@@ -54,6 +54,7 @@ window.Notanext = window.Notanext || {};
       if (locked || !current) return;
       locked = true;
       const ok = name === current;
+      picker.record({ name: current }, ok);
       byName[name].classList.add(ok ? 'good' : 'bad');
       if (!ok) byName[current].classList.add('reveal');
       if (ok) frame.setFeedback(rand(kit.CORRECT_PHRASES), 'correct');
@@ -139,6 +140,8 @@ window.Notanext = window.Notanext || {};
     // exacte sur la portée est alors la seule bonne réponse (pas d'ambiguïté d'octave).
     const MIN_POOL = 3;
     const pool = () => notesOf(clef()).filter((n) => instruments.inRange(instruments.get(), n.freq));
+    // Une note ratée revient dès que possible (après une autre note).
+    const picker = createPicker(pool, { minGap: 1 });
 
     function next() {
       if (dead) return;
@@ -156,7 +159,7 @@ window.Notanext = window.Notanext || {};
         return;
       }
       locked = false;
-      current = rand(notes);
+      current = picker.next();
       frame.setFeedback(IDLE);
       draw();
       play();
@@ -167,6 +170,7 @@ window.Notanext = window.Notanext || {};
       locked = true;
       const correctSteps = [current.step];
       const ok = step === current.step;
+      picker.record(current, ok);
       draw({ reveal: { correctSteps, correctName: current.name, clickedStep: step, ok } });
       if (ok) frame.setFeedback(rand(kit.CORRECT_PHRASES), 'correct');
       else frame.setFeedback(`Raté, c'était <b>${label(current.name)}</b>`);
@@ -209,7 +213,7 @@ window.Notanext = window.Notanext || {};
       if (hoverStep != null && !locked) drawGhost(hoverStep, hoverTouch);
     });
 
-    clefSel.addEventListener('change', next);
+    clefSel.addEventListener('change', () => { picker.reset(); next(); });
     document.getElementById('ear-play').addEventListener('click', play);
 
     const onResize = () => { if (!locked) draw(hoverStep != null ? { ghostStep: hoverStep } : {}); };

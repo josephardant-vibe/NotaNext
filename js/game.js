@@ -1,7 +1,7 @@
 // Application : navigation (onglets, grille de cartes, pages d'exercice) et logique des exercices.
 (function () {
   const { data, staff, scrollStaff, windowStaff, playTone, playNote, instruments, instrumentMenu } = window.Notanext;
-  const { CLEFS, clefById, notesOf, FR, ANSWER_ORDER, label, getNotation, setNotation, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS } = data;
+  const { CLEFS, clefById, notesOf, FR, ANSWER_ORDER, createPicker, label, getNotation, setNotation, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS } = data;
   const { renderStaff, eventToStep, attachKeyboard } = staff;
   const { createScrollStaff, SPEED_LEVELS } = scrollStaff;
   const { createWindowStaff } = windowStaff;
@@ -687,16 +687,15 @@
         const current = scroll.currentNote();
         if (!current) return;
         const ok = name === current.name;
+        picker.record(current, ok);
         scroll.answer(ok, current.name);
         if (ok) onGood();
         else onBad(current.name);
       });
 
-
-      const pickNote = () => {
-        const notes = notesOf(clefFn());
-        return notes[Math.floor(Math.random() * notes.length)];
-      };
+      // Une note ratée revient dès que possible (après une autre note).
+      const picker = createPicker(() => notesOf(clefFn()), { minGap: 1 });
+      const pickNote = () => picker.next();
 
       const scroll = createScrollStaff(svgEl, {
         clef: clefFn(),
@@ -704,7 +703,7 @@
         onDue: tone,
         // Une note qui dépasse le repère sans réponse compte comme une erreur,
         // exactement comme une mauvaise réponse donnée à temps.
-        onMiss: (name) => onBad(name),
+        onMiss: (name, note) => { if (note) picker.record(note, false); onBad(name); },
         initialSpeed: SPEED_LEVELS.intermediaire,
       });
 
@@ -713,7 +712,7 @@
 
       return {
         currentNote: () => scroll.currentNote(),
-        onClefChange: () => scroll.setClef(clefFn()),
+        onClefChange: () => { picker.reset(); scroll.setClef(clefFn()); },
         onSpeedChange: (level) => scroll.setSpeed(SPEED_LEVELS[level]),
         destroy: () => {
           setPanelPause(null);
@@ -728,15 +727,15 @@
         const current = win.currentNote();
         if (!current) return;
         const ok = name === current.name;
+        picker.record(current, ok); // avant answer() : la note ratée est la prochaine à entrer sur la portée
         win.answer(ok, current.name);
         if (ok) onGood();
         else onBad(current.name);
       });
 
-      const pickNote = () => {
-        const notes = notesOf(clefFn());
-        return notes[Math.floor(Math.random() * notes.length)];
-      };
+      // Les 7 notes à venir sont déjà affichées : la note ratée entre sur la portée au tirage suivant.
+      const picker = createPicker(() => notesOf(clefFn()), { minGap: 0 });
+      const pickNote = () => picker.next();
 
       const win = createWindowStaff(svgEl, {
         clef: clefFn(),
@@ -746,7 +745,7 @@
 
       return {
         currentNote: () => win.currentNote(),
-        onClefChange: () => win.setClef(clefFn()),
+        onClefChange: () => { picker.reset(); win.setClef(clefFn()); },
         destroy: () => win.destroy(),
       };
     }
@@ -772,6 +771,7 @@
     // ----- Placer la note : clic sur la portée (inchangé) -----
     function mountPlace(svgEl, clefFn, onGood, onBad) {
       const nameBox = document.getElementById('namebox');
+      const picker = createPicker(() => notesOf(clefFn()), { minGap: 1 });
       let current = null;
       let locked = false;
       let hoverStep = null; // dernier pas affiché par l'indice de survol
@@ -782,8 +782,7 @@
         locked = false;
         hoverStep = null;
         kb.reset();
-        const notes = notesOf(clefFn());
-        current = notes[Math.floor(Math.random() * notes.length)];
+        current = picker.next();
         frame.setFeedback('');
         nameBox.textContent = label(current.name);
         svgEl.classList.add('placing');
@@ -810,6 +809,7 @@
           .filter((n) => n.name === current.name)
           .map((n) => n.step);
         const ok = correctSteps.includes(step);
+        picker.record(current, ok);
         renderStaff(svgEl, {
           wide: true,
           clef: clefFn(),
@@ -848,7 +848,7 @@
 
       return {
         currentNote: () => current,
-        onClefChange: next,
+        onClefChange: () => { picker.reset(); next(); },
         destroy: () => { dead = true; window.removeEventListener('resize', onResize); window.removeEventListener('notanext:notation', onNotation); },
       };
     }

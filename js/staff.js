@@ -9,12 +9,12 @@ window.Notanext = window.Notanext || {};
   const BASE_Y = 106;              // y de la ligne du bas (step 0)
   const X0 = 46;
   const X1 = 198;
-  // Marge haut/bas : aucune note coupée, jusqu'à la 2e ligne supplémentaire au-dessus (step 12).
-  const VB_Y = -50;
-  const VB_HEIGHT = 196;
+  // Marge haut/bas : aucune note coupée, jusqu'à la note au-dessus de la 1re ligne supplémentaire (step 11).
+  const VB_Y = -40;
+  const VB_HEIGHT = 186;
   const VIEWBOX = `0 ${VB_Y} 210 ${VB_HEIGHT}`;
   const STEP_MIN = -2;
-  const STEP_MAX = 12;
+  const STEP_MAX = 11;
 
   const LINE_STEPS = [0, 2, 4, 6, 8];
   const yOf = (step) => BASE_Y - step * STEP;
@@ -166,8 +166,7 @@ window.Notanext = window.Notanext || {};
     if (step <= -2) return 'ligne supplémentaire sous la portée';
     if (step === 9) return 'au-dessus de la 5e ligne';
     if (step === 10) return '1re ligne supplémentaire au-dessus';
-    if (step === 11) return 'entre les deux lignes supplémentaires au-dessus';
-    if (step === 12) return '2e ligne supplémentaire au-dessus';
+    if (step === 11) return 'au-dessus de la 1re ligne supplémentaire';
     if (step === -1) return 'sous la première ligne';
     if (step % 2 === 0) { const n = step / 2 + 1; return (n === 1 ? '1re' : n + 'e') + ' ligne'; }
     const n = (step + 1) / 2;

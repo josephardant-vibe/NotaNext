@@ -9,8 +9,8 @@ window.Notanext = window.Notanext || {};
   const { STEP, BASE_Y } = window.Notanext.staff.geometry;
   const { drawClef } = window.Notanext.staff;
 
-  const VB_HEIGHT = 196;   // hauteur du viewBox (fixe, comme la portée statique)
-  const VB_Y = -50;        // marge haute/basse : aucune note coupée (jusqu'à la 2e ligne suppl. au-dessus)
+  const VB_HEIGHT = 186;   // hauteur du viewBox (fixe, comme la portée statique)
+  const VB_Y = -40;        // marge haute/basse : aucune note coupée (jusqu'au step 11)
   const DEFAULT_VB_WIDTH = 210;
   const MARKER_X = 84;           // repère collé contre la clé (la clé finit vers x = 69), en unités de viewBox
   const CLIP_X = 68;             // les notes glissent sous le bord droit de la clé
@@ -99,7 +99,7 @@ window.Notanext = window.Notanext || {};
         staticLayer.appendChild(el('line', { class: 'staff-line', x1: -20, x2: vbWidth + 20, y1: yOf(s), y2: yOf(s) }))
       );
       drawClef(staticLayer, currentClef);
-      staticLayer.appendChild(el('line', { class: 'marker-line', x1: MARKER_X, x2: MARKER_X, y1: -46, y2: 142 }));
+      staticLayer.appendChild(el('line', { class: 'marker-line', x1: MARKER_X, x2: MARKER_X, y1: -36, y2: 142 }));
     }
 
     function spawnNote() {
@@ -148,7 +148,7 @@ window.Notanext = window.Notanext || {};
       const ellipse = entry.group.querySelector('.note-head');
       ellipse.classList.add('reveal-wrong');
       flashName(entry);
-      if (onMiss) onMiss(entry.note.name);
+      if (onMiss) onMiss(entry.note.name, entry.note);
     }
 
     function tick(nowReal) {

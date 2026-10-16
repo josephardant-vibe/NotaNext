@@ -52,15 +52,54 @@ window.Notanext = window.Notanext || {};
     return CLEFS.find((c) => c.id === id);
   }
 
-  // Les 15 notes naturelles de la clé : de la 1re ligne supplémentaire sous la portée
-  // (Do4 en clé de sol) à la 2e ligne supplémentaire au-dessus (Do6 en clé de sol).
+  // Les 14 notes naturelles de la clé : de la 1re ligne supplémentaire sous la portée
+  // (Do4 en clé de sol) à l'interligne au-dessus de la 1re ligne supplémentaire (Si5 en clé de sol).
   // `step` : position verticale, 0 = ligne du bas de la portée.
   const STEP_MIN = -2;
-  const STEP_MAX = 12;
+  const STEP_MAX = 11;
   function notesOf(clef) {
     const steps = [];
     for (let s = STEP_MIN; s <= STEP_MAX; s++) steps.push(s);
     return steps.map((step) => ({ ...fromAbs(clef.base + step), step }));
+  }
+
+  // Tirage des notes avec rappel prioritaire des notes ratées : une fausse réponse remet cette note
+  // dans la file ; elle revient dès que possible, après `minGap` autres notes (0 = au prochain tirage).
+  // Une note ratée au moins 2 fois sur les 20 dernières réponses revient 2 fois. Sans note ratée, le
+  // tirage est aléatoire (jamais deux fois la même note de suite).
+  function createPicker(getNotes, opts) {
+    const minGap = (opts && opts.minGap) || 0;
+    const keyOf = (n) => (n.step != null ? 's' + n.step : n.name);
+    let history = []; // { key, ok } : les 20 dernières réponses
+    let queue = [];   // clés à redemander
+    let gap = 99;     // tirages depuis la dernière erreur
+    let lastKey = null;
+    function next() {
+      const notes = getNotes();
+      let chosen = null;
+      if (queue.length && gap >= minGap) {
+        const i = queue.findIndex((k) => notes.some((n) => keyOf(n) === k));
+        if (i >= 0) { const k = queue.splice(i, 1)[0]; chosen = notes.find((n) => keyOf(n) === k); }
+      }
+      if (!chosen) {
+        const pool = notes.length > 1 ? notes.filter((n) => keyOf(n) !== lastKey) : notes;
+        chosen = pool[Math.floor(Math.random() * pool.length)];
+      }
+      gap++;
+      lastKey = keyOf(chosen);
+      return chosen;
+    }
+    function record(note, ok) {
+      const key = keyOf(note);
+      history.push({ key, ok });
+      if (history.length > 20) history.shift();
+      if (ok) return;
+      const wanted = history.filter((h) => h.key === key && !h.ok).length >= 2 ? 2 : 1;
+      while (queue.filter((k) => k === key).length < wanted) queue.push(key);
+      gap = 0;
+    }
+    function reset() { history = []; queue = []; gap = 99; lastKey = null; }
+    return { next, record, reset };
   }
 
   const EXERCISES = [
@@ -146,6 +185,6 @@ window.Notanext = window.Notanext || {};
   };
 
   window.Notanext.data = {
-    FR, ANSWER_ORDER, label, getNotation, setNotation, FREQ, CLEFS, clefById, notesOf, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS,
+    FR, ANSWER_ORDER, createPicker, label, getNotation, setNotation, FREQ, CLEFS, clefById, notesOf, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS,
   };
 })();

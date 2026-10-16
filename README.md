@@ -30,8 +30,8 @@ défaut). Sur téléphone, l'onglet « Clavier » devient « Réglages » (notat
 - *Oreille absolue — placer* — un son, on place la note sur la portée (clic, ou toucher et
   glisser sur mobile) ; seule la position exacte (octave comprise) est juste, et seules les notes
   que l'instrument joue à leur vraie hauteur sont proposées ; option « Afficher le nom de la note ».
-- Étendue : 15 notes dans chaque clé, de la 1re ligne supplémentaire sous la portée à la 2e au-dessus
-  (de Do4 à Do6 en clé de sol).
+- Étendue : 14 notes dans chaque clé, de la 1re ligne supplémentaire sous la portée à l'interligne au-dessus
+  de la 1re ligne supplémentaire (de Do4 à Si5 en clé de sol).
 - Quatre clés au choix : sol, fa, ut alto, ut ténor (symboles Unicode, police Noto Music).
 
 **Instruments** — piano (défaut), violon, flûte, trompette, guitare : menu dans la ligne de
