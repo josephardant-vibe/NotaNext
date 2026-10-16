@@ -14,9 +14,10 @@ Déployée sur Netlify depuis ce dépôt.
 (un petit personnage court sur une portée, les notes touchées passent au vert ; `js/runner.js`,
 en SVG, sans image). Pas de formulaire : les comptes ne sont pas encore ouverts.
 
-**Mobile** — les jeux se tournent en paysage, sauf l'oreille absolue et toute la section
-Apprendre qui se tournent en portrait (message « Tourne ton téléphone » 3 s, puis rotation
-d'affichage ; un site ne peut pas verrouiller l'orientation).
+**Mobile** — les jeux de lecture se tournent en paysage, l'oreille absolue (deviner et placer) et la
+section Apprendre en portrait (message « Tourne ton téléphone » 2 s, puis rotation d'affichage). Le bouton de
+rotation d'un jeu active ou coupe la rotation automatique pour tous les jeux (réglage mémorisé, activé par
+défaut). Sur téléphone, l'onglet « Clavier » devient « Réglages » (notation, rotation) : pas de touches à associer.
 
 **S'exercer**
 - *Deviner la note* — huit notes sur la portée (celle repérée par le trait et les sept à venir), trouve le nom de celle repérée.

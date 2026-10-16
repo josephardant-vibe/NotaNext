@@ -80,7 +80,7 @@ window.Notanext = window.Notanext || {};
     violin:  { label: 'Violon',    samples: ['G3', 'C4', 'G4', 'C5', 'E5', 'C6'],           lo: 55, hi: 87, gain: 0.85,
                detune: { C4: -3, E5: 16 } },
     flute:   { label: 'Flûte',     samples: ['C4', 'E4', 'A4', 'E5', 'C6'],                 lo: 60, hi: 87, gain: 0.85 },
-    trumpet: { label: 'Trompette', samples: ['F3', 'C4', 'G4', 'D5'],                       lo: 52, hi: 77, gain: 0.8,
+    trumpet: { label: 'Trompette', samples: ['F3', 'C4', 'G4', 'D5', 'C6'],                 lo: 52, hi: 84, gain: 0.8,
                detune: { F3: -12, C4: -3 } },
     guitar:  { label: 'Guitare',   samples: ['E2', 'B2', 'F3', 'C4', 'G4'],                 lo: 40, hi: 70, gain: 0.85 },
   };

@@ -422,7 +422,7 @@ select {
 }
 
 .window-note {
-  transition: transform 0.35s ease;
+  transition: transform 0.18s ease-out;
 }
 
 .side-label {
@@ -1893,3 +1893,7 @@ h1.gf-title { margin: 0; }
     scroll-behavior: auto !important;
   }
 }
+
+/* Rotation automatique : le bouton est « enfoncé » quand elle est active (réglage commun à tous les jeux). */
+.gf-rotate-btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent-dark); background: rgba(184, 80, 47, 0.08); }
+.kbd-keys { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }

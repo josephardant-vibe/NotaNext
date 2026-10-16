@@ -16,7 +16,7 @@ window.Notanext = window.Notanext || {};
   const MIN_GAP = 40;             // écart minimal entre deux notes ; sur une boîte étroite les dernières sortent du cadre
   const VB_HEIGHT = 196;
   const OFFSCREEN_X = -20;        // là où glisse (puis disparaît) la note qui sort
-  const TRANSITION_MS = 350;
+  const TRANSITION_MS = 180;      // glissement court : les réponses peuvent s'enchaîner très vite
 
   const yOf = (step) => BASE_Y - step * STEP;
 
@@ -58,7 +58,6 @@ window.Notanext = window.Notanext || {};
 
     let currentClef = clef;
     let entries = []; // { note, group }
-    let locked = false;
 
     // Géométrie : la portée occupe toute la largeur de la boîte (même ratio que le défilement
     // continu) ; les 3 emplacements sont placés autour du repère, à l'écart de la clé.
@@ -97,7 +96,6 @@ window.Notanext = window.Notanext || {};
         notesLayer.appendChild(group);
         entries[i] = { note, group };
       }
-      locked = false;
       if (onDue) onDue(entries[TARGET_INDEX].note);
     }
 
@@ -118,8 +116,7 @@ window.Notanext = window.Notanext || {};
       // Colore la cible (comme déjà défini ailleurs), puis fait avancer toute la
       // fenêtre d'un cran : la note évaluée glisse à gauche, une nouvelle entre à droite.
       answer(isCorrect, correctName) {
-        if (locked || !entries[TARGET_INDEX]) return;
-        locked = true;
+        if (!entries[TARGET_INDEX]) return;
 
         const target = entries[TARGET_INDEX];
         const ellipse = target.group.querySelector('.note-head');
@@ -151,24 +148,9 @@ window.Notanext = window.Notanext || {};
 
         entries = entries.slice(1).concat([{ note: freshNote, group: freshGroup }]);
 
-        // Le son de la nouvelle cible ne part qu'une fois son glissement terminé
-        // (transitionend), et non sur un simple minuteur qui peut se déclencher
-        // une image avant la fin réelle de l'animation CSS. Le minuteur n'est
-        // qu'un filet de sécurité si l'événement ne vient pas.
-        const arriving = entries[TARGET_INDEX];
-        let settled = false;
-        const settle = () => {
-          if (settled) return;
-          settled = true;
-          arriving.group.removeEventListener('transitionend', onEnd);
-          locked = false;
-          if (onDue) onDue(arriving.note);
-        };
-        const onEnd = (e) => {
-          if (e.target === arriving.group && e.propertyName === 'transform') settle();
-        };
-        arriving.group.addEventListener('transitionend', onEnd);
-        setTimeout(settle, TRANSITION_MS + 150);
+        // La nouvelle cible sonne tout de suite (pas d'attente de la fin du glissement) : on peut
+        // enchaîner les réponses très vite, comme dans le défilement continu.
+        if (onDue) onDue(entries[TARGET_INDEX].note);
       },
       setClef(newClef) {
         currentClef = newClef;

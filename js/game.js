@@ -266,7 +266,29 @@
     clearTimeout(hintTimer);
     hintPending = false;
     orient = null;
+    syncRotateBtn();
     refreshLayout();
+  }
+
+  // Bouton de rotation du cadre de jeu : active ou coupe la rotation automatique pour TOUS les jeux
+  // et la section Apprendre (réglage commun, mémorisé).
+  function syncRotateBtn() {
+    const btn = document.getElementById('gf-rotate-btn');
+    if (!btn) return;
+    btn.setAttribute('aria-pressed', String(autoRotate));
+    const text = autoRotate ? 'Rotation automatique activée : toucher pour la désactiver' : 'Rotation automatique désactivée : toucher pour l\'activer';
+    btn.setAttribute('aria-label', text);
+    btn.title = text;
+  }
+
+  // Téléphone : pas de clavier physique, le panneau devient « Réglages » (notation, rotation).
+  function syncPhone() {
+    const phone = isPhone();
+    document.body.classList.toggle('is-phone', phone);
+    const label = document.getElementById('nav-kbd-label');
+    if (label) label.textContent = phone ? 'Réglages' : 'Clavier';
+    const kb = document.getElementById('nav-kbd');
+    if (kb) kb.title = phone ? 'Réglages : notation et rotation' : 'Configurer le clavier';
   }
 
   document.getElementById('app-hint-keep').addEventListener('click', () => setAutoRotate(false));
@@ -277,16 +299,9 @@
     window.dispatchEvent(new Event('resize')); // les portées recalculent leur largeur
   }
 
-  function toggleOrientation() {
-    const portraitNow = gameEl.classList.contains('rot-ccw') || (!gameEl.classList.contains('rot-cw') && window.innerHeight > window.innerWidth);
-    orient = portraitNow ? 'landscape' : 'portrait';
-    hintPending = false;
-    clearTimeout(hintTimer);
-    refreshLayout();
-  }
-
-  window.addEventListener('resize', () => { if (!gameEl.hidden) applyOrientation(); applyLearnOrientation(); });
-  window.addEventListener('orientationchange', () => { refreshLayout(); });
+  window.addEventListener('resize', () => { syncPhone(); if (!gameEl.hidden) applyOrientation(); applyLearnOrientation(); });
+  window.addEventListener('orientationchange', () => { syncPhone(); refreshLayout(); });
+  syncPhone();
 
   function closeGame() {
     if (activeGame && activeGame.destroy) activeGame.destroy();
@@ -317,7 +332,7 @@
           <button type="button" class="backbtn" id="back">&#8592; S'exercer</button>
           <h1 class="gf-title" id="gf-heading">${opts.title}</h1>
           <span class="gf-right">
-            <button type="button" class="gf-rotate-btn" id="gf-rotate-btn" aria-label="Changer l'orientation du jeu" title="Changer l'orientation du jeu"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="14" rx="1.8"/><path d="M5 20.5h14M17 18.5l2 2-2 2" transform="translate(0 -2)"/></svg></button>
+            <button type="button" class="gf-rotate-btn" id="gf-rotate-btn" aria-label="Rotation automatique" aria-pressed="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="14" rx="1.8"/><path d="M5 20.5h14M17 18.5l2 2-2 2" transform="translate(0 -2)"/></svg></button>
             <span class="gf-count" id="gf-count" aria-live="polite" title="Bonnes réponses / réponses totales"></span>
           </span>
         </div>
@@ -362,7 +377,8 @@
     q('back').addEventListener('click', opts.onBack);
     q('hint-back').addEventListener('click', opts.onBack);
     q('hint-keep').addEventListener('click', () => setAutoRotate(false));
-    q('gf-rotate-btn').addEventListener('click', toggleOrientation);
+    q('gf-rotate-btn').addEventListener('click', () => setAutoRotate(!autoRotate));
+    syncRotateBtn();
 
     // ----- compteur : bonnes réponses / total -----
     const countEl = q('gf-count');
@@ -465,7 +481,7 @@
       <div class="gf kbd-card" role="dialog" aria-labelledby="kbd-title">
         <div class="gf-top">
           <button type="button" class="backbtn" id="kbd-done">&#8592; Retour</button>
-          <h2 class="gf-title" id="kbd-title">Clavier</h2>
+          <h2 class="gf-title" id="kbd-title">${isPhone() ? 'Réglages' : 'Clavier'}</h2>
           <span class="gf-right"></span>
         </div>
         <div class="kbd-panel">
@@ -477,6 +493,7 @@
             </div>
           </div>
           <label class="switch"><input type="checkbox" id="kbd-rotate" role="switch"${autoRotate ? ' checked' : ''}><span class="switch-track"><span class="switch-thumb"></span></span><span>Rotation automatique sur téléphone</span></label>
+          <div class="kbd-keys"${isPhone() ? ' hidden' : ''}>
           <p>Clique une note, puis appuie sur la touche de ton choix. Valable pour tous les jeux à boutons.</p>
           <div class="kbd-rows">
             ${FR.map((n) => `<div class="kbd-row"><span class="kbd-name" data-note="${n}"></span><button type="button" class="kbd-key" data-note="${n}"></button></div>`).join('')}
@@ -484,6 +501,7 @@
           <div class="theory-nav">
             <button type="button" class="btn-secondary" id="kbd-reset">Tout effacer</button>
             <button type="button" class="btn-secondary" id="kbd-auto">Remplir automatiquement</button>
+          </div>
           </div>
         </div>
       </div>
