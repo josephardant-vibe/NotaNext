@@ -220,10 +220,12 @@
     document.body.classList.toggle('is-phone', isPhone());
     gameEl.classList.remove('rot-cw', 'rot-ccw', 'show-hint');
     document.body.classList.remove('game-rotated', 'game-portrait');
-    if (gameEl.hidden || !rotationOn() || !isPhone()) return;
+    if (gameEl.hidden || !rotationOn() || !isPhone()) { hintPaused = false; syncPause(); return; }
     const devicePortrait = window.innerHeight > window.innerWidth;
     const deviceOk = gamePref === 'portrait' ? devicePortrait : !devicePortrait;
     if (hintPending && deviceOk) { hintPending = false; clearTimeout(hintTimer); }
+    hintPaused = hintPending;
+    syncPause();
     if (hintPending) { gameEl.classList.add('show-hint'); return; }
     const want = orient || gamePref;
     const rot = want === 'landscape' && devicePortrait ? 'rot-cw' : want === 'portrait' && !devicePortrait ? 'rot-ccw' : null;
@@ -304,6 +306,7 @@
   syncPhone();
 
   function closeGame() {
+    window.Notanext.stopSounds(); // le son d'une note encore en cours s'arrête avec le jeu
     if (activeGame && activeGame.destroy) activeGame.destroy();
     activeGame = null;
     activeAnswers = null;
@@ -312,6 +315,7 @@
     hintPending = false;
     orient = null;
     gamePref = 'landscape';
+    hintPaused = false;
     gameEl.hidden = true;
     gameEl.innerHTML = '';
     gameEl.classList.remove('rot-cw', 'rot-ccw', 'show-hint');
@@ -438,7 +442,11 @@
   let activeAnswers = null;
   let capturing = false;
   let pauseHook = null; // le défilement continu se met en pause pendant que le panneau est ouvert
-  const setPanelPause = (fn) => { pauseHook = fn; };
+  // ... ou pendant le message / la rotation « Tourne ton téléphone » (le jeu ne démarre qu'une fois posé).
+  let panelPaused = false;
+  let hintPaused = false;
+  const syncPause = () => { if (pauseHook) pauseHook(panelPaused || hintPaused); };
+  const setPanelPause = (fn) => { pauseHook = fn; syncPause(); };
 
   function refreshKeyHints() {
     if (!activeAnswers) return;
@@ -474,7 +482,8 @@
   function openKeyPanel() {
     if (document.querySelector('.kbd-overlay')) return;
     const opener = document.activeElement;
-    if (pauseHook) pauseHook(true);
+    panelPaused = true;
+    syncPause();
     const overlay = document.createElement('div');
     overlay.className = 'kbd-overlay';
     overlay.innerHTML = `
@@ -580,7 +589,8 @@
       document.body.classList.remove('kbd-open');
       header.removeEventListener('click', onHeaderClick);
       closeKeyPanelFn = null;
-      if (pauseHook) pauseHook(false);
+      panelPaused = false;
+      syncPause();
       if (opener && opener.focus) opener.focus();
     }
     closeKeyPanelFn = closePanel;
@@ -682,8 +692,6 @@
         else onBad(current.name);
       });
 
-      // Le clavier (touches personnalisées) est global : voir « Clavier » plus bas.
-      setPanelPause((paused) => scroll.setPaused(paused));
 
       const pickNote = () => {
         const notes = notesOf(clefFn());
@@ -699,6 +707,9 @@
         onMiss: (name) => onBad(name),
         initialSpeed: SPEED_LEVELS.intermediaire,
       });
+
+      // Mise en pause pendant le panneau Clavier ou le message de rotation (voir syncPause).
+      setPanelPause((paused) => scroll.setPaused(paused));
 
       return {
         currentNote: () => scroll.currentNote(),

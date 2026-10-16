@@ -66,6 +66,8 @@ window.Notanext = window.Notanext || {};
     document.getElementById('ear-play').addEventListener('click', play);
 
     const unmountRow = instrumentMenu.mountBig(frame.root);
+    // Un clic sur un instrument fait jouer la note en cours avec lui, même s'il est déjà choisi.
+    frame.root.querySelectorAll('.inst-big').forEach((b) => b.addEventListener('click', play));
     instruments.load(instruments.get()).catch(() => {});
     frame.setDestroy(() => {
       dead = true;

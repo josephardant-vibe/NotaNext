@@ -1895,5 +1895,7 @@ h1.gf-title { margin: 0; }
 }
 
 /* Rotation automatique : le bouton est « enfoncé » quand elle est active (réglage commun à tous les jeux). */
-.gf-rotate-btn[aria-pressed="true"] { border-color: var(--accent); color: var(--accent-dark); background: rgba(184, 80, 47, 0.08); }
+/* Le bouton reste blanc ; seule l'icône change d'orientation : inclinée = rotation automatique, droite = désactivée. */
+.gf-rotate-btn svg { transition: transform 0.25s ease; }
+.gf-rotate-btn[aria-pressed="false"] svg { transform: rotate(90deg); }
 .kbd-keys { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }

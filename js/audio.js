@@ -14,6 +14,29 @@ window.Notanext = window.Notanext || {};
   // Par défaut 0.7s, comme avant — les appels existants (jeux, "Les clés")
   // ne passent pas ce paramètre et ne changent pas de son.
   // `volume` (gain de crête, 0-1) : 0.25 par défaut, comme avant.
+  // Sons en cours : on peut tous les couper d'un coup en quittant un jeu (stopAll).
+  const playing = new Set(); // { src, gain }
+  let epoch = 0;             // change à chaque stopAll : annule les sons en attente de chargement
+  function track(src, gain) {
+    const item = { src, gain };
+    playing.add(item);
+    src.onended = () => playing.delete(item);
+  }
+  function stopAll() {
+    epoch++;
+    const ctx2 = ctx;
+    playing.forEach(({ src, gain }) => {
+      try {
+        const t = ctx2.currentTime;
+        gain.gain.cancelScheduledValues(t);
+        gain.gain.setValueAtTime(gain.gain.value, t);
+        gain.gain.linearRampToValueAtTime(0, t + 0.03); // fondu très court : pas de claquement
+        src.stop(t + 0.05);
+      } catch (e) { /* déjà arrêté */ }
+    });
+    playing.clear();
+  }
+
   function playTone(freq, duration, volume) {
     duration = duration || 0.7;
     volume = volume || 0.25;
@@ -35,6 +58,7 @@ window.Notanext = window.Notanext || {};
       osc.connect(gain).connect(audioCtx.destination);
       osc.start(now);
       osc.stop(now + duration + 0.05);
+      track(osc, gain);
     } catch (e) {
       // Le navigateur peut bloquer l'audio avant la première interaction : on ignore.
     }
@@ -129,6 +153,7 @@ window.Notanext = window.Notanext || {};
       gain.gain.value = inst.gain;
       src.connect(gain).connect(audioCtx.destination);
       src.start(now);
+      track(src, gain);
     } catch (e) { /* audio bloqué : on ignore */ }
   }
 
@@ -141,7 +166,8 @@ window.Notanext = window.Notanext || {};
     try { getContext(); } catch (e) { /* audio indisponible */ }
     const midi = fold(freqToMidi(freq), inst);
     if (loaded[id]) return playSample(loaded[id], inst, midi);
-    loadInstrument(id).then((list) => { if (current === id) playSample(list, inst, midi); }).catch(() => playTone(freq));
+    const myEpoch = epoch;
+    loadInstrument(id).then((list) => { if (current === id && myEpoch === epoch) playSample(list, inst, midi); }).catch(() => { if (myEpoch === epoch) playTone(freq); });
   }
 
   // Vrai si au moins une des fréquences est hors de la plage de l'instrument (jouée à l'octave).
@@ -175,6 +201,7 @@ window.Notanext = window.Notanext || {};
 
   window.Notanext.playTone = playTone;
   window.Notanext.playNote = playNote;
+  window.Notanext.stopSounds = stopAll;
   window.Notanext.instruments = {
     LIST: Object.keys(INSTRUMENTS), INSTRUMENTS, get: () => current, set: setInstrument, load: loadInstrument, needsFold, inRange,
   };

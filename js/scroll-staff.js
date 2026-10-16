@@ -152,6 +152,13 @@ window.Notanext = window.Notanext || {};
     }
 
     function tick(nowReal) {
+      // Écran masqué (message « Tourne ton téléphone », panneau…) : largeur inconnue, rien ne naît ni n'avance
+      // tant que la portée n'a pas sa vraie taille (sinon la 1re note apparaît au mauvais endroit).
+      if (!svg.clientWidth) {
+        lastReal = nowReal;
+        rafId = requestAnimationFrame(tick);
+        return;
+      }
       let dt = 0;
       if (!document.hidden && !paused) dt = Math.min(nowReal - lastReal, 100);
       lastReal = nowReal;
