@@ -27,7 +27,7 @@ window.Notanext = window.Notanext || {};
     Mi2: 82.41, Fa2: 87.31, Sol2: 98.0, La2: 110.0, Si2: 123.47,
     Do3: 130.81, Ré3: 146.83, Mi3: 164.81, Fa3: 174.61, Sol3: 196.0, La3: 220.0, Si3: 246.94,
     Do4: 261.63, Ré4: 293.66, Mi4: 329.63, Fa4: 349.23, Sol4: 392.0, La4: 440.0, Si4: 493.88,
-    Do5: 523.25, Ré5: 587.33, Mi5: 659.25, Fa5: 698.46,
+    Do5: 523.25, Ré5: 587.33, Mi5: 659.25, Fa5: 698.46, Sol5: 783.99, La5: 880.0, Si5: 987.77, Do6: 1046.5,
   };
 
   // Numéro diatonique absolu -> note (Do0 = 0, Si0 = 6, Do1 = 7, ...).
@@ -52,10 +52,15 @@ window.Notanext = window.Notanext || {};
     return CLEFS.find((c) => c.id === id);
   }
 
-  // Les 11 notes naturelles de la clé, du Do (ou équivalent) sous la portée
-  // au Fa (ou équivalent) en haut. `step` : position verticale, 0 = ligne du bas.
+  // Les 15 notes naturelles de la clé : de la 1re ligne supplémentaire sous la portée
+  // (Do4 en clé de sol) à la 2e ligne supplémentaire au-dessus (Do6 en clé de sol).
+  // `step` : position verticale, 0 = ligne du bas de la portée.
+  const STEP_MIN = -2;
+  const STEP_MAX = 12;
   function notesOf(clef) {
-    return [-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8].map((step) => ({ ...fromAbs(clef.base + step), step }));
+    const steps = [];
+    for (let s = STEP_MIN; s <= STEP_MAX; s++) steps.push(s);
+    return steps.map((step) => ({ ...fromAbs(clef.base + step), step }));
   }
 
   const EXERCISES = [

@@ -9,8 +9,12 @@ window.Notanext = window.Notanext || {};
   const BASE_Y = 106;              // y de la ligne du bas (step 0)
   const X0 = 46;
   const X1 = 198;
-  const VIEWBOX = '0 -24 210 180'; // marge haut/bas : aucune note coupée
-  const VB_HEIGHT = 180;
+  // Marge haut/bas : aucune note coupée, jusqu'à la 2e ligne supplémentaire au-dessus (step 12).
+  const VB_Y = -50;
+  const VB_HEIGHT = 196;
+  const VIEWBOX = `0 ${VB_Y} 210 ${VB_HEIGHT}`;
+  const STEP_MIN = -2;
+  const STEP_MAX = 12;
 
   const LINE_STEPS = [0, 2, 4, 6, 8];
   const yOf = (step) => BASE_Y - step * STEP;
@@ -67,7 +71,7 @@ window.Notanext = window.Notanext || {};
     if (opts.wide) {
       const vbW = wideWidth(svg);
       x0 = -20; x1 = vbW + 20; NOTE_X = Math.round(vbW * 0.55);
-      svg.setAttribute('viewBox', `0 -24 ${vbW} ${VB_HEIGHT}`);
+      svg.setAttribute('viewBox', `0 ${VB_Y} ${vbW} ${VB_HEIGHT}`);
     } else {
       svg.setAttribute('viewBox', VIEWBOX);
     }
@@ -154,12 +158,16 @@ window.Notanext = window.Notanext || {};
     pt.x = clientX || 0;
     pt.y = clientY;
     const y = pt.matrixTransform(svg.getScreenCTM().inverse()).y;
-    return Math.max(-2, Math.min(8, Math.round((BASE_Y - y) / STEP)));
+    return Math.max(STEP_MIN, Math.min(STEP_MAX, Math.round((BASE_Y - y) / STEP)));
   }
 
   // Description parlée d'une position sur la portée (step 0 = ligne du bas, -1 = sous la 1re ligne).
   function describeStep(step) {
     if (step <= -2) return 'ligne supplémentaire sous la portée';
+    if (step === 9) return 'au-dessus de la 5e ligne';
+    if (step === 10) return '1re ligne supplémentaire au-dessus';
+    if (step === 11) return 'entre les deux lignes supplémentaires au-dessus';
+    if (step === 12) return '2e ligne supplémentaire au-dessus';
     if (step === -1) return 'sous la première ligne';
     if (step % 2 === 0) { const n = step / 2 + 1; return (n === 1 ? '1re' : n + 'e') + ' ligne'; }
     const n = (step + 1) / 2;
@@ -175,8 +183,8 @@ window.Notanext = window.Notanext || {};
     svg.setAttribute('tabindex', '0');
     svg.setAttribute('role', 'slider');
     svg.setAttribute('aria-orientation', 'vertical');
-    svg.setAttribute('aria-valuemin', '-2');
-    svg.setAttribute('aria-valuemax', '8');
+    svg.setAttribute('aria-valuemin', String(STEP_MIN));
+    svg.setAttribute('aria-valuemax', String(STEP_MAX));
     svg.setAttribute('aria-label', 'Portée : place la note. Flèches haut et bas pour la déplacer, Entrée pour valider.');
     const announce = () => {
       const extra = opts.extra ? opts.extra(step) : '';
@@ -187,10 +195,10 @@ window.Notanext = window.Notanext || {};
     svg.addEventListener('keydown', (e) => {
       if (opts.isLocked()) return;
       let next = null;
-      if (e.key === 'ArrowUp' || e.key === 'ArrowRight') next = Math.min(8, step + 1);
-      else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') next = Math.max(-2, step - 1);
-      else if (e.key === 'Home') next = -2;
-      else if (e.key === 'End') next = 8;
+      if (e.key === 'ArrowUp' || e.key === 'ArrowRight') next = Math.min(STEP_MAX, step + 1);
+      else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') next = Math.max(STEP_MIN, step - 1);
+      else if (e.key === 'Home') next = STEP_MIN;
+      else if (e.key === 'End') next = STEP_MAX;
       else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); opts.onCommit(step); return; }
       if (next == null) return;
       e.preventDefault();

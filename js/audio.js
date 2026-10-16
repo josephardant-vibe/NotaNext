@@ -75,11 +75,11 @@ window.Notanext = window.Notanext || {};
     // lo / hi : plage jouable (numéros MIDI, hauteurs réelles) ; la borne basse suit la vraie note la plus
     // grave de l'instrument (sol3 violon, do4 flûte, mi3 trompette en si bémol, mi2 guitare).
     // detune : écart mesuré de l'échantillon par rapport à sa note (cents), corrigé à la lecture.
-    piano:   { label: 'Piano',     samples: ['Ds2', 'A2', 'Ds3', 'A3', 'Ds4', 'A4', 'Ds5'], lo: 36, hi: 78, gain: 0.8,
-               detune: { Ds2: 4, A2: 2, A3: 5, Ds4: 6, A4: 6, Ds5: 5 } },
-    violin:  { label: 'Violon',    samples: ['G3', 'C4', 'G4', 'C5', 'E5'],                 lo: 55, hi: 79, gain: 0.85,
+    piano:   { label: 'Piano',     samples: ['Ds2', 'A2', 'Ds3', 'A3', 'Ds4', 'A4', 'Ds5', 'A5'], lo: 36, hi: 84, gain: 0.8,
+               detune: { Ds2: 4, A2: 2, A3: 5, Ds4: 6, A4: 6, Ds5: 5, A5: 7 } },
+    violin:  { label: 'Violon',    samples: ['G3', 'C4', 'G4', 'C5', 'E5', 'C6'],           lo: 55, hi: 87, gain: 0.85,
                detune: { C4: -3, E5: 16 } },
-    flute:   { label: 'Flûte',     samples: ['C4', 'E4', 'A4', 'E5'],                       lo: 60, hi: 79, gain: 0.85 },
+    flute:   { label: 'Flûte',     samples: ['C4', 'E4', 'A4', 'E5', 'C6'],                 lo: 60, hi: 87, gain: 0.85 },
     trumpet: { label: 'Trompette', samples: ['F3', 'C4', 'G4', 'D5'],                       lo: 52, hi: 77, gain: 0.8,
                detune: { F3: -12, C4: -3 } },
     guitar:  { label: 'Guitare',   samples: ['E2', 'B2', 'F3', 'C4', 'G4'],                 lo: 40, hi: 70, gain: 0.85 },

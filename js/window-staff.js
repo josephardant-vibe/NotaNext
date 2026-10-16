@@ -14,7 +14,7 @@ window.Notanext = window.Notanext || {};
   const LEFT_X = 105;             // 1er emplacement : juste après la clé (qui finit vers x = 69)
   const RIGHT_MARGIN = 34;
   const MIN_GAP = 40;             // écart minimal entre deux notes ; sur une boîte étroite les dernières sortent du cadre
-  const VB_HEIGHT = 180;
+  const VB_HEIGHT = 196;
   const OFFSCREEN_X = -20;        // là où glisse (puis disparaît) la note qui sort
   const TRANSITION_MS = 350;
 
@@ -71,7 +71,7 @@ window.Notanext = window.Notanext || {};
       // Les emplacements se partagent toute la largeur après la clé.
       GAP = Math.max(MIN_GAP, (vbW - RIGHT_MARGIN - LEFT_X) / (WINDOW_SIZE - 1));
       SLOTS_X = Array.from({ length: WINDOW_SIZE }, (_, i) => Math.round(LEFT_X + i * GAP));
-      svg.setAttribute('viewBox', `0 -24 ${vbW} ${VB_HEIGHT}`);
+      svg.setAttribute('viewBox', `0 -50 ${vbW} ${VB_HEIGHT}`);
     }
     layout();
 
@@ -82,7 +82,7 @@ window.Notanext = window.Notanext || {};
       );
       drawClef(staticLayer, currentClef);
       staticLayer.appendChild(
-        el('line', { class: 'marker-line', x1: SLOTS_X[TARGET_INDEX], x2: SLOTS_X[TARGET_INDEX], y1: -20, y2: 152 })
+        el('line', { class: 'marker-line', x1: SLOTS_X[TARGET_INDEX], x2: SLOTS_X[TARGET_INDEX], y1: -46, y2: 142 })
       );
     }
 
