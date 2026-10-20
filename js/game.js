@@ -35,12 +35,13 @@
   const rotationOn = () => MOBILE_LANDSCAPE && autoRotate;
 
   // ---------- éléments ----------
-  const tabEx = document.getElementById('tab-ex');
-  const tabLearn = document.getElementById('tab-learn');
-  const navLogin = document.getElementById('nav-login');
+  const tabButtons = Array.from(document.querySelectorAll('[data-tab]')); // barre du haut (ordinateur) et barre d'onglets (mobile)
   const viewEx = document.getElementById('view-ex');
   const viewLearn = document.getElementById('view-learn');
+  const viewSettings = document.getElementById('view-settings');
+  const viewDoc = document.getElementById('view-doc');
   const viewAccount = document.getElementById('view-account');
+  const views = window.Notanext.views = {}; // écrans remplis par d'autres fichiers : hub, settings, doc (show/hide)
   const exGrid = document.getElementById('ex-grid');
   const exPage = document.getElementById('ex-page');
   const learnPanel = document.getElementById('learn-panel');
@@ -63,17 +64,26 @@
   }
   const setHash = (h) => { if (location.hash !== h) location.hash = h; };
 
+  // Onglet actif selon l'écran : les pages texte (mentions, confidentialité, crédits) viennent de Réglages.
+  const TAB_OF = { ex: 'ex', learn: 'learn', settings: 'settings', doc: 'settings' };
   function showView(name) {
     viewEx.hidden = name !== 'ex';
     viewLearn.hidden = name !== 'learn';
+    viewSettings.hidden = name !== 'settings';
+    viewDoc.hidden = name !== 'doc';
     viewAccount.hidden = name !== 'account';
-    tabEx.classList.toggle('on', name === 'ex');
-    tabLearn.classList.toggle('on', name === 'learn');
-    navLogin.classList.toggle('on', name === 'account');
+    tabButtons.forEach((b) => {
+      const on = b.dataset.tab === TAB_OF[name];
+      b.classList.toggle('on', on);
+      if (on) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
+    });
+    if (name !== 'ex' && views.hub) views.hub.hide();
+    if (name !== 'settings' && views.settings) views.settings.hide();
     currentView = name;
     applyLearnOrientation();
   }
 
+  const DOC_PAGES = ['mentions-legales', 'confidentialite', 'credits'];
   function route() {
     const [page, arg] = (location.hash.replace(/^#\/?/, '') || 'accueil').split('/');
     // L'accueil a sa propre adresse (#/accueil) : le bouton Retour du navigateur y ramène.
@@ -81,6 +91,7 @@
     if (page === 'accueil') {
       closeGame();
       shown = 'accueil/';
+      if (views.hub) views.hub.hide();
       if (home) home.show();
       return;
     }
@@ -89,10 +100,21 @@
     if (key === shown) return;
     shown = key;
     closeGame();
-    if (page === 'compte') {
+    if (page === 'compte') { // plus aucun lien n'y mène (« Comptes bientôt » n'est plus cliquable)
       showView('account');
       setTitle('Comptes bientôt');
       return focusHeading(document.querySelector('#view-account .page-title'));
+    }
+    if (page === 'reglages') {
+      showView('settings');
+      if (views.settings) views.settings.show();
+      setTitle('Réglages');
+      return focusHeading(viewSettings.querySelector('h1'));
+    }
+    if (DOC_PAGES.includes(page)) {
+      showView('doc');
+      if (views.doc) views.doc.show(page);
+      return focusHeading(viewDoc.querySelector('h1'));
     }
     if (page === 'apprendre') {
       showView('learn');
@@ -120,12 +142,6 @@
     });
   }
 
-  function buildGrid() {
-    const tiles = EXERCISES.map((ex) => ({ title: ex.title, desc: ex.tag, action: 'Jouer', onOpen: () => openExercise(ex.id) }));
-    tiles.push({ title: 'Nouveau jeu', soon: true });
-    buildTiles(document.getElementById('card-grid'), tiles);
-  }
-
   function showGrid(fromRoute) {
     closeGame();
     exGrid.hidden = false;
@@ -133,10 +149,12 @@
     if (fromRoute !== true) setHash('#/exercer');
     shown = 'exercer/';
     setTitle("S'exercer");
+    if (views.hub) views.hub.show();
     focusHeading(exGrid.querySelector('h1'));
   }
 
   function openExercise(id, fromRoute) {
+    if (views.hub) views.hub.hide();
     exGrid.hidden = true;
     exPage.hidden = true;
     if (fromRoute !== true) setHash(`#/exercer/${id}`);
@@ -283,14 +301,11 @@
     btn.title = text;
   }
 
-  // Téléphone : pas de clavier physique, le panneau devient « Réglages » (notation, rotation).
+  // Téléphone : pas de clavier physique (Réglages cache la section Clavier, affiche la rotation automatique).
   function syncPhone() {
-    const phone = isPhone();
-    document.body.classList.toggle('is-phone', phone);
-    const label = document.getElementById('nav-kbd-label');
-    if (label) label.textContent = phone ? 'Réglages' : 'Clavier';
-    const kb = document.getElementById('nav-kbd');
-    if (kb) kb.title = phone ? 'Réglages : notation et rotation' : 'Configurer le clavier';
+    document.body.classList.toggle('is-phone', isPhone());
+    // « m » = mise en page mobile (barre du haut fine + barre d'onglets en bas) : téléphone, ou fenêtre étroite.
+    document.body.classList.toggle('m', isPhone() || window.innerWidth <= 720);
   }
 
   document.getElementById('app-hint-keep').addEventListener('click', () => setAutoRotate(false));
@@ -325,12 +340,19 @@
 
   // opts : title, config (HTML des réglages), stageHtml, answersHtml, replay ('config' | 'stage' | null),
   // showNext, onBack. Renvoie le cadre ; `frame.session.record(ok)` met à jour le compteur.
+  // Mode démonstration (aperçus du hub) : `opts.demo = { host }` monte le même écran de jeu dans `host`,
+  // sans toucher à l'état de l'application (ni jeu en cours, ni titre, ni focus, ni touches, ni stockage) ;
+  // rien n'y est jouable (le conteneur est inerte) et aucun son n'est émis (voir audio.js, setDemoSilent).
   function openFrame(opts) {
-    closeGame();
-    document.body.classList.add('in-game');
-    setTitle(opts.title);
-    gameEl.hidden = false;
-    gameEl.innerHTML = `
+    const demo = opts.demo || null;
+    const out = demo ? demo.host : gameEl;
+    if (!demo) {
+      closeGame();
+      document.body.classList.add('in-game');
+      setTitle(opts.title);
+      gameEl.hidden = false;
+    }
+    out.innerHTML = `
       <div class="gf ${opts.cls || ''}">
         <div class="gf-top">
           <button type="button" class="backbtn" id="back">&#8592; S'exercer</button>
@@ -353,7 +375,7 @@
         <div class="gf-next"><button type="button" class="btn-primary" id="gf-next" hidden>Suivant &#8594;</button></div>
         <div class="gf-answers" id="answers">${opts.answersHtml || ''}</div>
       </div>
-      <div class="gf-hint" role="status">
+      ${demo ? '' : `<div class="gf-hint" role="status">
         <button type="button" class="backbtn" id="hint-back">&#8592; S'exercer</button>
         <div class="gf-hint-body">
           <svg class="gf-hint-icon" width="84" height="84" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="22" y="10" width="20" height="34" rx="4"/><path d="M30 38h4"/><path d="M50 22a20 20 0 0 1 0 24M50 46l-1.5-6M50 46l6-1"/></svg>
@@ -361,11 +383,11 @@
           <p>Le jeu passera en ${opts.portrait ? 'vertical' : 'horizontal'} dans quelques secondes.</p>
           <button type="button" class="backbtn hint-keep" id="hint-keep">Garder cette orientation</button>
         </div>
-      </div>
+      </div>`}
     `;
-    const q = (id) => document.getElementById(id);
+    const q = (id) => out.querySelector('#' + id);
     const frame = {
-      root: gameEl.querySelector('.gf'),
+      root: out.querySelector('.gf'),
       stage: q('gf-stage'),
       answers: q('answers'),
       replay: q('replay'),
@@ -375,8 +397,17 @@
         frame.feedbackEl.innerHTML = html || '&nbsp;';
         frame.feedbackEl.className = 'feedback gf-feedback' + (cls ? ' ' + cls : '');
       },
-      setDestroy(fn) { activeGame = { destroy: fn }; },
+      setDestroy(fn) { if (demo) demo.destroy = fn; else activeGame = { destroy: fn }; },
     };
+    if (demo) {
+      // Compteur local seulement ; rien d'autre à brancher.
+      const countEl = q('gf-count');
+      let good = 0, total = 0;
+      const paintCount = () => { countEl.textContent = `${good} / ${total}`; };
+      frame.session = { record(ok) { total++; if (ok) good++; paintCount(); } };
+      paintCount();
+      return frame;
+    }
     focusHeading(q('gf-heading'));
     q('back').addEventListener('click', opts.onBack);
     q('hint-back').addEventListener('click', opts.onBack);
@@ -410,10 +441,11 @@
 
   function setTab(name) {
     if (name === 'ex') { showView('ex'); showGrid(); }
+    else if (name === 'settings') { setHash('#/reglages'); route(); }
     else { showView('learn'); showLearnGrid(); }
   }
 
-  window.Notanext.app = { setTab, openExercise, openLearnCard, closeGame };
+  window.Notanext.app = { mountDemo: (ex, demo) => mountExercise(ex, demo), setTab, openExercise, openLearnCard, closeGame, isPhone, getAutoRotate: () => autoRotate, setAutoRotate: (v) => setAutoRotate(v) };
 
   // Boîte à outils pour les jeux écrits dans d'autres fichiers (js/ear.js).
   const kit = {
@@ -423,38 +455,41 @@
     setActiveAnswers(map) { activeAnswers = map; refreshKeyHints(); },
   };
 
-  tabEx.addEventListener('click', () => setTab('ex'));
-  tabLearn.addEventListener('click', () => setTab('learn'));
-  navLogin.addEventListener('click', () => setHash('#/compte'));
+  // Boîte à outils des aperçus : mêmes jeux, mais montés dans un conteneur à part (voir openFrame).
+  function demoKit(demo) {
+    return {
+      openFrame: (o) => openFrame(Object.assign({}, o, { demo })),
+      showGrid: () => {},
+      CORRECT_PHRASES,
+      setActiveAnswers() {},
+      demo,
+    };
+  }
+
+  tabButtons.forEach((b) => b.addEventListener('click', () => setTab(b.dataset.tab)));
   document.getElementById('account-back').addEventListener('click', () => setTab('ex'));
   window.addEventListener('hashchange', route);
 
   // ---------- clavier (global) ----------
-  // Une seule configuration (note -> touche), stockée dans le navigateur, partagée
-  // par tous les jeux à boutons de réponse Do–Si. `activeAnswers` = les boutons du
+  // Une seule configuration (note -> touche physique), gérée par js/keys.js et réglée dans Réglages,
+  // partagée par tous les jeux à boutons de réponse Do–Si. `activeAnswers` = les boutons du
   // jeu actuellement affiché (aucun pour "Placer la note", qui n'a pas de boutons).
-  const KEYS_STORAGE = 'notanext.keys';
-  let keys = {};
-  try { keys = JSON.parse(localStorage.getItem(KEYS_STORAGE)) || {}; } catch (e) { keys = {}; }
-  const saveKeys = () => {
-    try { localStorage.setItem(KEYS_STORAGE, JSON.stringify(keys)); } catch (e) { /* stockage indisponible : réglage valable pour la session */ }
-  };
+  const K = window.Notanext.keys;
   let activeAnswers = null;
-  let capturing = false;
-  let pauseHook = null; // le défilement continu se met en pause pendant que le panneau est ouvert
-  // ... ou pendant le message / la rotation « Tourne ton téléphone » (le jeu ne démarre qu'une fois posé).
-  let panelPaused = false;
+  let pauseHook = null; // le défilement continu se met en pause pendant le message / la rotation « Tourne ton téléphone »
   let hintPaused = false;
-  const syncPause = () => { if (pauseHook) pauseHook(panelPaused || hintPaused); };
+  const syncPause = () => { if (pauseHook) pauseHook(hintPaused); };
   const setPanelPause = (fn) => { pauseHook = fn; syncPause(); };
 
   function refreshKeyHints() {
     if (!activeAnswers) return;
     FR.forEach((name) => {
       const hint = activeAnswers[name].querySelector('.key-hint');
-      if (hint) hint.textContent = keys[name] ? keys[name].toUpperCase() : '';
+      if (hint) hint.textContent = K.get(name) ? K.labelOf(K.get(name)) : '';
     });
   }
+  window.addEventListener('notanext:keys', refreshKeyHints);
+  K.ready.then(refreshKeyHints); // la lettre affichée dépend de la disposition détectée
 
   // Changement de notation : boutons de réponse et repères de « Les clés » se mettent à jour.
   window.addEventListener('notanext:notation', () => {
@@ -464,154 +499,25 @@
     if (document.getElementById('learn-staff') && !learnPage.hidden) drawLearn();
   });
 
-  // Appuyer sur la touche associée = cliquer sur le bouton de réponse correspondant.
+  // Appuyer sur la touche associée = cliquer sur le bouton de réponse correspondant (touche physique : AZERTY et QWERTY).
   document.addEventListener('keydown', (e) => {
-    if (capturing || !activeAnswers || gameEl.hidden) return;
+    if (K.capturing || !activeAnswers || gameEl.hidden) return;
     if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
     if (e.target && (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT')) return;
-    const name = FR.find((n) => keys[n] === e.key.toLowerCase());
+    const name = K.noteFor(e.code);
     if (!name) return;
     e.preventDefault();
     activeAnswers[name].click();
   });
 
-  // Remplissage automatique : la lettre de la note anglaise (c d e f g a b), quelle que soit la notation affichée.
-  const AUTO_KEYS = ['c', 'd', 'e', 'f', 'g', 'a', 'b'];
-
-  // Page « Clavier » : même carte que les jeux (bouton Retour en haut), par-dessus l'écran.
-  function openKeyPanel() {
-    if (document.querySelector('.kbd-overlay')) return;
-    const opener = document.activeElement;
-    panelPaused = true;
-    syncPause();
-    const overlay = document.createElement('div');
-    overlay.className = 'kbd-overlay';
-    overlay.innerHTML = `
-      <div class="gf kbd-card" role="dialog" aria-labelledby="kbd-title">
-        <div class="gf-top">
-          <button type="button" class="backbtn" id="kbd-done">&#8592; Retour</button>
-          <h2 class="gf-title" id="kbd-title">${isPhone() ? 'Réglages' : 'Clavier'}</h2>
-          <span class="gf-right"></span>
-        </div>
-        <div class="kbd-panel">
-          <div class="seg-wrap">
-            <span class="seg-label">Notation</span>
-            <div class="seg" role="group" aria-label="Notation">
-              <button type="button" class="seg-btn" data-notation="fr">Français</button>
-              <button type="button" class="seg-btn" data-notation="en">Anglais</button>
-            </div>
-          </div>
-          <label class="switch"><input type="checkbox" id="kbd-rotate" role="switch"${autoRotate ? ' checked' : ''}><span class="switch-track"><span class="switch-thumb"></span></span><span>Rotation automatique sur téléphone</span></label>
-          <div class="kbd-keys"${isPhone() ? ' hidden' : ''}>
-          <p>Clique une note, puis appuie sur la touche de ton choix. Valable pour tous les jeux à boutons.</p>
-          <div class="kbd-rows">
-            ${FR.map((n) => `<div class="kbd-row"><span class="kbd-name" data-note="${n}"></span><button type="button" class="kbd-key" data-note="${n}"></button></div>`).join('')}
-          </div>
-          <div class="theory-nav">
-            <button type="button" class="btn-secondary" id="kbd-reset">Tout effacer</button>
-            <button type="button" class="btn-secondary" id="kbd-auto">Remplir automatiquement</button>
-          </div>
-          </div>
-        </div>
-      </div>
-    `;
-    // La barre du haut reste visible : le panneau commence juste en dessous (sauf si elle est masquée).
-    const header = document.getElementById('app-header');
-    const headerBottom = header && header.offsetParent !== null && !appEl.classList.contains('rot-ccw') ? header.getBoundingClientRect().bottom : 0;
-    overlay.style.setProperty('--kbd-top', Math.max(0, Math.round(headerBottom)) + 'px');
-    document.body.classList.add('kbd-open');
-    document.body.appendChild(overlay);
-    const keyBtns = Array.from(overlay.querySelectorAll('.kbd-key'));
-    const nameEls = Array.from(overlay.querySelectorAll('.kbd-name'));
-    const segBtns = Array.from(overlay.querySelectorAll('.seg-btn'));
-    let waiting = null;
-
-    function paint() {
-      segBtns.forEach((b) => b.classList.toggle('on', b.dataset.notation === getNotation()));
-      nameEls.forEach((el) => { el.textContent = label(el.dataset.note); });
-      keyBtns.forEach((b) => {
-        const active = b === waiting;
-        b.classList.toggle('waiting', active);
-        const k = keys[b.dataset.note];
-        b.textContent = active ? 'Appuie sur une touche…' : (k ? k.toUpperCase() : '—');
-      });
-    }
-
-    const onCapture = (e) => {
-      if (!waiting) return;
-      e.preventDefault();
-      e.stopPropagation();
-      if (['Shift', 'Control', 'Alt', 'Meta', 'CapsLock', 'Tab', 'Dead'].includes(e.key)) return;
-      if (e.key !== 'Escape') {
-        const k = e.key.toLowerCase();
-        FR.forEach((n) => { if (keys[n] === k) delete keys[n]; }); // une touche = une seule note
-        keys[waiting.dataset.note] = k;
-        saveKeys();
-        refreshKeyHints();
-      }
-      waiting = null;
-      capturing = false;
-      paint();
-    };
-    document.addEventListener('keydown', onCapture, true);
-    capturing = false;
-
-    keyBtns.forEach((b) => b.addEventListener('click', () => {
-      waiting = b;
-      capturing = true;
-      paint();
-    }));
-    segBtns.forEach((b) => b.addEventListener('click', () => {
-      setNotation(b.dataset.notation);
-      paint();
-    }));
-    overlay.querySelector('#kbd-reset').addEventListener('click', () => {
-      keys = {};
-      saveKeys();
-      refreshKeyHints();
-      paint();
-    });
-    overlay.querySelector('#kbd-auto').addEventListener('click', () => {
-      keys = {};
-      FR.forEach((n, i) => { keys[n] = AUTO_KEYS[i]; });
-      waiting = null;
-      capturing = false;
-      saveKeys();
-      refreshKeyHints();
-      paint();
-    });
-    overlay.querySelector('#kbd-rotate').addEventListener('change', (e) => setAutoRotate(e.target.checked));
-    // Fermeture : le focus revient sur le bouton qui a ouvert le panneau.
-    function closePanel() {
-      document.removeEventListener('keydown', onCapture, true);
-      capturing = false;
-      overlay.remove();
-      document.body.classList.remove('kbd-open');
-      header.removeEventListener('click', onHeaderClick);
-      closeKeyPanelFn = null;
-      panelPaused = false;
-      syncPause();
-      if (opener && opener.focus) opener.focus();
-    }
-    closeKeyPanelFn = closePanel;
-    // Un clic sur un onglet de la barre (S'exercer, Apprendre…) ferme le panneau ; l'icône Clavier le referme aussi.
-    function onHeaderClick(e) { if (!e.target.closest('#nav-kbd')) closePanel(); }
-    header.addEventListener('click', onHeaderClick);
-    overlay.querySelector('#kbd-done').addEventListener('click', closePanel);
-    // Clavier : Échap ferme (sauf en attente d'une touche). Fenêtre non modale : Tab peut rejoindre la barre.
-    overlay.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !waiting) { e.preventDefault(); closePanel(); }
-    });
-    paint();
-    overlay.querySelector('#kbd-done').focus();
-  }
-  let closeKeyPanelFn = null;
-  document.getElementById('nav-kbd').addEventListener('click', () => (closeKeyPanelFn ? closeKeyPanelFn() : openKeyPanel()));
-
   // ---------- exercice ----------
-  function mountExercise(ex) {
-    if (ex.mode === 'ear-guess') return window.Notanext.ear.mountGuess(ex, kit);
-    if (ex.mode === 'ear-place') return window.Notanext.ear.mountPlace(ex, kit);
+  // `demo` (aperçus du hub) : { host } ; le jeu est monté dans `host` en mode démonstration, voir openFrame.
+  function mountExercise(ex, demo) {
+    const theKit = demo ? demoKit(demo) : kit;
+    // Les identifiants sont cherchés dans le conteneur de l'aperçu (plusieurs aperçus peuvent coexister).
+    const $ = (id) => (demo ? demo.host : document).querySelector('#' + id);
+    if (ex.mode === 'ear-guess') return window.Notanext.ear.mountGuess(ex, theKit);
+    if (ex.mode === 'ear-place') return window.Notanext.ear.mountPlace(ex, theKit);
     let clefId = 'sol';
     const isPlace = ex.mode === 'place';
     const frame = openFrame({
@@ -626,10 +532,11 @@
       // Placer la note n'a pas de boutons : on réserve leur place pour que la portée ait exactement la même taille que dans les autres jeux.
       answersHtml: isPlace ? ANSWER_ORDER.map(() => '<span class="answer-btn spacer" aria-hidden="true">&nbsp;</span>').join('') : '',
       onBack: () => showGrid(),
+      demo,
     });
     const { session } = frame;
 
-    const svg = document.getElementById('staff');
+    const svg = $('staff');
     const clef = () => clefById(clefId);
 
     function markCorrect() {
@@ -651,7 +558,7 @@
 
     // Menu d'instrument + avertissement si certaines notes de la clé sont jouées à l'octave.
     const unmountMenu = instrumentMenu.mount(frame.root);
-    const noteEl = document.getElementById('inst-note');
+    const noteEl = $('inst-note');
     function paintFoldNote() {
       const fold = instruments.needsFold(instruments.get(), notesOf(clef()).map((n) => n.freq));
       noteEl.hidden = !fold;
@@ -659,7 +566,7 @@
       noteEl.title = fold ? 'Cet instrument ne couvre pas toute la clé : les notes trop graves ou trop aiguës sont jouées une octave plus haut ou plus bas.' : '';
     }
     window.addEventListener('notanext:instrument', paintFoldNote);
-    instruments.load(instruments.get()).catch(() => {});
+    if (!demo) instruments.load(instruments.get()).catch(() => {});
     paintFoldNote();
 
     frame.setDestroy(() => {
@@ -671,15 +578,16 @@
       const note = controller.currentNote();
       if (note) playNote(note.freq);
     });
-    document.getElementById('clef-sel').addEventListener('change', (e) => {
+    $('clef-sel').addEventListener('change', (e) => {
       clefId = e.target.value;
       paintFoldNote();
       controller.onClefChange();
     });
-    const speedSel = document.getElementById('speed-sel');
+    const speedSel = $('speed-sel');
     if (speedSel) {
       speedSel.addEventListener('change', (e) => controller.onSpeedChange(e.target.value));
     }
+    if (demo) return { answer: (ok) => controller.demoAnswer(ok), pause: (p) => controller.demoPause(p) };
 
     // ----- Deviner la note - défilement continu -----
     function mountGuessScroll(svgEl, clefFn, onGood, onBad) {
@@ -707,15 +615,17 @@
         initialSpeed: SPEED_LEVELS.intermediaire,
       });
 
-      // Mise en pause pendant le panneau Clavier ou le message de rotation (voir syncPause).
-      setPanelPause((paused) => scroll.setPaused(paused));
+      // Mise en pause pendant le message de rotation (voir syncPause) ; pas dans un aperçu.
+      if (!demo) setPanelPause((paused) => scroll.setPaused(paused));
 
       return {
         currentNote: () => scroll.currentNote(),
         onClefChange: () => { picker.reset(); scroll.setClef(clefFn()); },
         onSpeedChange: (level) => scroll.setSpeed(SPEED_LEVELS[level]),
+        demoAnswer: (ok) => demoPressAnswer(scroll.currentNote(), ok),
+        demoPause: (p) => scroll.setPaused(p),
         destroy: () => {
-          setPanelPause(null);
+          if (!demo) setPanelPause(null);
           scroll.destroy();
         },
       };
@@ -746,6 +656,8 @@
       return {
         currentNote: () => win.currentNote(),
         onClefChange: () => { picker.reset(); win.setClef(clefFn()); },
+        demoAnswer: (ok) => demoPressAnswer(win.currentNote(), ok),
+        demoPause: () => {},
         destroy: () => win.destroy(),
       };
     }
@@ -763,14 +675,25 @@
         answers.appendChild(btn);
         byName[name] = btn;
       });
-      activeAnswers = byName;
-      refreshKeyHints();
+      if (!demo) {
+        activeAnswers = byName;
+        refreshKeyHints();
+      }
       return byName;
+    }
+
+    // Aperçu : « répond » en appuyant sur le bouton (bonne note, ou une autre note si `ok` est faux).
+    function demoPressAnswer(current, ok) {
+      if (!current) return;
+      const names = ANSWER_ORDER.filter((n) => n !== current.name);
+      const name = ok ? current.name : names[Math.floor(Math.random() * names.length)];
+      const btn = frame.answers.querySelector(`[data-note="${name}"]`);
+      if (btn) btn.click();
     }
 
     // ----- Placer la note : clic sur la portée (inchangé) -----
     function mountPlace(svgEl, clefFn, onGood, onBad) {
-      const nameBox = document.getElementById('namebox');
+      const nameBox = $('namebox');
       const picker = createPicker(() => notesOf(clefFn()), { minGap: 1 });
       let current = null;
       let locked = false;
@@ -849,6 +772,15 @@
       return {
         currentNote: () => current,
         onClefChange: () => { picker.reset(); next(); },
+        // Aperçu : pose la note au bon endroit, ou sur une autre position de la portée.
+        demoAnswer: (ok) => {
+          if (locked || !current) return;
+          const all = notesOf(clefFn());
+          const good = all.filter((n) => n.name === current.name).map((n) => n.step);
+          const others = all.filter((n) => n.name !== current.name).map((n) => n.step);
+          commit(ok ? good[0] : others[Math.floor(Math.random() * others.length)]);
+        },
+        demoPause: () => {},
         destroy: () => { dead = true; window.removeEventListener('resize', onResize); window.removeEventListener('notanext:notation', onNotation); },
       };
     }
@@ -877,8 +809,8 @@
     ).join('');
   }
 
-  buildGrid();
   buildLearnGrid();
-  route();
-  booted = true;
+  // Les écrans définis dans d'autres fichiers (hub, réglages, pages texte) sont chargés après celui-ci :
+  // on n'affiche la première page qu'une fois tous les scripts exécutés.
+  document.addEventListener('DOMContentLoaded', () => { route(); booted = true; });
 })();

@@ -14,6 +14,7 @@ window.Notanext = window.Notanext || {};
   // Pas de partition : un bouton rond joue le son, 7 notes en cercle (Do en haut, sens horaire).
   // Les touches clavier configurées restent valables (boutons enregistrés via kit.setActiveAnswers).
   function mountGuess(ex, kit) {
+    const $ = (id) => (kit.demo ? kit.demo.host : document).querySelector('#' + id);
     const circle = FR.map((n, i) => {
       const a = -Math.PI / 2 + (i * 2 * Math.PI) / FR.length;
       const x = 50 + 36 * Math.cos(a);
@@ -32,6 +33,7 @@ window.Notanext = window.Notanext || {};
     const byName = {};
     frame.root.querySelectorAll('.ear-note').forEach((b) => { byName[b.dataset.note] = b; });
     kit.setActiveAnswers(byName);
+    const demo = kit.demo; // aperçu du hub : muet, non jouable, rien d'écrit dans le stockage
 
     let current = null;
     let locked = false;
@@ -64,18 +66,29 @@ window.Notanext = window.Notanext || {};
     }
 
     Object.entries(byName).forEach(([name, b]) => b.addEventListener('click', () => answer(name)));
-    document.getElementById('ear-play').addEventListener('click', play);
+    $('ear-play').addEventListener('click', play);
 
     const unmountRow = instrumentMenu.mountBig(frame.root);
     // Un clic sur un instrument fait jouer la note en cours avec lui, même s'il est déjà choisi.
     frame.root.querySelectorAll('.inst-big').forEach((b) => b.addEventListener('click', play));
-    instruments.load(instruments.get()).catch(() => {});
+    if (!demo) instruments.load(instruments.get()).catch(() => {});
     frame.setDestroy(() => {
       dead = true;
       clearTimeout(timer);
       unmountRow();
     });
     next();
+    if (demo) {
+      // Aperçu : répond en appuyant sur la bonne note ou sur une autre.
+      return {
+        answer: (ok) => {
+          if (locked || !current) return;
+          const others = FR.filter((n) => n !== current);
+          answer(ok ? current : others[Math.floor(Math.random() * others.length)]);
+        },
+        pause: () => {},
+      };
+    }
   }
 
   // ---------- Oreille absolue — placer ----------
@@ -85,6 +98,7 @@ window.Notanext = window.Notanext || {};
   // Option « Afficher le nom de la note » : le nom suit la position, écrit sur la note.
   const NAMES_KEY = 'notanext.earplace.names';
   function mountPlace(ex, kit) {
+    const $ = (id) => (kit.demo ? kit.demo.host : document).querySelector('#' + id);
     let namesOn = false;
     try { namesOn = localStorage.getItem(NAMES_KEY) === '1'; } catch (e) { /* désactivé */ }
     const coarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
@@ -106,11 +120,11 @@ window.Notanext = window.Notanext || {};
       onBack: () => kit.showGrid(),
     });
 
-    const svg = document.getElementById('staff');
+    const svg = $('staff');
     svg.style.touchAction = 'none';
-    const clefSel = document.getElementById('clef-sel');
-    const namesBox = document.getElementById('ear-names');
-    const noteEl = document.getElementById('inst-note');
+    const clefSel = $('clef-sel');
+    const namesBox = $('ear-names');
+    const noteEl = $('inst-note');
     const clef = () => clefById(clefSel.value);
 
     let current = null;
@@ -214,7 +228,7 @@ window.Notanext = window.Notanext || {};
     });
 
     clefSel.addEventListener('change', () => { picker.reset(); next(); });
-    document.getElementById('ear-play').addEventListener('click', play);
+    $('ear-play').addEventListener('click', play);
 
     const onResize = () => { if (!locked) draw(hoverStep != null ? { ghostStep: hoverStep } : {}); };
     const onNotation = () => { if (hoverStep != null && !locked) drawGhost(hoverStep, hoverTouch); };
@@ -222,7 +236,8 @@ window.Notanext = window.Notanext || {};
     window.addEventListener('notanext:notation', onNotation);
     window.addEventListener('notanext:instrument', next);
     const unmountMenu = instrumentMenu.mount(frame.root);
-    instruments.load(instruments.get()).catch(() => {});
+    const demo = kit.demo; // aperçu du hub : muet, non jouable
+    if (!demo) instruments.load(instruments.get()).catch(() => {});
 
     frame.setDestroy(() => {
       dead = true;
@@ -233,6 +248,17 @@ window.Notanext = window.Notanext || {};
       unmountMenu();
     });
     next();
+    if (demo) {
+      // Aperçu : pose la note au bon endroit, ou ailleurs sur la portée.
+      return {
+        answer: (ok) => {
+          if (locked || !current) return;
+          const others = notesOf(clef()).filter((n) => n.step !== current.step).map((n) => n.step);
+          commit(ok ? current.step : others[Math.floor(Math.random() * others.length)]);
+        },
+        pause: () => {},
+      };
+    }
   }
 
   window.Notanext.ear = { mountGuess, mountPlace };
