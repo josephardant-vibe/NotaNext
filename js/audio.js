@@ -23,6 +23,9 @@ window.Notanext = window.Notanext || {};
   } catch (e) { /* valeurs d'origine */ }
   let master = null;
   let demoSilent = false; // aperçus du hub : aucun son, quoi qu'il arrive
+  // Aucun son quand la page n'est pas à l'écran (autre onglet, autre application, téléphone verrouillé) : les
+  // minuteries des jeux continuent en arrière-plan, mais elles ne doivent jamais faire de bruit.
+  const blocked = () => demoSilent || document.hidden;
   const level = () => (muted ? 0 : volume / 100);
   function out() {
     const audioCtx = getContext();
@@ -73,7 +76,7 @@ window.Notanext = window.Notanext || {};
   }
 
   function playTone(freq, duration, peak) {
-    if (demoSilent) return;
+    if (blocked()) return;
     duration = duration || 0.7;
     peak = peak || 0.25;
     try {
@@ -103,7 +106,7 @@ window.Notanext = window.Notanext || {};
   // Clic de métronome (bruit court, non mélodique) : `accent` = premier temps,
   // plus fort et plus aigu que les autres.
   function playClick(accent) {
-    if (demoSilent) return;
+    if (blocked()) return;
     try {
       const audioCtx = getContext();
       const now = audioCtx.currentTime;
@@ -196,7 +199,7 @@ window.Notanext = window.Notanext || {};
 
   // Joue la note (fréquence) avec l'instrument choisi.
   function playNote(freq, withId) {
-    if (demoSilent) return;
+    if (blocked()) return;
     const id = withId || current;
     const inst = INSTRUMENTS[id];
     // Réveille le contexte audio tout de suite, pendant le geste de l'utilisateur : certains navigateurs
@@ -229,6 +232,10 @@ window.Notanext = window.Notanext || {};
     loadInstrument(id).catch(() => {});
     window.dispatchEvent(new Event('notanext:instrument'));
   }
+
+  // La page quitte l'écran : on coupe tout de suite les sons en cours.
+  document.addEventListener('visibilitychange', () => { if (document.hidden) stopAll(); });
+  window.addEventListener('pagehide', stopAll);
 
   // Déverrouillage au premier geste (clic, toucher, touche) : crée et réveille le contexte audio.
   const unlock = () => {

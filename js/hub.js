@@ -12,6 +12,7 @@ window.Notanext = window.Notanext || {};
     { id: 'lire', title: 'Lire la portée', sub: 'Reconnaître et placer les notes', ids: ['guess-window', 'guess-scroll', 'place'] },
     { id: 'oreille', title: 'Oreille absolue', sub: 'Sans voir la portée', ids: ['ear-guess', 'ear-place'] },
   ];
+  const CHEVRON_DOWN = '<svg class="hub-fam-chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
   const CHEVRON = '<svg class="hub-chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
 
   const GAME_W = 760;   // largeur de l'écran de jeu monté dans l'aperçu
@@ -98,18 +99,22 @@ window.Notanext = window.Notanext || {};
     const target = host.querySelector('.ear-wheel') || host.querySelector('.staff-box') || host.querySelector('.stage-row');
     if (!target) return;
     const r = target.getBoundingClientRect();
-    const s = hostRect.width / GAME_W || 1; // échelle actuelle de l'hôte (1 hors transformation)
-    const cx = (r.left - hostRect.left) / s;
-    const cy = (r.top - hostRect.top) / s;
-    const w = r.width / s;
-    const h = r.height / s;
-    const cropW = THUMB_W / THUMB_SCALE; // 336
-    const cropH = THUMB_H / THUMB_SCALE; // 144
-    // Portées : on garde le côté droit (la clé de sol est rognée à gauche) ; cercle des notes : centré.
+    const k = hostRect.width / GAME_W || 1; // échelle actuelle de l'hôte (1 hors transformation)
+    const x0 = (r.left - hostRect.left) / k; // position et taille de la zone utile dans l'écran de jeu (px d'origine)
+    const y0 = (r.top - hostRect.top) / k;
+    const w = r.width / k;
+    const h = r.height / k;
     const isWheel = target.classList.contains('ear-wheel');
-    const x = isWheel ? cx + (w - cropW) / 2 : cx + Math.max(0, w - cropW) * 0.62;
-    const y = cy + (h - cropH) / 2;
-    host.style.transform = `scale(${THUMB_SCALE}) translate(${-Math.round(x)}px, ${-Math.round(y)}px)`;
+    // Échelle : 0,5 quand la zone utile tient en hauteur ; sinon on réduit pour que toute sa hauteur utile
+    // (le cercle entier, ou les cinq lignes de la portée) entre dans la miniature.
+    const usefulH = isWheel ? h : h * 0.62;
+    const scale = Math.min(THUMB_SCALE, THUMB_H / usefulH);
+    const cropW = THUMB_W / scale;
+    const cropH = THUMB_H / scale;
+    // Horizontalement : cercle centré ; portée calée à droite (la clé de sol est rognée à gauche).
+    const x = isWheel ? x0 + (w - cropW) / 2 : x0 + Math.max(0, w - cropW) * 0.62;
+    const y = y0 + (h - cropH) / 2;
+    host.style.transform = `scale(${scale}) translate(${-Math.round(x)}px, ${-Math.round(y)}px)`;
   }
 
   // ----- construction de la liste -----
@@ -139,10 +144,10 @@ window.Notanext = window.Notanext || {};
     let list;
     if (!q) {
       listEl.innerHTML = FAMILIES.map((f, k) => `
-        <section class="hub-fam${k ? ' second' : ''}" aria-labelledby="hub-fam-${f.id}">
-          <div class="hub-fam-head"><h2 id="hub-fam-${f.id}">${f.title}</h2><p>${f.sub}</p></div>
+        <details class="hub-fam${k ? ' second' : ''}" open>
+          <summary class="hub-fam-head"><span class="hub-fam-titles"><h2 id="hub-fam-${f.id}">${f.title}</h2><p>${f.sub}</p></span>${CHEVRON_DOWN}</summary>
           ${f.ids.map((id) => rowHtml(exItem(gameOf(id)), '')).join('')}
-        </section>`).join('');
+        </details>`).join('');
       list = FAMILIES.flatMap((f) => f.ids).map((id) => exItem(gameOf(id)));
     } else {
       const nq = norm(q);
@@ -222,7 +227,7 @@ window.Notanext = window.Notanext || {};
           if (!demos.has(key)) {
             host.style.transform = '';
             const run = startDemo(key, gameOf(el.dataset.id), host);
-            if (run) requestAnimationFrame(() => cropThumb(run));
+            if (run) { requestAnimationFrame(() => cropThumb(run)); setTimeout(() => { if (!run.dead) cropThumb(run); }, 500); setTimeout(() => { if (!run.dead) cropThumb(run); }, 1600); } // la mise en page du jeu se termine après le montage
           }
         } else stopDemo(key);
       });
@@ -251,11 +256,12 @@ window.Notanext = window.Notanext || {};
 
   // ----- clavier : ↑ ↓ pour parcourir, Entrée pour lancer, « / » pour chercher -----
   function move(delta) {
-    if (!rows.length) return;
-    const cur = rows.findIndex((r) => r.item === selected || r.el === document.activeElement);
-    const next = Math.max(0, Math.min(rows.length - 1, (cur < 0 ? (delta > 0 ? 0 : rows.length - 1) : cur + delta)));
-    rows[next].el.focus(); // le focus fait aussi passer l'aperçu à ce jeu (voir le gestionnaire « focus »)
-    if (!mobileMq.matches) select(rows[next].item);
+    const shown = rows.filter((r) => r.el.offsetParent !== null); // les familles repliées n'ont pas de rangées visibles
+    if (!shown.length) return;
+    const cur = shown.findIndex((r) => r.item === selected || r.el === document.activeElement);
+    const next = Math.max(0, Math.min(shown.length - 1, (cur < 0 ? (delta > 0 ? 0 : shown.length - 1) : cur + delta)));
+    shown[next].el.focus(); // le focus fait aussi passer l'aperçu à ce jeu (voir le gestionnaire « focus »)
+    if (!mobileMq.matches) select(shown[next].item);
   }
   document.addEventListener('keydown', (e) => {
     if (!visible || e.ctrlKey || e.metaKey || e.altKey) return;

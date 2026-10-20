@@ -10,6 +10,7 @@ window.Notanext = window.Notanext || {};
   const viewEl = document.getElementById('view-settings');
   const isPhone = () => Math.min(window.innerWidth, window.innerHeight) <= 500;
 
+  const CHEVRON_DOWN = '<svg class="set-chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
   const CHEVRON = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
   // Réglages effacés par « Réinitialiser » (le reste du stockage n'est pas touché).
   const RESET_KEYS = ['notanext.notation', 'notanext.keys.v2', 'notanext.keys', 'notanext.layout', 'notanext.volume', 'notanext.muted',
@@ -26,8 +27,7 @@ window.Notanext = window.Notanext || {};
       <div class="settings">
         <h1>Réglages</h1>
 
-        <section class="set-sec" aria-labelledby="set-aff">
-          <h2 id="set-aff">Affichage</h2>
+        <details class="set-sec"><summary><h2 id="set-aff">Affichage</h2>${CHEVRON_DOWN}</summary><div class="set-body">
           <div class="seg-wrap">
             <span class="seg-label">Notation des notes</span>
             <div class="seg" role="group" aria-label="Notation des notes">
@@ -37,11 +37,10 @@ window.Notanext = window.Notanext || {};
           </div>
           <p class="set-hint">Notation des notes : Do Ré Mi / C D E.</p>
           ${phone ? '<label class="switch"><input type="checkbox" id="set-rotate" role="switch"><span class="switch-track"><span class="switch-thumb"></span></span><span>Rotation automatique des jeux</span></label>' : ''}
-        </section>
+        </div></details>
 
         ${phone ? '' : `
-        <section class="set-sec" aria-labelledby="set-clav">
-          <h2 id="set-clav">Clavier</h2>
+        <details class="set-sec"><summary><h2 id="set-clav">Clavier</h2>${CHEVRON_DOWN}</summary><div class="set-body">
           <p class="set-hint" id="set-layout-info"></p>
           <div class="seg-wrap" id="set-layout-pick" hidden>
             <span class="seg-label">Ton clavier</span>
@@ -63,10 +62,9 @@ window.Notanext = window.Notanext || {};
             </div>
           </div>
           <div class="theory-nav"><button type="button" class="btn-secondary" id="set-clear">Tout effacer</button></div>
-        </section>`}
+        </div></details>`}
 
-        <section class="set-sec" aria-labelledby="set-son">
-          <h2 id="set-son">Son</h2>
+        <details class="set-sec"><summary><h2 id="set-son">Son</h2>${CHEVRON_DOWN}</summary><div class="set-body">
           <div class="set-vol">
             <label for="set-volume">Volume</label>
             <input type="range" id="set-volume" min="0" max="100" step="5">
@@ -77,10 +75,9 @@ window.Notanext = window.Notanext || {};
           <div class="set-inst" role="group" aria-labelledby="set-inst-label">
             ${PREVIEW_IDS.map((id) => `<button type="button" class="inst-big set-inst-btn" data-id="${id}"><span class="inst-ico" style="color:${instrumentMenu.META[id].color}">${instrumentMenu.META[id].icon}</span><span>${instrumentMenu.label(id)}</span></button>`).join('')}
           </div>
-        </section>
+        </div></details>
 
-        <section class="set-sec" aria-labelledby="set-data">
-          <h2 id="set-data">Mes données</h2>
+        <details class="set-sec"><summary><h2 id="set-data">Mes données</h2>${CHEVRON_DOWN}</summary><div class="set-body">
           <div id="set-reset-idle"><button type="button" class="btn-secondary" id="set-reset">${phone ? 'Réinitialiser mes réglages' : 'Réinitialiser tous mes réglages'}</button></div>
           <div id="set-reset-confirm" class="set-confirm" role="group" aria-labelledby="set-confirm-t" hidden>
             <p id="set-confirm-t"><strong>Réinitialiser tous mes réglages ?</strong><br>Notation, touches et son reviendront aux valeurs d'origine.</p>
@@ -90,26 +87,24 @@ window.Notanext = window.Notanext || {};
             </div>
           </div>
           <p class="set-hint">Tes réglages restent dans ce navigateur. Le formulaire de retours est la seule chose qui envoie un message, quand tu appuies sur Envoyer.</p>
-        </section>
+        </div></details>
 
-        <section class="set-sec" aria-labelledby="set-beta">
-          <h2 id="set-beta">Bêta</h2>
+        <details class="set-sec"><summary><h2 id="set-beta">Bêta</h2>${CHEVRON_DOWN}</summary><div class="set-body">
           <p class="set-hint">Dis-nous ce qui marche, ce qui bloque ou ce qui manque.</p>
           <div class="theory-nav"><button type="button" class="btn-primary" id="set-feedback">Donner mon avis</button></div>
           <p class="set-hint">Version : <span id="set-version"></span></p>
           <p class="set-hint">L'icône de retours est masquée ? Tu peux la remettre.</p>
           <div class="theory-nav"><button type="button" class="btn-secondary" id="set-showicon">Réafficher l'icône</button></div>
-        </section>
+        </div></details>
 
-        <section class="set-sec" aria-labelledby="set-info">
-          <h2 id="set-info">Informations</h2>
+        <details class="set-sec"><summary><h2 id="set-info">Informations</h2>${CHEVRON_DOWN}</summary><div class="set-body">
           <ul class="set-links">
             <li><a href="#/accueil">À propos de NotaNext ${CHEVRON}</a></li>
             <li><a href="#/mentions-legales">Mentions légales ${CHEVRON}</a></li>
             <li><a href="#/confidentialite">Confidentialité ${CHEVRON}</a></li>
             <li><a href="#/credits">Crédits et licences ${CHEVRON}</a></li>
           </ul>
-        </section>
+        </div></details>
       </div>`;
   }
 

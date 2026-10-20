@@ -2115,8 +2115,9 @@ body.in-game .game { padding-right: 72px; }
 body.m.in-game .game { padding-right: 12px; }
 @media (max-width: 720px) and (orientation: portrait) { body.in-game .game { padding-bottom: 64px; } }
 @media (max-height: 520px) and (orientation: landscape) { body.m.in-game .game { padding-right: 72px; } }
-.game.rot-cw { padding-top: 72px; padding-right: 12px !important; }  /* tourné : le bord droit de l'écran devient le haut du jeu */
-.game.rot-ccw { padding-bottom: 72px; padding-right: 12px !important; }
+/* Jeu tourné de force : la marge de l'icône suit la rotation (le bas de l'écran pour rot-cw, la droite pour rot-ccw). */
+.game.rot-cw { padding: 0 72px 12px 12px !important; }
+.game.rot-ccw { padding: 0 12px 72px 12px !important; }
 
 /* Apprendre (hors périmètre de cette refonte) : mêmes marges que les autres écrans, sans cadre autour. */
 #learn-grid, #learn-page { padding: 24px 0 32px; }
@@ -2126,3 +2127,31 @@ body.m #learn-grid, body.m #learn-page { padding-top: 16px; }
   body.m .nav { height: 40px; }
   body.m .nav .nav-home { font-size: 20px; }
 }
+
+/* ----- familles du hub et sections de Réglages : menus déroulants ----- */
+summary { list-style: none; cursor: pointer; }
+summary::-webkit-details-marker { display: none; }
+.hub-fam-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.hub-fam-titles { display: block; min-width: 0; }
+.hub-fam-chev, .set-chev { flex: none; color: var(--grey-text); transition: transform 0.15s; }
+details[open] > summary .hub-fam-chev, details[open] > summary .set-chev { transform: rotate(180deg); }
+.hub-fam-head:hover .hub-fam-chev, .set-sec > summary:hover .set-chev { color: var(--ink); }
+.hub-fam-head:focus-visible, .set-sec > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.hub-fam.second { border-top: 0; }
+.hub-fam.second > .hub-fam-head { margin-top: 40px; padding-top: 18px; border-top: 2px solid var(--ink); }
+.hub-fam:not(.second) > .hub-fam-head h2 + p { margin-bottom: 0; }
+
+.set-sec { display: block; padding: 0; border-top: 1px solid var(--hair); }
+.set-sec:first-of-type { margin-top: 16px; }
+.set-sec > summary { display: flex; align-items: center; justify-content: space-between; min-height: 64px; }
+.set-sec > summary h2 { margin: 0; }
+.set-body { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 4px 0 28px; }
+.settings .set-sec:last-of-type { border-bottom: 1px solid var(--hair); }
+
+/* Clavier (ordinateur) : les sept notes en ligne, la touche sous chaque nom. */
+.settings .kbd-rows { max-width: none; width: 100%; flex-direction: row; flex-wrap: wrap; gap: 12px; }
+.settings .kbd-row { flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 6px; width: 92px; text-align: center; }
+.settings .kbd-key { min-width: 0; width: 100%; }
+
+/* Jeu tourné (téléphone) : l'en-tête reste caché, malgré la mise en page mobile de la barre. */
+body.m.game-rotated .nav { display: none; }
