@@ -35,3 +35,12 @@ déployée sur Netlify depuis GitHub (josephardant-vibe/NotaNext).
 - Onglets : S'exercer (5 jeux) / Apprendre (« Les clés » seulement pour
   l'instant). Pas de profil ni de comptes : la page Se connecter annonce
   « Comptes bientôt ».
+
+## Accès complet (à venir)
+- Modèle prévu : paiement unique de 3 €, accès complet ; un interrupteur par compte
+  (accès accordé ou non). Rien n'est en place : comptes et paiement ne sont pas
+  construits.
+- Point d'entrée unique : `js/access.js`, `window.Notanext.access.hasFullAccess()`,
+  qui renvoie toujours vrai pour l'instant (« remplacée plus tard par comptes +
+  paiement »). Tout futur contenu réservé passera par cette fonction ; aucun mur,
+  aucune page de paiement, aucun blocage tant qu'elle n'a pas été remplacée.
