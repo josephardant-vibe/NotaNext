@@ -10,6 +10,41 @@ window.Notanext = window.Notanext || {};
     return ctx;
   }
 
+  // ---------- volume général (Réglages > Son) ----------
+  // Tous les sons passent par un gain commun : volume 0-100 (100 = niveau d'origine) et « couper le son ».
+  const VOLUME_KEY = 'notanext.volume';
+  const MUTED_KEY = 'notanext.muted';
+  let volume = 100;
+  let muted = false;
+  try {
+    const v = parseInt(localStorage.getItem(VOLUME_KEY), 10);
+    if (v >= 0 && v <= 100) volume = v;
+    muted = localStorage.getItem(MUTED_KEY) === '1';
+  } catch (e) { /* valeurs d'origine */ }
+  let master = null;
+  let demoSilent = false; // aperçus du hub : aucun son, quoi qu'il arrive
+  const level = () => (muted ? 0 : volume / 100);
+  function out() {
+    const audioCtx = getContext();
+    if (!master) {
+      master = audioCtx.createGain();
+      master.gain.value = level();
+      master.connect(audioCtx.destination);
+    }
+    return master;
+  }
+  function applyLevel() { if (master) master.gain.value = level(); }
+  function setVolume(v) {
+    volume = Math.max(0, Math.min(100, Math.round(v)));
+    try { localStorage.setItem(VOLUME_KEY, String(volume)); } catch (e) { /* valable pour la session */ }
+    applyLevel();
+  }
+  function setMuted(m) {
+    muted = !!m;
+    try { localStorage.setItem(MUTED_KEY, muted ? '1' : '0'); } catch (e) { /* valable pour la session */ }
+    applyLevel();
+  }
+
   // `duration` (secondes) : durée totale du son avant extinction complète.
   // Par défaut 0.7s, comme avant — les appels existants (jeux, "Les clés")
   // ne passent pas ce paramètre et ne changent pas de son.
@@ -37,9 +72,10 @@ window.Notanext = window.Notanext || {};
     playing.clear();
   }
 
-  function playTone(freq, duration, volume) {
+  function playTone(freq, duration, peak) {
+    if (demoSilent) return;
     duration = duration || 0.7;
-    volume = volume || 0.25;
+    peak = peak || 0.25;
     try {
       const audioCtx = getContext();
       const now = audioCtx.currentTime;
@@ -52,10 +88,10 @@ window.Notanext = window.Notanext || {};
 
       // Enveloppe courte pour éviter les clics et donner un son net.
       gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(volume, now + 0.02);
+      gain.gain.linearRampToValueAtTime(peak, now + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-      osc.connect(gain).connect(audioCtx.destination);
+      osc.connect(gain).connect(out());
       osc.start(now);
       osc.stop(now + duration + 0.05);
       track(osc, gain);
@@ -67,6 +103,7 @@ window.Notanext = window.Notanext || {};
   // Clic de métronome (bruit court, non mélodique) : `accent` = premier temps,
   // plus fort et plus aigu que les autres.
   function playClick(accent) {
+    if (demoSilent) return;
     try {
       const audioCtx = getContext();
       const now = audioCtx.currentTime;
@@ -81,7 +118,7 @@ window.Notanext = window.Notanext || {};
       gain.gain.linearRampToValueAtTime(accent ? 0.3 : 0.16, now + 0.004);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
 
-      osc.connect(gain).connect(audioCtx.destination);
+      osc.connect(gain).connect(out());
       osc.start(now);
       osc.stop(now + 0.1);
     } catch (e) {
@@ -151,15 +188,16 @@ window.Notanext = window.Notanext || {};
       src.buffer = s.buffer;
       src.playbackRate.value = Math.pow(2, (midi - s.midi) / 12 - s.cents / 1200);
       gain.gain.value = inst.gain;
-      src.connect(gain).connect(audioCtx.destination);
+      src.connect(gain).connect(out());
       src.start(now);
       track(src, gain);
     } catch (e) { /* audio bloqué : on ignore */ }
   }
 
   // Joue la note (fréquence) avec l'instrument choisi.
-  function playNote(freq) {
-    const id = current;
+  function playNote(freq, withId) {
+    if (demoSilent) return;
+    const id = withId || current;
     const inst = INSTRUMENTS[id];
     // Réveille le contexte audio tout de suite, pendant le geste de l'utilisateur : certains navigateurs
     // (Safari surtout) refusent de le faire plus tard, après le chargement asynchrone des échantillons.
@@ -167,7 +205,7 @@ window.Notanext = window.Notanext || {};
     const midi = fold(freqToMidi(freq), inst);
     if (loaded[id]) return playSample(loaded[id], inst, midi);
     const myEpoch = epoch;
-    loadInstrument(id).then((list) => { if (current === id && myEpoch === epoch) playSample(list, inst, midi); }).catch(() => { if (myEpoch === epoch) playTone(freq); });
+    loadInstrument(id).then((list) => { if ((withId || current === id) && myEpoch === epoch) playSample(list, inst, midi); }).catch(() => { if (myEpoch === epoch) playTone(freq); });
   }
 
   // Vrai si au moins une des fréquences est hors de la plage de l'instrument (jouée à l'octave).
@@ -206,4 +244,10 @@ window.Notanext = window.Notanext || {};
     LIST: Object.keys(INSTRUMENTS), INSTRUMENTS, get: () => current, set: setInstrument, load: loadInstrument, needsFold, inRange,
   };
   window.Notanext.playClick = playClick;
+  window.Notanext.sound = {
+    getVolume: () => volume, setVolume, isMuted: () => muted, setMuted,
+    // Écoute d'un instrument précis sans changer le réglage de l'instrument.
+    preview: (id, freq) => { if (INSTRUMENTS[id]) playNote(freq, id); },
+    setDemoSilent: (v) => { demoSilent = !!v; if (demoSilent) stopAll(); },
+  };
 })();
