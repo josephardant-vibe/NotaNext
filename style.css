@@ -125,6 +125,78 @@ h1 {
   letter-spacing: -0.01em;
 }
 
+/* ---------- HUBS : GRILLE DE TUILES ---------- */
+.grid-head {
+  margin: 16px 0 28px;
+}
+
+.grid-head h1 {
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.05;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+@media (min-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+
+.tile {
+  /* sous-grille : icône, titre, description et lien s'alignent d'une tuile à l'autre */
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  justify-items: start;
+  gap: 6px;
+  min-height: 188px;
+  padding: 22px 24px 20px;
+  text-align: left;
+  font: inherit;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: border-color 0.12s;
+}
+
+.tile:hover:not(.soon) { border-color: var(--accent); }
+
+.tile-icon { color: var(--accent); margin-bottom: 8px; }
+
+.tile-title {
+  font-family: "Fraunces", Georgia, serif;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1.15;
+}
+
+.tile-desc {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.tile-go {
+  margin-top: auto;
+  padding-top: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.tile.soon { cursor: default; background: transparent; border-style: dashed; }
+.tile.soon .tile-icon,
+.tile.soon .tile-title,
+.tile.soon .tile-go { color: var(--grey-text); }
+.tile.soon .tile-go { font-weight: 500; }
+
+@media (max-width: 520px) {
+  .grid { grid-template-columns: 1fr; }
+  .tile { min-height: 0; }
+}
+
 /* ---------- PAGE EXERCICE ---------- */
 .ex-page {
   display: flex;
@@ -1640,6 +1712,7 @@ body.is-home .app { display: none; }
 
 /* Les requêtes de largeur voient l'écran (paysage) : on rejoue ici celles qui visent un écran étroit. */
 .app.rot-ccw .grid { grid-template-columns: 1fr; }
+.app.rot-ccw .tile { min-height: 0; }
 .app.rot-ccw .learn-layout { flex-direction: column; height: auto; }
 
 /* Message « Tourne ton téléphone » avant la rotation d'Apprendre */
@@ -1997,7 +2070,7 @@ body.in-game .tabbar { display: none; }
 .set-links a svg { color: var(--grey-text); }
 body.m .settings { padding: 24px 0 40px; }
 body.m .settings h1 { font-size: 34px; }
-body.m .panel { padding-left: 20px; padding-right: 20px; }
+body.m .panel { padding-left: 20px; padding-right: 20px; padding-bottom: 56px; } /* marge basse : le contenu passe sous l'icône de retours */
 
 /* ----- pages texte ----- */
 .doc { width: 100%; max-width: 68ch; padding: 32px 0 64px; }
@@ -2044,3 +2117,12 @@ body.m.in-game .game { padding-right: 12px; }
 @media (max-height: 520px) and (orientation: landscape) { body.m.in-game .game { padding-right: 72px; } }
 .game.rot-cw { padding-top: 72px; padding-right: 12px !important; }  /* tourné : le bord droit de l'écran devient le haut du jeu */
 .game.rot-ccw { padding-bottom: 72px; padding-right: 12px !important; }
+
+/* Apprendre (hors périmètre de cette refonte) : mêmes marges que les autres écrans, sans cadre autour. */
+#learn-grid, #learn-page { padding: 24px 0 32px; }
+#learn-grid .grid-head { margin-top: 0; }
+body.m #learn-grid, body.m #learn-page { padding-top: 16px; }
+@media (max-height: 520px) {
+  body.m .nav { height: 40px; }
+  body.m .nav .nav-home { font-size: 20px; }
+}

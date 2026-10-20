@@ -10,7 +10,13 @@ Déployée sur Netlify depuis ce dépôt.
 **Page d'accueil** — l'adresse du site l'ouvre toujours (réglage
 `REDIRIGER_VISITEURS_REVENANTS` dans `js/home.js` pour rétablir « première visite seulement »), avec une démo interactive, la méthode et un aperçu des jeux et des cours.
 
-**Se connecter** (bouton « Comptes bientôt ») — « Ton espace personnel arrive bientôt », avec une animation en boucle
+**Navigation** — logo, S'exercer, Apprendre, Réglages (engrenage) ; sur téléphone, barre d'onglets en bas.
+**S'exercer** — liste des jeux en deux familles ; sur ordinateur, survoler une rangée affiche un aperçu animé du jeu (le vrai jeu, en démonstration, muet),
+un clic ouvre le jeu ; recherche (raccourci « / ») sur les jeux et les cartes d'Apprendre.
+**Réglages** — notation, clavier (touches physiques : AZERTY et QWERTY), son (volume, muet), réinitialisation, retours bêta, pages légales et crédits.
+**Retours bêta** — icône discrète qui ouvre un formulaire Tally ; version et page sont jointes à chaque envoi.
+
+**Se connecter** (page « Comptes bientôt », plus accessible depuis la navigation) — « Ton espace personnel arrive bientôt », avec une animation en boucle
 (un petit personnage court sur une portée, les notes touchées passent au vert ; `js/runner.js`,
 en SVG, sans image). Pas de formulaire : les comptes ne sont pas encore ouverts.
 
