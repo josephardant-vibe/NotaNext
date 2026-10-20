@@ -39,7 +39,8 @@ window.Notanext = window.Notanext || {};
       if (!window.Tally || !window.Tally.openPopup) throw new Error('Tally indisponible');
       window.Tally.openPopup(FORM_ID, {
         layout: 'modal',
-        width: 380,
+        width: 420,
+        overlay: true,
         hideTitle: false,
         hiddenFields: { version: window.Notanext.version || '', page: currentPage() },
         onOpen: () => { isOpen = true; },

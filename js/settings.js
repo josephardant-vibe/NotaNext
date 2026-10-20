@@ -27,6 +27,14 @@ window.Notanext = window.Notanext || {};
       <div class="settings">
         <h1>Réglages</h1>
 
+        <details class="set-sec set-beta" open><summary><h2 id="set-beta">Bêta</h2>${CHEVRON_DOWN}</summary><div class="set-body">
+          <p class="set-hint">Dis-nous ce qui marche, ce qui bloque ou ce qui manque.</p>
+          <div class="theory-nav"><button type="button" class="btn-primary" id="set-feedback">Donner mon avis</button></div>
+          <p class="set-hint">Version : <span id="set-version"></span></p>
+          <p class="set-hint">L'icône de retours est masquée ? Tu peux la remettre.</p>
+          <div class="theory-nav"><button type="button" class="btn-secondary" id="set-showicon">Réafficher l'icône</button></div>
+        </div></details>
+
         <details class="set-sec"><summary><h2 id="set-aff">Affichage</h2>${CHEVRON_DOWN}</summary><div class="set-body">
           <div class="seg-wrap">
             <span class="seg-label">Notation des notes</span>
@@ -87,14 +95,6 @@ window.Notanext = window.Notanext || {};
             </div>
           </div>
           <p class="set-hint">Tes réglages restent dans ce navigateur. Le formulaire de retours est la seule chose qui envoie un message, quand tu appuies sur Envoyer.</p>
-        </div></details>
-
-        <details class="set-sec"><summary><h2 id="set-beta">Bêta</h2>${CHEVRON_DOWN}</summary><div class="set-body">
-          <p class="set-hint">Dis-nous ce qui marche, ce qui bloque ou ce qui manque.</p>
-          <div class="theory-nav"><button type="button" class="btn-primary" id="set-feedback">Donner mon avis</button></div>
-          <p class="set-hint">Version : <span id="set-version"></span></p>
-          <p class="set-hint">L'icône de retours est masquée ? Tu peux la remettre.</p>
-          <div class="theory-nav"><button type="button" class="btn-secondary" id="set-showicon">Réafficher l'icône</button></div>
         </div></details>
 
         <details class="set-sec"><summary><h2 id="set-info">Informations</h2>${CHEVRON_DOWN}</summary><div class="set-body">
