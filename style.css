@@ -2160,3 +2160,8 @@ body.m.game-rotated .nav { display: none; }
 .tally-popup { border: 3px solid var(--accent-dark) !important; border-radius: 16px !important; }
 .set-beta > summary h2 { color: var(--accent-dark); }
 .set-beta { border-top: 2px solid var(--accent-dark); }
+
+/* Chargement sur l'accueil : l'app reste masquée jusqu'à ce que le routeur prenne la main (js/game.js, route). */
+html.boot-home .app, html.boot-home .game { display: none; }
+html.boot-home .home { display: block; }
+html.boot-home .fb-btn { display: none; }

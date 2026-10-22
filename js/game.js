@@ -85,6 +85,7 @@
 
   const DOC_PAGES = ['mentions-legales', 'confidentialite', 'credits'];
   function route() {
+    document.documentElement.classList.remove('boot-home'); // le routeur a pris la main
     const [page, arg] = (location.hash.replace(/^#\/?/, '') || 'accueil').split('/');
     // L'accueil a sa propre adresse (#/accueil) : le bouton Retour du navigateur y ramène.
     const home = window.Notanext.home;
