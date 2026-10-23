@@ -116,11 +116,11 @@
   function pick(name) {
     if (picked) return;
     picked = name;
+    done++; // comme dans les vrais jeux : le total monte dès la réponse, jamais « 1 / 0 »
     if (name === NAMES[STEPS[index] % 7]) good++;
     render();
     setTimeout(() => {
       index = (index + 1) % STEPS.length;
-      done++;
       picked = null;
       render();
     }, 1100);
