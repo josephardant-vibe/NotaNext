@@ -188,7 +188,7 @@
 
   // ----- "Les cours" : bandeau défilant -----
   const COURSES = [
-    { title: 'Les clés', desc: "Clé de sol, clé de fa, clé d'ut : lire une portée quelle que soit la clé.", open: { learn: 'clefs' } },
+    { title: 'Les clés', desc: "Clé de sol, clé de fa, clé d'ut (alto et ténor) : lire une portée dans les clés les plus courantes.", open: { learn: 'clefs' } },
   ];
   const coursesEl = document.getElementById('home-courses');
   COURSES.forEach((c) => {

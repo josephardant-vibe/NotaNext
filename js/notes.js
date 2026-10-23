@@ -160,7 +160,7 @@ window.Notanext = window.Notanext || {};
   const FAQ_ANSWERS = {
     sol: [
       "La clé de sol t'indique où se trouve la note Sol sur la portée : elle est placée sur la 2e ligne en partant du bas. À partir de cette note de référence, tu retrouves toutes les autres en comptant les lignes et les espaces.",
-      'Violon, flûte, hautbois, clarinette, trompette, saxophone, main droite au piano, harpe, voix soprano/alto/ténor.',
+      'Violon, flûte, hautbois, clarinette, trompette, saxophone, main droite au piano, harpe (avec la clé de fa), voix soprano, alto et ténor (le ténor se note une octave au-dessus de sa hauteur réelle).',
       'Convient aux notes aiguës — en clé de fa, ces notes demanderaient trop de lignes supplémentaires au-dessus.',
       "Oui, la clé la plus utilisée en musique aujourd'hui.",
     ],
@@ -168,19 +168,19 @@ window.Notanext = window.Notanext || {};
       "La clé de fa t'indique où se trouve la note Fa sur la portée : elle est placée sur la 4e ligne en partant du bas. À partir de cette note de référence, tu retrouves toutes les autres en comptant les lignes et les espaces.",
       'Violoncelle, contrebasse, basson, trombone, tuba, main gauche au piano, voix graves.',
       'Convient aux notes graves — en clé de sol, ces notes demanderaient trop de lignes en dessous.',
-      'Oui, la deuxième plus utilisée, complémentaire de la clé de sol au piano.',
+      'Oui : avec la clé de sol, c\'est l\'une des deux clés les plus courantes ; elles se complètent aux deux mains du piano.',
     ],
     utA: [
       "La clé d'ut alto t'indique où se trouve le Do central sur la portée : il est placé sur la ligne du milieu (la 3e en partant du bas). À partir de cette note de référence, tu retrouves toutes les autres en comptant les lignes et les espaces.",
       "Principalement l'alto (instrument à cordes).",
-      "La tessiture de l'alto se situe entre le violon et le violoncelle — les deux autres clés lui imposeraient des lignes supplémentaires.",
-      "Oui, la seule clé d'ut encore couramment utilisée en pratique courante.",
+      "La tessiture de l'alto se situe entre le violon et le violoncelle — les clés de sol et de fa lui imposeraient des lignes supplémentaires.",
+      "Oui, surtout pour l'alto (instrument à cordes). La clé d'ut ténor reste aussi employée, pour les passages aigus d'autres instruments.",
     ],
     utT: [
       "La clé d'ut ténor t'indique où se trouve le Do central sur la portée : il est placé sur la 4e ligne en partant du bas. À partir de cette note de référence, tu retrouves toutes les autres en comptant les lignes et les espaces.",
       'Passages aigus du violoncelle, du basson et du trombone ténor.',
       'Évite trop de lignes au-dessus de la portée dans le registre aigu de ces instruments.',
-      'Oui mais ponctuellement, pour les passages aigus de ces instruments.',
+      'Oui : pour les passages aigus du violoncelle et du trombone ténor, et très couramment au basson.',
     ],
   };
 
