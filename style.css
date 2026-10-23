@@ -20,9 +20,6 @@ body {
 }
 
 /* ---------- FOND ---------- */
-/* Le fond dégradé animé est celui de l'app ; les anciens pictogrammes flottants restent masqués. */
-.bg-icons { display: none; }
-
 .bg {
   position: fixed;
   inset: -20%;
@@ -40,40 +37,6 @@ body {
   0% { background-position: 0 0, 0 0, 0% 50%; }
   50% { background-position: 0 0, 0 0, 100% 50%; }
   100% { background-position: 0 0, 0 0, 0% 50%; }
-}
-
-.bg-icons {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.bg-icon {
-  position: absolute;
-  color: var(--accent);
-  opacity: 0.14;
-}
-
-.bg-icon svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.bg-icon.i1 { top: 8%;  left: 5%;  width: 70px; height: 104px; animation: fl 18s ease-in-out infinite; }
-.bg-icon.i2 { top: 60%; left: 88%; width: 44px; height: 68px;  animation: fl 22s ease-in-out infinite 1s; }
-.bg-icon.i3 { top: 82%; left: 9%;  width: 34px; height: 52px;  animation: fl 20s ease-in-out infinite 3s; }
-.bg-icon.i4 { top: 16%; left: 84%; width: 50px; height: 76px;  animation: fl 24s ease-in-out infinite; }
-.bg-icon.i5 { top: 40%; left: 2%;  width: 30px; height: 46px;  animation: fl 26s ease-in-out infinite 2s; }
-.bg-icon.i6 { top: 34%; left: 94%; width: 34px; height: 52px;  animation: fl 19s ease-in-out infinite 4s; }
-.bg-icon.i7 { top: 70%; left: 46%; width: 26px; height: 40px;  animation: fl 28s ease-in-out infinite 1.5s; opacity: 0.09; }
-.bg-icon.i8 { top: 6%;  left: 60%; width: 24px; height: 38px;  animation: fl 23s ease-in-out infinite 5s; opacity: 0.09; }
-
-@keyframes fl {
-  0%, 100% { transform: translateY(0) rotate(-3deg); }
-  50% { transform: translateY(-18px) rotate(3deg); }
 }
 
 /* ---------- COQUILLE ---------- */
@@ -191,14 +154,6 @@ h1 {
   gap: 9px;
 }
 
-.ex-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex: 0 0 auto;
-}
-
 .backbtn {
   display: inline-flex;
   align-items: center;
@@ -219,20 +174,6 @@ h1 {
   color: var(--accent-dark);
 }
 
-.ex-title {
-  font-family: var(--font-family-display);
-  font-weight: 600;
-  font-size: var(--font-size-lg);
-}
-
-.ex-score {
-  font-family: var(--font-family-display);
-  font-weight: 600;
-  font-size: var(--font-size-xl);
-  color: var(--gold);
-  font-variant-numeric: tabular-nums;
-}
-
 select {
   font: inherit;
   font-size: var(--font-size-sm);
@@ -245,13 +186,6 @@ select {
   -webkit-appearance: none;
   appearance: none;
   cursor: pointer;
-}
-
-.ex-config {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  flex: 0 0 auto;
 }
 
 .namebox {
@@ -375,13 +309,6 @@ select {
 }
 
 /* ---------- SOUS LA PORTÉE ---------- */
-.ex-under {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 0 0 auto;
-  min-height: 30px;
-}
 
 .replay {
   display: inline-flex;
@@ -611,7 +538,6 @@ select {
   display: none !important;
 }
 
-
 /* ----- clavier personnalisable (défilement continu) ----- */
 .key-hint {
   display: block;
@@ -683,7 +609,6 @@ body.is-home {
 }
 
 body.is-home .bg,
-body.is-home .bg-icons,
 body.is-home .nav,
 body.is-home .shell,
 body.is-home .game {
@@ -1382,7 +1307,6 @@ body.is-phone .gf-rotate-btn { display: inline-flex; }
   min-height: 0;
   width: 100%;
 }
-
 
 .replay.big { font-size: 16px; padding: 14px 26px; }
 
