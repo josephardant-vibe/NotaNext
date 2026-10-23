@@ -125,7 +125,7 @@
       <span class="app-user" id="nav-login">Comptes bientôt</span>
     </header>
 
-    <div class="shell" id="view-ex">
+    <main class="shell" id="view-ex">
       <div class="panel" id="ex-panel">
         <div id="ex-grid" class="hub">
           <div class="hub-head">
@@ -159,9 +159,9 @@
         </div>
         <div class="ex-page" id="ex-page" hidden></div>
       </div>
-    </div>
+    </main>
 
-    <div class="shell" id="view-learn" hidden>
+    <main class="shell" id="view-learn" hidden>
       <div class="panel" id="learn-panel">
         <div id="learn-grid">
           <div class="grid-head">
@@ -171,27 +171,27 @@
         </div>
         <div class="ex-page" id="learn-page" hidden></div>
       </div>
-    </div>
+    </main>
 
     <!-- Réglages : rempli par js/settings.js -->
-    <div class="shell" id="view-settings" hidden>
+    <main class="shell" id="view-settings" hidden>
       <div class="panel" id="settings-panel"></div>
-    </div>
+    </main>
 
     <!-- Pages texte (mentions légales, confidentialité, crédits) : rempli par js/docs.js -->
-    <div class="shell" id="view-doc" hidden>
+    <main class="shell" id="view-doc" hidden>
       <div class="panel" id="doc-panel"></div>
-    </div>
+    </main>
 
     <!-- Page « Se connecter » : les comptes arrivent bientôt (animation js/runner.js). Plus aucun lien n'y mène. -->
-    <div class="shell" id="view-account" hidden>
+    <main class="shell" id="view-account" hidden>
       <div class="panel page-panel">
         <button type="button" class="backbtn account-back" id="account-back">&#8592; S'exercer</button>
         <h1 class="page-title">Ton espace personnel arrive bientôt</h1>
         <svg class="runner" id="runner" role="img" aria-label="Un petit bonhomme court sur la ligne du bas d'une portée, saute sur certaines notes, en touche d'autres de la main et glisse sous d'autres ; les notes touchées deviennent vertes"></svg>
         <button type="button" class="backbtn runner-pause" id="runner-pause" aria-pressed="false">Mettre en pause l'animation</button>
       </div>
-    </div>
+    </main>
 
     <!-- Mobile : barre d'onglets en bas (3 destinations). -->
     <nav class="tabbar" id="tabbar" aria-label="Navigation principale">
@@ -212,7 +212,7 @@
   </div>
 
   <!-- Écran de jeu : cadre commun à tous les jeux, rempli par js/game.js -->
-  <div class="game" id="game" hidden></div>
+  <main class="game" id="game" hidden></main>
 
   <script src="js/access.js"></script>
   <script src="js/version.js"></script>
