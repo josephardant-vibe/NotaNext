@@ -1,6 +1,6 @@
 # Propositions (rien n'est appliqué dans la branche)
 
-Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Les patchs 03 et 04 sont déjà appliqués (dossier `appliquees/`). Les autres ont été regénérés le 23 oct. après les derniers commits (`git apply --check` OK). Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
+Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Les patchs 03, 04, 06, 07 et 12 sont déjà appliqués (dossier `appliquees/`). Les autres ont été regénérés le 23 oct. après les derniers commits (`git apply --check` OK). Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
 
 ## 01 — 404, solution A : pages-passerelles (`01-404-pages-passerelles.patch`)
 - Pourquoi : `/s-exercer/`, `/apprendre/`, `/reglages/` renvoient 404 (il n'y a qu'une page `index.html` et aucune règle de réécriture).
@@ -27,12 +27,12 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 - Pourquoi : aucun fichier `robots.txt`. Ce patch autorise tout, sans plan de site (l'adresse définitive du site n'est pas connue, je ne l'invente pas).
 - Risque : nul.
 
-## 06 — Verre dépoli et blancs translucides (`06-verre-et-blancs-translucides.patch`)
+## 06 — Verre dépoli et blancs translucides — INCLUSE DANS LA 12, APPLIQUÉE (`appliquees/06-…`)
 - Pourquoi : `backdrop-filter` en dehors du hero (3 → 1 restant : le hero) et blancs translucides `rgba(255,255,255,…)` (pure-white 16 → 2 restants, tous dans le hero).
 - Ce que ça fait : fonds pleins `bg-raised`, filets `border-subtle`, retrait des reflets internes.
 - Risque : **moyen** — les écrans de jeu (`.gf`, `.faq`, boutons) perdent la transparence sur le fond animé ; à regarder en jeu et en paysage.
 
-## 07 — Animations d'ambiance (`07-animations-d-ambiance.patch`)
+## 07 — Animations d'ambiance — INCLUSE DANS LA 12, APPLIQUÉE (`appliquees/07-…`)
 - Pourquoi : le fond de l'écran de jeu dérive en boucle (26 s). Les 8 icônes flottantes ne sont plus dans le code (code mort retiré, commit 21d6eee). La direction « papier statique » n'est pas validée.
 - Risque : moyen (direction artistique). Les animations « tilt » des indices ne sont pas touchées.
 
@@ -53,7 +53,7 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 - Ce que ça fait : la démo compte comme les vrais jeux (`0 / 0`, puis `1 / 1`…).
 - Risque : faible, **mais c'est le hero (figé)** : à toi de décider.
 
-## 12 — Papier statique complet (`12-papier-statique-complet.patch`)
+## 12 — Papier statique complet — APPLIQUÉE (`appliquees/12-…`, avec deux correctifs : empilement de `.gf` et roue d'Oreille absolue)
 - Pourquoi : les écrans de jeu gardent un fond dégradé beige qui dérive, un cadre en verre dépoli et des blancs translucides, alors que tout le shell (hub, Réglages, Apprendre) est plat sur papier. Ce patch regroupe 06 + 07 + un fond uni `bg-page` (retrait de `bgDrift`). Les verres/blancs du hero restent.
 - Vérificateur après le patch : pure-white 2, glass 1 (hero), ambient-animation 0, color-literal 27.
 - Testé à l'écran (jeu 1440 px, oreille absolue, Apprendre) : lisible, cohérent avec le hub ; à regarder en paysage mobile.

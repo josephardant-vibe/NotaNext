@@ -15,8 +15,10 @@ déployée sur Netlify depuis GitHub (josephardant-vibe/NotaNext).
   animation illustrée (petit personnage cuivre qui court sur une portée, notes
   qui passent au vert quand il les touche) ; ni pictogramme ni vert « bonne
   réponse » ailleurs. Animation fournie par le propriétaire (js/runner.js).
-- Un seul panneau "verre" (Liquid Glass) par écran, jamais un effet par
-  bouton. Aucune ombre portée ailleurs.
+- Verre (Liquid Glass) : réservé au panneau de démonstration du hero de
+  l'accueil. Depuis le 23 oct. 2026 (« papier statique »), les écrans de jeu
+  sont plats : fond papier uni, cadre à filet fin, aucun verre ni blanc
+  translucide. Aucune ombre portée ailleurs.
 - Icônes : uniquement des têtes de note, jamais de pictogramme de portée.
 - Polices : Fraunces (titres/score), IBM Plex Sans (texte/boutons).
 - Clés de musique : vrais symboles Unicode (police), jamais de tracé SVG
