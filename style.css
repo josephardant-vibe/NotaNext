@@ -920,22 +920,14 @@ body.is-home .game {
 }
 
 .home-section {
+  --home-pad: clamp(20px, 4vw, 56px);
   scroll-margin-top: 72px;
-  padding: clamp(56px, 8vw, 110px) clamp(20px, 4vw, 56px) 0;
-}
-
-.home-section:last-of-type {
-  padding-left: 0;
-  padding-right: 0;
+  padding: clamp(56px, 8vw, 110px) var(--home-pad) 0;
 }
 
 .home-wrap {
   max-width: 1240px;
   margin: 0 auto;
-}
-
-.home-section:last-of-type .home-wrap {
-  padding: 0 clamp(20px, 4vw, 56px);
 }
 
 .home-section h2 {
@@ -1105,11 +1097,15 @@ body.is-home .game {
   color: var(--muted);
 }
 
-/* Bandeau des cours : défile horizontalement, avec accroche à chaque carte. */
+/* Bandeau des cours : défile horizontalement, avec accroche à chaque carte. Il déborde jusqu'aux bords de
+   l'écran (marges négatives) mais sa première carte part du même bord que les titres et les autres sections
+   (marge de page + centrage de .home-wrap, 1240 px). */
 .home-courses {
   display: flex;
   gap: 20px;
-  padding: 0 clamp(20px, 4vw, 56px);
+  margin: 0 calc(-1 * var(--home-pad));
+  padding: 0 calc(var(--home-pad) + max(0px, (100% - 1240px) / 2));
+  scroll-padding-inline: calc(var(--home-pad) + max(0px, (100% - 2 * var(--home-pad) - 1240px) / 2));
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
