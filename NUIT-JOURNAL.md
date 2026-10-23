@@ -12,3 +12,4 @@
 - Patchs 11 et 16 (hero) appliqués ; correctif du total de la démo (« 1 / 0 »). Accueil contrôlé à 390 et 1440 px.
 - Accueil : « Les cours » aligné (règle :last-of-type retirée, bandeau avec marges négatives). Mesuré à 390, 760, 1440, 1920 px.
 - Patchs 08, 09, 10 appliqués (un commit chacun, vérificateur vert). Hub (390/760/1440) et 5 jeux (390/760/1440 + paysage 740x360) contrôlés : aucun débordement, aucun contraste en défaut.
+- Patchs 02 (404.html) et 05 (robots.txt) appliqués. 404 vérifié avec un serveur local imitant l'hébergeur (scratchpad/tools/serve404.py) : 7 routes + chemins profonds + adresse inconnue. 404.html stylé aux couleurs du site.

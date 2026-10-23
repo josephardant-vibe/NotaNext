@@ -1,14 +1,14 @@
 # Propositions (rien n'est appliqué dans la branche)
 
-Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Les patchs 03, 04 et 06 à 16 sont déjà appliqués (dossier `appliquees/`). Il reste le 404 (01 ou 02) et `robots.txt` (05), vérifiés avec `git apply --check` le 23 oct. sur le dernier commit. Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
+Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Tous les patchs retenus sont appliqués (dossier `appliquees/`) ; le 01 (404, pages-passerelles) est écarté au profit du 02 (`non-retenues/`). Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
 
-## 01 — 404, solution A : pages-passerelles (`01-404-pages-passerelles.patch`)
+## 01 — 404, solution A : pages-passerelles — NON RETENUE (`non-retenues/01-…`, remplacée par la B)
 - Pourquoi : `/s-exercer/`, `/apprendre/`, `/reglages/` renvoient 404 (il n'y a qu'une page `index.html` et aucune règle de réécriture).
 - Ce que ça fait : crée 3 petits dossiers avec un `index.html` qui redirige vers `/#/exercer` etc.
 - Risque : faible ; fonctionne sur n'importe quel hébergeur statique. Ne couvre que les 3 adresses créées.
 - Choisir A **ou** B (pas les deux).
 
-## 02 — 404, solution B : `404.html` (`02-404-page-unique.patch`)
+## 02 — 404, solution B : `404.html` — APPLIQUÉE (`appliquees/02-…`, commit 5a13550, puis polices et lien du site 6c6917b, chemins profonds ad72e59)
 - Pourquoi : même problème, un seul fichier à la racine qui lit l'adresse et redirige vers la bonne route (`#/…`) ; couvre aussi les pages texte.
 - Risque : faible ; suppose que l'hébergeur sert `404.html` pour les adresses inconnues (Netlify, GitHub Pages, Cloudflare Pages le font) et que le site est à la racine du domaine.
 - Le 404 des adresses inconnues sans correspondance reste affiché (« Page introuvable » + lien d'accueil).
@@ -23,7 +23,7 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 - Ce que ça fait : « des séances courtes et régulières » et « des exercices courts, corrigés ».
 - Risque : formulation pédagogique, à valider. Si la précision « dix minutes » est voulue, il faut une source.
 
-## 05 — `robots.txt` (`05-robots-txt.patch`)
+## 05 — `robots.txt` — APPLIQUÉE (`appliquees/05-…`, commit e689b75)
 - Pourquoi : aucun fichier `robots.txt`. Ce patch autorise tout, sans plan de site (l'adresse définitive du site n'est pas connue, je ne l'invente pas).
 - Risque : nul.
 
