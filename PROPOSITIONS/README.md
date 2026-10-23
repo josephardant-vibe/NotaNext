@@ -86,4 +86,4 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 - **Polices en dur (35)** : `font-family: "Fraunces", Georgia, serif` partout ; remplacement par `var(--font-family-…)` sûr mais mécanique (35 lignes) : je ne l'ai pas fait faute de temps de vérification visuelle ; patch faisable sur demande.
 - **Mentions légales** : 5 champs « À COMPLÉTER » à fournir par Joseph (statut, identité/adresse, directeur de la publication, hébergeur, droits).
 - **Partage** : `og:image`, `og:url`, canonical, favicon PNG : il faut l'adresse définitive et une image fournie par Joseph.
-- **Repère `<main>`** pour l'application (accessibilité) : ajout simple mais touche la structure de `index.html` ; à faire avec une relecture.
+- **Repère `<main>`** : fait par le fork a11y (voir `design-system/A11Y-FORK-RAPPORT.md`), à tester avec un lecteur d'écran.
