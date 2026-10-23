@@ -1,17 +1,3 @@
-:root {
-  --paper: #faf6ef;
-  --ink: #211d18;
-  --control-border: #8a8177; /* bordure des boutons et champs : ≥ 3:1 sur le fond (WCAG 1.4.11) */
-  --muted: #6f665c;         /* texte secondaire : 5,2:1 sur le fond (WCAG 1.4.3) */
-  --border: #e4ddd0;
-  --accent: #b8502f;        /* cuivre — interface (titre, onglet actif, note, survols) */
-  --accent-dark: #8f3c22;
-  --gold: #a9791b;          /* or / laiton — score et série uniquement */
-  --success: #3f7d52;       /* vert — bonne réponse uniquement */
-  --grey-ind: #9a938a;      /* gris : remplissages et bordures « raté » seulement */
-  --grey-text: #6b635a;     /* gris pour du texte « raté » ou neutre (≥ 4,5:1) */
-}
-
 * {
   box-sizing: border-box;
 }
@@ -1773,7 +1759,6 @@ h1.gf-title { margin: 0; }
    SHELL V2 (maquette design/shell-v2-2026-10-20.html) : en-tête, barre d'onglets, hub, Réglages, pages texte
    Plat : fond parchemin, filets d'1 px, aucune ombre, aucun verre, aucun cercle décoratif.
    ===================================================================== */
-:root { --hair: rgba(33, 29, 24, 0.12); }
 
 /* Hors jeu, le fond animé disparaît : parchemin uni. Il reste derrière les écrans de jeu (hors périmètre). */
 body:not(.in-game) .bg { display: none; }
