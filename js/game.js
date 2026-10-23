@@ -203,6 +203,7 @@
         <div class="faq">
           <h3 aria-level="2">FAQ</h3>
           <div id="faq-body"></div>
+          <p class="learn-sources">Sources : <a href="https://www.larousse.fr/encyclopedie/musdico/clef/166855" target="_blank" rel="noopener">Larousse, Dictionnaire de la musique, « Clef »</a> ; <a href="https://dolmetsch.com/musictheory14.htm" target="_blank" rel="noopener">Dolmetsch Online, Music Theory Online, leçon 14 « Other Clefs »</a> (B. Blood).</p>
         </div>
       </div>
     `;

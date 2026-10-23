@@ -455,6 +455,9 @@ select {
   content: "–";
 }
 
+.learn-sources { margin: var(--space-4) 0 0; font-size: var(--font-size-xs); line-height: 1.55; color: var(--color-sys-text-secondary); }
+.learn-sources a { color: var(--color-sys-text-accent); }
+
 .faq p {
   margin: 8px 0 2px;
   font-size: var(--font-size-xs);
