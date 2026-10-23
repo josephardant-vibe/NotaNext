@@ -591,10 +591,20 @@ select {
 }
 
 @media (max-width: 760px) {
+  /* Le cours défile en entier : la FAQ n'est plus coincée dans une petite boîte qui défile toute seule. */
   .learn-layout {
     flex-direction: column;
     height: auto;
   }
+  /* Pas en mode « app tournée » (.rot-ccw) : sa hauteur ne suit pas celle de la fenêtre. */
+  .app:not(.rot-ccw) #learn-page .ex-page { height: auto; }
+  .app:not(.rot-ccw) .learn-layout {
+    flex: none;
+    padding-bottom: var(--space-16); /* dégage l'icône de retours et la barre d'onglets */
+  }
+  .app:not(.rot-ccw) .learn-left { flex: none; }
+  .app:not(.rot-ccw) .learn-staff { flex: none; height: min(52vh, 420px); }
+  .app:not(.rot-ccw) .faq { flex: none; overflow: visible; }
 }
 
 [hidden] {
