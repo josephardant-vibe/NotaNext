@@ -2093,6 +2093,26 @@ body.m .doc h1 { font-size: 32px; }
 .fb-btn.dragging { cursor: grabbing; color: var(--ink); }
 .fb-btn[hidden] { display: none; }
 .fb-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
+/* Message d'état du bouton de retours (ex. formulaire injoignable) : plat, au-dessus de l'icône. */
+.fb-note {
+  position: fixed;
+  z-index: 41;
+  right: var(--space-6);
+  bottom: calc(var(--space-6) + var(--component-target-comfort) + var(--space-2));
+  max-width: min(320px, calc(100vw - 2 * var(--space-4)));
+  padding: var(--space-3) var(--space-4);
+  border: var(--border-width-hairline) solid var(--color-sys-border-control);
+  border-radius: var(--radius-md);
+  background: var(--color-sys-bg-raised);
+  color: var(--color-sys-text-primary);
+  font-size: var(--font-size-sm);
+  line-height: var(--font-line-height-snug);
+  cursor: pointer;
+}
+.fb-note:not(.on) { opacity: 0; pointer-events: none; }
+body.m .fb-note { right: var(--space-4); bottom: calc(72px + env(safe-area-inset-bottom, 0px) + var(--component-target-comfort) + var(--space-2)); }
+body.m.in-game .fb-note { bottom: calc(var(--space-3) + var(--component-target-comfort) + var(--space-2)); }
+body.is-home .fb-note { display: none; }
 body.m .fb-btn { right: 16px; bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
 body.m.in-game .fb-btn { bottom: 12px; }
 /* Écran de jeu : l'icône reste dans une marge réservée, jamais sur la portée ni sur les touches. */
