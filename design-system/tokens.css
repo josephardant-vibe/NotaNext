@@ -1,0 +1,111 @@
+/* GÉNÉRÉ par design-system/build-tokens.py à partir de tokens.json. NE PAS MODIFIER À LA MAIN. */
+/* NotaNext design tokens — version : voir design-system/README.md */
+:root {
+  /* color-ref */
+  --color-ref-paper: #faf6ef;
+  --color-ref-paper-raised: #f7f4ee;
+  --color-ref-ink: #211d18;
+  --color-ref-stone-600: #6b635a;
+  --color-ref-stone-500: #8a8177;
+  --color-ref-stone-400: #9a938a;
+  --color-ref-stone-200: #e4ddd0;
+  --color-ref-copper-500: #b8502f;
+  --color-ref-copper-700: #8f3c22;
+  --color-ref-brass-500: #a9791b;
+  --color-ref-green-600: #3f7d52;
+  --color-ref-green-700: #36704a;
+  --color-ref-navy-800: #1f3a5f;
+  --color-ref-burgundy-700: #7b2a3a;
+  --color-ref-teal-700: #2f6f73;
+  /* color-sys */
+  --color-sys-bg-page: var(--color-ref-paper);
+  --color-sys-bg-raised: var(--color-ref-paper-raised);
+  --color-sys-text-primary: var(--color-ref-ink);
+  --color-sys-text-secondary: var(--color-ref-stone-600);
+  --color-sys-text-accent: var(--color-ref-copper-500);
+  --color-sys-text-on-accent: var(--color-ref-paper);
+  --color-sys-border-subtle: var(--color-ref-stone-200);
+  --color-sys-border-control: var(--color-ref-stone-500);
+  --color-sys-border-hairline: rgba(33, 29, 24, 0.12);
+  --color-sys-action-primary: var(--color-ref-copper-500);
+  --color-sys-action-primary-hover: var(--color-ref-copper-700);
+  --color-sys-focus-ring: var(--color-ref-ink);
+  --color-sys-feedback-correct: var(--color-ref-green-600);
+  --color-sys-feedback-correct-text: var(--color-ref-green-700);
+  --color-sys-feedback-wrong-fill: var(--color-ref-stone-400);
+  --color-sys-feedback-wrong-text: var(--color-ref-stone-600);
+  --color-sys-reward-score: var(--color-ref-brass-500);
+  --color-sys-reward-series: var(--color-ref-brass-500);
+  --color-sys-stamp-navy: var(--color-ref-navy-800);
+  --color-sys-stamp-burgundy: var(--color-ref-burgundy-700);
+  --color-sys-stamp-teal: var(--color-ref-teal-700);
+  /* font-family */
+  --font-family-display: Fraunces, Georgia, serif;
+  --font-family-text: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-family-script: Parisienne, cursive;
+  --font-family-music: "Noto Music", serif;
+  /* font-weight */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  /* font-size */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 20px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 30px;
+  --font-size-3xl: 38px;
+  --font-size-4xl: 48px;
+  --font-size-display: clamp(42px, 6.2vw, 84px);
+  /* font-line-height */
+  --font-line-height-tight: 1.1;
+  --font-line-height-snug: 1.3;
+  --font-line-height-normal: 1.5;
+  /* space */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  /* radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+  --radius-circle: 50%;
+  /* border */
+  --border-width-hairline: 1px;
+  --border-width-strong: 2px;
+  /* motion */
+  --motion-duration-fast: 120ms;
+  --motion-duration-base: 180ms;
+  --motion-duration-slow: 250ms;
+  --motion-easing-out: cubic-bezier(0, 0, 0.58, 1);
+  /* breakpoint */
+  --breakpoint-phone: 520px;
+  --breakpoint-tablet: 760px;
+  --breakpoint-desktop: 1000px;
+  /* component */
+  --component-target-min: 24px;
+  --component-target-comfort: 44px;
+  --component-row-height-mobile: 72px;
+  --component-row-height-desktop: 76px;
+
+  /* Alias des anciennes variables (migration progressive : à supprimer quand plus utilisés) */
+  --paper: var(--color-sys-bg-page);
+  --ink: var(--color-sys-text-primary);
+  --control-border: var(--color-sys-border-control);
+  --muted: var(--color-sys-text-secondary);
+  --grey-text: var(--color-sys-text-secondary);
+  --border: var(--color-sys-border-subtle);
+  --accent: var(--color-sys-action-primary);
+  --accent-dark: var(--color-sys-action-primary-hover);
+  --gold: var(--color-sys-reward-score);
+  --success: var(--color-sys-feedback-correct);
+  --grey-ind: var(--color-sys-feedback-wrong-fill);
+  --hair: var(--color-sys-border-hairline);
+}

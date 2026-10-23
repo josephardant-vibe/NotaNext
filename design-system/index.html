@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Design system NotaNext — guide visuel v0.1.0</title>
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="tokens.css">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:var(--color-sys-bg-page);color:var(--color-sys-text-primary);font:var(--font-weight-regular) var(--font-size-md)/var(--font-line-height-normal) var(--font-family-text)}
+main{max-width:1000px;margin:0 auto;padding:var(--space-12) var(--space-6)}
+h1,h2,h3{font-family:var(--font-family-display);font-weight:var(--font-weight-semibold);margin:0}
+h1{font-size:var(--font-size-3xl);line-height:var(--font-line-height-tight)}
+h2{font-size:var(--font-size-xl);margin:var(--space-12) 0 var(--space-4);padding-top:var(--space-4);border-top:var(--border-width-hairline) solid var(--color-sys-border-hairline)}
+p{color:var(--color-sys-text-secondary);margin:var(--space-2) 0}
+code{font-size:var(--font-size-xs)}
+small{color:var(--color-sys-text-secondary);font-size:var(--font-size-xs)}
+.dsg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:var(--space-4)}
+.dsg-sw{display:flex;gap:var(--space-3);align-items:flex-start;padding:var(--space-3) 0;border-bottom:var(--border-width-hairline) solid var(--color-sys-border-hairline)}
+.dsg-chip{width:48px;height:48px;flex:none;border-radius:var(--radius-sm);border:var(--border-width-hairline) solid var(--color-sys-border-hairline)}
+.dsg-tag{font-size:var(--font-size-xs);border:var(--border-width-hairline) solid var(--color-sys-border-control);border-radius:var(--radius-pill);padding:0 var(--space-2);color:var(--color-sys-text-secondary)}
+table{border-collapse:collapse;width:100%;font-size:var(--font-size-sm)}
+td{padding:var(--space-2) var(--space-3);border-bottom:var(--border-width-hairline) solid var(--color-sys-border-hairline)}
+.dsg-type{font-family:var(--font-family-display);font-weight:var(--font-weight-semibold);padding:var(--space-1) 0;line-height:var(--font-line-height-tight)}
+.dsg-type span{font:var(--font-weight-medium) var(--font-size-xs) var(--font-family-text);color:var(--color-sys-text-secondary);display:inline-block;width:48px}
+.dsg-type small{font-family:var(--font-family-text);font-weight:var(--font-weight-regular)}
+.dsg-space{display:flex;align-items:center;gap:var(--space-3);margin:var(--space-1) 0}
+.dsg-space i{display:block;height:12px;background:var(--color-sys-action-primary)}
+.dsg-rads{display:flex;gap:var(--space-4);flex-wrap:wrap}
+.dsg-rad{width:96px;height:64px;border:var(--border-width-hairline) solid var(--color-sys-border-control);display:flex;align-items:center;justify-content:center;background:var(--color-sys-bg-raised)}
+.dsg-btn{font:var(--font-weight-semibold) var(--font-size-sm) var(--font-family-text);border-radius:var(--radius-pill);padding:0 var(--space-6);min-height:44px;cursor:pointer;border:var(--border-width-hairline) solid transparent}
+.dsg-btn.p{background:var(--color-sys-action-primary);color:var(--color-sys-text-on-accent)}
+.dsg-btn.p:hover{background:var(--color-sys-action-primary-hover)}
+.dsg-btn.s{background:transparent;color:var(--color-sys-text-primary);border-color:var(--color-sys-border-control)}
+.dsg-btn:focus-visible,.dsg-row:focus-visible,.dsg-ans:focus-visible{outline:var(--border-width-strong) solid var(--color-sys-focus-ring);outline-offset:2px}
+.dsg-row{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);min-height:var(--component-row-height-mobile);padding:0 var(--space-3);border-bottom:var(--border-width-hairline) solid var(--color-sys-border-hairline);text-decoration:none;color:inherit}
+.dsg-row:hover{background:var(--color-sys-bg-raised)}
+.dsg-row b{display:block;font:var(--font-weight-semibold) var(--font-size-lg) var(--font-family-text)}
+.dsg-row span{color:var(--color-sys-text-secondary);font-size:var(--font-size-sm)}
+.dsg-row i{color:var(--color-sys-text-accent);font-style:normal;font-size:var(--font-size-lg)}
+.dsg-ans{min-width:56px;min-height:44px;border-radius:var(--radius-md);border:var(--border-width-hairline) solid var(--color-sys-border-control);background:var(--color-sys-bg-raised);font:var(--font-weight-medium) var(--font-size-md) var(--font-family-text);color:var(--color-sys-text-primary);cursor:pointer}
+.dsg-ok{border-color:var(--color-sys-feedback-correct);background:var(--color-sys-feedback-correct);color:var(--color-sys-text-on-accent)}
+.dsg-ko{border-color:var(--color-sys-feedback-wrong-fill);color:var(--color-sys-feedback-wrong-text)}
+.dsg-do{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-6)}
+@media (max-width:760px){.dsg-do{grid-template-columns:1fr}}
+</style></head><body><main>
+<h1>Design system NotaNext</h1>
+<p>Guide visuel — version 0.1.0 — 22 oct. 2026. Généré à partir de <code>tokens.json</code> : ce que tu vois est ce que le code utilise.</p>
+
+<h2>Couleurs de base (color.ref)</h2>
+<p>Valeurs de base, jamais utilisées directement. Contraste calculé sur le papier #FAF6EF.</p>
+<div class="dsg-grid"><div class="dsg-sw"><div class="dsg-chip" style="background:#faf6ef"></div><div><b>paper</b><br><code>#FAF6EF</code> · 1.0:1<br><small>Papier. Jamais de blanc pur.</small></div></div><div class="dsg-sw"><div class="dsg-chip" style="background:#f7f4ee"></div><div><b>paper-raised</b><br><code>#F7F4EE</code> · 1.0:1<br><small>Surface légèrement relevée (portée, panneaux).</small></div></div><div class="dsg-sw"><div class="dsg-chip" style="background:#211d18"></div><div><b>ink</b><br><code>#211D18</code> · 15.5:1<br><small>Encre : texte principal, notation musicale.</small></div></div><div class="dsg-sw"><div class="dsg-chip" style="background:#6b635a"></div><div><b>stone-600</b><br><code>#6B635A</code> · 5.5:1<br><small>Gris texte secondaire (5,5:1 sur papier).</small></div></div><div class="dsg-sw"><div class="dsg-chip" style="background:#8a8177"></div><div><b>stone-500</b><br><code>#8A8177</code> · 3.6:1<br><small>Bordure des contrôles (3,6:1 sur papier). Filets et icônes seulement, jamais du texte.</small></div></div><div class="dsg-sw"><div class="dsg-chip" style="background:#9a938a"></div><div><b>stone-400</b><br><code>#9A938A</code> · 2.8:1<br><small>Gris « raté » : remplissages et bordures, avec un libellé (2,8:1 : jamais seul).</small></div></div><div class="dsg-sw"><div class="dsg-chip" style="background:#e4ddd0"></div><div><b>stone-200</b><br><code>#E4DDD0</code> · 1.3:1<br><small>Bordure discrète.</small></div></div><div class="dsg-sw"><div class="dsg-chip" style="background:#b8502f"></div><div><b>copper-500</b><br><code>#B8502F</code> · 4.6:1<br><small>Cuivre : accent d'interface (4,6:1).</small></div></div><div class="dsg-sw"><div class="dsg-chip" style="background:#8f3c22"></div><div><b>copper-700</b><br><code>#8F3C22</code> · 6.9:1<br><small>Cuivre foncé : survol, appui (6,9:1).</small></div></div><div class="dsg-sw"><div class="dsg-chip" style="background:#a9791b"></div><div><b>brass-500</b><br><code>#A9791B</code> · 3.6:1<br><small>Laiton : score et séries (3,6:1) : formes et grands textes seulement.</small></div></div><div class="dsg-sw"><div class="dsg-chip" style="background:#3f7d52"></div><div><b>green-600</b><br><code>#3F7D52</code> · 4.6:1<br><small>Vert : bonne réponse uniquement (4,6:1 sur papier, 4,5:1 sur surface relevée).</small></div></div><div class="dsg-sw"><div class="dsg-chip" style="background:#36704a"></div><div><b>green-700</b><br><code>#36704A</code> · 5.5:1<br><small>Vert foncé pour le texte « bonne réponse » sur surface relevée.</small></div></div><div class="dsg-sw"><div class="dsg-chip" style="background:#1f3a5f"></div><div><b>navy-800</b> <span class="dsg-tag">proposé</span><br><code>#1F3A5F</code> · 10.7:1<br><small>PROPOSÉ (non livré) : cachet bleu nuit (10,7:1).</small></div></div><div class="dsg-sw"><div class="dsg-chip" style="background:#7b2a3a"></div><div><b>burgundy-700</b> <span class="dsg-tag">proposé</span><br><code>#7B2A3A</code> · 8.7:1<br><small>PROPOSÉ (non livré) : cachet bordeaux (8,7:1).</small></div></div><div class="dsg-sw"><div class="dsg-chip" style="background:#2f6f73"></div><div><b>teal-700</b> <span class="dsg-tag">proposé</span><br><code>#2F6F73</code> · 5.4:1<br><small>PROPOSÉ (non livré) : cachet bleu pétrole (5,4:1).</small></div></div></div>
+
+<h2>Rôles d'usage (color.sys)</h2>
+<table><tr><td><code>color.sys.bg.page</code></td><td>paper</td></tr><tr><td><code>color.sys.bg.raised</code></td><td>paper-raised</td></tr><tr><td><code>color.sys.text.primary</code></td><td>ink</td></tr><tr><td><code>color.sys.text.secondary</code></td><td>stone-600</td></tr><tr><td><code>color.sys.text.accent</code></td><td>copper-500</td></tr><tr><td><code>color.sys.text.on-accent</code></td><td>paper</td></tr><tr><td><code>color.sys.border.subtle</code></td><td>stone-200</td></tr><tr><td><code>color.sys.border.control</code></td><td>stone-500</td></tr><tr><td><code>color.sys.border.hairline</code></td><td>rgba encre 12 %</td></tr><tr><td><code>color.sys.action.primary</code></td><td>copper-500</td></tr><tr><td><code>color.sys.action.primary-hover</code></td><td>copper-700</td></tr><tr><td><code>color.sys.focus.ring</code></td><td>ink</td></tr><tr><td><code>color.sys.feedback.correct</code></td><td>green-600</td></tr><tr><td><code>color.sys.feedback.correct-text</code></td><td>green-700</td></tr><tr><td><code>color.sys.feedback.wrong-fill</code></td><td>stone-400</td></tr><tr><td><code>color.sys.feedback.wrong-text</code></td><td>stone-600</td></tr><tr><td><code>color.sys.reward.score</code></td><td>brass-500</td></tr><tr><td><code>color.sys.reward.series</code></td><td>brass-500</td></tr><tr><td><code>color.sys.stamp.navy</code></td><td>navy-800</td></tr><tr><td><code>color.sys.stamp.burgundy</code></td><td>burgundy-700</td></tr><tr><td><code>color.sys.stamp.teal</code></td><td>teal-700</td></tr></table>
+
+<h2>Typographie</h2>
+<p>Titres : Fraunces 600. Texte : IBM Plex Sans 400/500/600. Échelle de 8 pas.</p>
+<div class="dsg-type" style="font-size:12px"><span>xs</span> Apprends à lire la musique <small>12 px</small></div><div class="dsg-type" style="font-size:14px"><span>sm</span> Apprends à lire la musique <small>14 px</small></div><div class="dsg-type" style="font-size:16px"><span>md</span> Apprends à lire la musique <small>16 px</small></div><div class="dsg-type" style="font-size:20px"><span>lg</span> Apprends à lire la musique <small>20 px</small></div><div class="dsg-type" style="font-size:24px"><span>xl</span> Apprends à lire la musique <small>24 px</small></div><div class="dsg-type" style="font-size:30px"><span>2xl</span> Apprends à lire la musique <small>30 px</small></div><div class="dsg-type" style="font-size:38px"><span>3xl</span> Apprends à lire la musique <small>38 px</small></div><div class="dsg-type" style="font-size:48px"><span>4xl</span> Apprends à lire la musique <small>48 px</small></div>
+
+<h2>Espacement</h2>
+<div class="dsg-space"><i style="width:4px"></i><code>space-1 · 4 px</code></div><div class="dsg-space"><i style="width:8px"></i><code>space-2 · 8 px</code></div><div class="dsg-space"><i style="width:12px"></i><code>space-3 · 12 px</code></div><div class="dsg-space"><i style="width:16px"></i><code>space-4 · 16 px</code></div><div class="dsg-space"><i style="width:24px"></i><code>space-6 · 24 px</code></div><div class="dsg-space"><i style="width:32px"></i><code>space-8 · 32 px</code></div><div class="dsg-space"><i style="width:48px"></i><code>space-12 · 48 px</code></div><div class="dsg-space"><i style="width:64px"></i><code>space-16 · 64 px</code></div>
+
+<h2>Rayons</h2>
+<div class="dsg-rads"><div class="dsg-rad" style="border-radius:8px"><code>sm</code></div><div class="dsg-rad" style="border-radius:12px"><code>md</code></div><div class="dsg-rad" style="border-radius:20px"><code>lg</code></div><div class="dsg-rad" style="border-radius:999px"><code>pill</code></div><div class="dsg-rad" style="border-radius:40px"><code>circle</code></div></div>
+
+<h2>Composants de base</h2>
+<p>Bouton principal (un seul par écran), bouton secondaire, rangée de hub, boutons de réponse avec retour juste/faux.</p>
+<div class="dsg-do">
+ <div>
+  <p><b>Boutons</b></p>
+  <button class="dsg-btn p">Jouer ma première note</button> <button class="dsg-btn s">Réglages</button>
+  <p style="margin-top:var(--space-6)"><b>Rangée de hub</b></p>
+  <a class="dsg-row" href="#"><div><b>Deviner la note</b><span>Trouve le nom de la note repérée par le trait.</span></div><i>›</i></a>
+  <a class="dsg-row" href="#"><div><b>Placer la note</b><span>On te donne un nom, place la note sur la portée.</span></div><i>›</i></a>
+ </div>
+ <div>
+  <p><b>Réponses (Do à Si)</b></p>
+  <button class="dsg-ans">Do</button> <button class="dsg-ans dsg-ok">Ré ✓</button> <button class="dsg-ans dsg-ko">Mi · c'était Ré</button>
+  <p><small>Juste : vert + nom. Faux : gris + « c'était [nom] ». Jamais la couleur seule.</small></p>
+ </div>
+</div>
+
+<h2>À ne pas faire</h2>
+<table>
+<tr><td>Blanc pur, ombre portée, verre dépoli hors du hero, cercle décoratif</td></tr>
+<tr><td>Violet, vermillon, ocre ; vert hors « bonne réponse » ; laiton hors score et séries</td></tr>
+<tr><td>Une taille, un rayon, une durée ou une largeur de rupture hors des échelles</td></tr>
+<tr><td>Une information portée par la couleur seule ; un contenu pédagogique inventé</td></tr>
+</table>
+</main></body></html>
