@@ -491,7 +491,7 @@ select {
   gap: 6px;
   overflow: auto;
   padding: 16px;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(6px) brightness(1.04) saturate(130%);
   -webkit-backdrop-filter: blur(6px) brightness(1.04) saturate(130%);
@@ -1264,7 +1264,7 @@ body.in-game .shell { display: none; }
   flex-direction: column;
   gap: 10px;
   padding: clamp(14px, 2.4vh, 22px) clamp(14px, 2.4vw, 30px);
-  border-radius: 22px;
+  border-radius: var(--radius-lg);
   background: rgba(255, 255, 255, 0.52);
   backdrop-filter: blur(7px) brightness(1.04) saturate(135%);
   -webkit-backdrop-filter: blur(7px) brightness(1.04) saturate(135%);
@@ -1417,7 +1417,7 @@ body.is-phone .gf-rotate-btn { display: inline-flex; }
   flex-direction: column;
   align-items: flex-start;
   padding: 16px 20px;
-  border-radius: 22px;
+  border-radius: var(--radius-lg);
   background: var(--paper);
 }
 
@@ -1656,7 +1656,7 @@ body.game-rotated .nav { display: none; }
   color: var(--ink);
   background: var(--color-sys-bg-raised);
   border: 1.5px solid var(--control-border);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 .inst-big .inst-ico svg { width: 26px; height: 26px; }
@@ -1898,7 +1898,7 @@ body.in-game .tabbar { display: none; }
   flex: none;
   padding: 1px 8px;
   border: 1.5px solid var(--hair);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font: inherit;
   font-size: 13px;
   font-weight: 600;
@@ -2142,7 +2142,7 @@ details[open] > summary .hub-fam-chev, details[open] > summary .set-chev { trans
 body.m.game-rotated .nav { display: none; }
 
 /* Fenêtre des retours bêta (Tally) : cadre bordeaux de la charte (cuivre foncé), bien visible. */
-.tally-popup { border: 3px solid var(--accent-dark) !important; border-radius: 16px !important; }
+.tally-popup { border: 3px solid var(--accent-dark) !important; border-radius: var(--radius-md) !important; }
 .set-beta > summary h2 { color: var(--accent-dark); }
 .set-beta { border-top: 2px solid var(--accent-dark); }
 
