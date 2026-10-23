@@ -197,7 +197,7 @@
   // ----- Carte "Les clés" (clé + portée annotée + FAQ, inchangé) -----
   function mountClefsPage() {
     learnPage.innerHTML = `
-      <button type="button" class="backbtn" id="learn-back">&#8592; Apprendre</button>
+      <button type="button" class="backbtn" id="learn-back"><span aria-hidden="true">&#8592;</span>Apprendre</button>
       <div class="learn-layout">
         <div class="learn-left">
           <h1>Les clés</h1>
@@ -208,7 +208,7 @@
           </div>
         </div>
         <div class="faq">
-          <h3>FAQ</h3>
+          <h3 aria-level="2">FAQ</h3>
           <div id="faq-body"></div>
         </div>
       </div>
@@ -356,7 +356,7 @@
     out.innerHTML = `
       <div class="gf ${opts.cls || ''}">
         <div class="gf-top">
-          <button type="button" class="backbtn" id="back">&#8592; S'exercer</button>
+          <button type="button" class="backbtn" id="back"><span aria-hidden="true">&#8592;</span>S'exercer</button>
           <h1 class="gf-title" id="gf-heading">${opts.title}</h1>
           <span class="gf-right">
             <button type="button" class="gf-rotate-btn" id="gf-rotate-btn" aria-label="Rotation automatique" aria-pressed="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="14" rx="1.8"/><path d="M5 20.5h14M17 18.5l2 2-2 2" transform="translate(0 -2)"/></svg></button>
@@ -365,19 +365,19 @@
         </div>
         <div class="gf-config">
           ${opts.config || ''}
-          ${opts.replay === 'config' ? '<button type="button" class="replay" id="replay">&#9654; Réécouter</button>' : ''}
+          ${opts.replay === 'config' ? '<button type="button" class="replay" id="replay"><span aria-hidden="true">&#9654;</span>Réécouter</button>' : ''}
           ${opts.configAfter || ''}
         </div>
         <div class="gf-stage" id="gf-stage">
-          ${opts.replay === 'stage' ? '<button type="button" class="replay big" id="replay">&#9654; Réécouter</button>' : ''}
+          ${opts.replay === 'stage' ? '<button type="button" class="replay big" id="replay"><span aria-hidden="true">&#9654;</span>Réécouter</button>' : ''}
           ${opts.stageHtml || ''}
         </div>
         <p class="feedback gf-feedback" id="feedback" aria-live="polite">&nbsp;</p>
-        <div class="gf-next"><button type="button" class="btn-primary" id="gf-next" hidden>Suivant &#8594;</button></div>
+        <div class="gf-next"><button type="button" class="btn-primary" id="gf-next" hidden>Suivant <span aria-hidden="true">&#8594;</span></button></div>
         <div class="gf-answers" id="answers">${opts.answersHtml || ''}</div>
       </div>
       ${demo ? '' : `<div class="gf-hint" role="status">
-        <button type="button" class="backbtn" id="hint-back">&#8592; S'exercer</button>
+        <button type="button" class="backbtn" id="hint-back"><span aria-hidden="true">&#8592;</span>S'exercer</button>
         <div class="gf-hint-body">
           <svg class="gf-hint-icon" width="84" height="84" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="22" y="10" width="20" height="34" rx="4"/><path d="M30 38h4"/><path d="M50 22a20 20 0 0 1 0 24M50 46l-1.5-6M50 46l6-1"/></svg>
           <h2>${opts.portrait ? 'Tourne ton téléphone à la verticale' : 'Tourne ton téléphone à l\'horizontale'}</h2>

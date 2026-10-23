@@ -98,7 +98,7 @@ window.Notanext = window.Notanext || {};
       document.title = `NotaNext — ${p.title}`;
       root.innerHTML = `
         <div class="doc">
-          <a class="backbtn doc-back" href="#/reglages">&#8592; Réglages</a>
+          <a class="backbtn doc-back" href="#/reglages"><span aria-hidden="true">&#8592;</span>Réglages</a>
           <h1>${p.title}</h1>
           ${p.html()}
         </div>`;

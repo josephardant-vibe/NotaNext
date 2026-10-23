@@ -125,7 +125,7 @@
       <span class="app-user" id="nav-login">Comptes bientôt</span>
     </header>
 
-    <div class="shell" id="view-ex">
+    <main class="shell" id="view-ex">
       <div class="panel" id="ex-panel">
         <div id="ex-grid" class="hub">
           <div class="hub-head">
@@ -159,9 +159,9 @@
         </div>
         <div class="ex-page" id="ex-page" hidden></div>
       </div>
-    </div>
+    </main>
 
-    <div class="shell" id="view-learn" hidden>
+    <main class="shell" id="view-learn" hidden>
       <div class="panel" id="learn-panel">
         <div id="learn-grid">
           <div class="grid-head">
@@ -171,30 +171,30 @@
         </div>
         <div class="ex-page" id="learn-page" hidden></div>
       </div>
-    </div>
+    </main>
 
     <!-- Réglages : rempli par js/settings.js -->
-    <div class="shell" id="view-settings" hidden>
+    <main class="shell" id="view-settings" hidden>
       <div class="panel" id="settings-panel"></div>
-    </div>
+    </main>
 
     <!-- Pages texte (mentions légales, confidentialité, crédits) : rempli par js/docs.js -->
-    <div class="shell" id="view-doc" hidden>
+    <main class="shell" id="view-doc" hidden>
       <div class="panel" id="doc-panel"></div>
-    </div>
+    </main>
 
     <!-- Page « Se connecter » : les comptes arrivent bientôt (animation js/runner.js). Plus aucun lien n'y mène. -->
-    <div class="shell" id="view-account" hidden>
+    <main class="shell" id="view-account" hidden>
       <div class="panel page-panel">
-        <button type="button" class="backbtn account-back" id="account-back">&#8592; S'exercer</button>
+        <button type="button" class="backbtn account-back" id="account-back"><span aria-hidden="true">&#8592;</span>S'exercer</button>
         <h1 class="page-title">Ton espace personnel arrive bientôt</h1>
         <svg class="runner" id="runner" role="img" aria-label="Un petit bonhomme court sur la ligne du bas d'une portée, saute sur certaines notes, en touche d'autres de la main et glisse sous d'autres ; les notes touchées deviennent vertes"></svg>
         <button type="button" class="backbtn runner-pause" id="runner-pause" aria-pressed="false">Mettre en pause l'animation</button>
       </div>
-    </div>
+    </main>
 
     <!-- Mobile : barre d'onglets en bas (3 destinations). -->
-    <nav class="tabbar" id="tabbar" aria-label="Navigation principale">
+    <nav class="tabbar" id="tabbar" aria-label="Navigation principale (barre du bas)">
       <button type="button" data-tab="ex" class="on"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>S'exercer</button>
       <button type="button" data-tab="learn"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Apprendre</button>
       <button type="button" data-tab="settings"><svg class="" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>Réglages</button>
@@ -212,7 +212,7 @@
   </div>
 
   <!-- Écran de jeu : cadre commun à tous les jeux, rempli par js/game.js -->
-  <div class="game" id="game" hidden></div>
+  <main class="game" id="game" hidden></main>
 
   <script src="js/access.js"></script>
   <script src="js/version.js"></script>
