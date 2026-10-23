@@ -11,3 +11,4 @@
 - Patchs 13, 14, 15 (textes sourcés) appliqués, un commit chacun, vérificateur vert ; Les clés (4 clés) et accueil contrôlés à 390 et 1440 px.
 - Patchs 11 et 16 (hero) appliqués ; correctif du total de la démo (« 1 / 0 »). Accueil contrôlé à 390 et 1440 px.
 - Accueil : « Les cours » aligné (règle :last-of-type retirée, bandeau avec marges négatives). Mesuré à 390, 760, 1440, 1920 px.
+- Patchs 08, 09, 10 appliqués (un commit chacun, vérificateur vert). Hub (390/760/1440) et 5 jeux (390/760/1440 + paysage 740x360) contrôlés : aucun débordement, aucun contraste en défaut.

@@ -7,7 +7,7 @@
 - **Corrigé** : graisses, rayons, durées, tailles de police, blancs opaques, polices, teintes, accessibilité (`<main>`, noms, message à la place de `alert()`, contrastes, cibles), 3 bugs d'affichage mobile, code mort, 2 textes (03 et 04) + 1 correction issue de la revue de code.
 - **Revue de code** (12 constats) : 8 corrigés, 4 reportés (voir § 5).
 - **Contenu pédagogique** : inventaire sourcé dans `design-system/SOURCES-COURS-CLES.md` (27 affirmations ; 1 erreur probable sur la clé d'ut alto). Corrections **proposées**, non appliquées.
-- **16 patchs** : 5 déjà appliqués (`PROPOSITIONS/appliquees/`), les autres vérifiés avec `git apply --check`, explications dans `PROPOSITIONS/README.md`.
+- **16 patchs** : 13 appliqués (`PROPOSITIONS/appliquees/`) ; restent le 404 (01 ou 02) et `robots.txt` (05), vérifiés avec `git apply --check`. Explications dans `PROPOSITIONS/README.md`.
 - Vérifié à l'écran : hub, jeux (jouer, juste/faux, clavier), Réglages, Apprendre, accueil à 390 / 760 / 1440 px et paysage. **Non vérifié** : appareils réels (iOS Safari), lecteur d'écran, le son.
 
 ## 2. Avant / après (vérificateur strict)
@@ -15,13 +15,13 @@
 |---|---|---|---|
 | Couleurs en dur | 33 | 14 | hero, SVG, instruments, runner |
 | Blanc pur | 25 | 2 | hero seulement |
-| Tailles de police hors échelle | 67 | 36 | hero, zones compactes (patch 09) |
+| Tailles de police hors échelle | 67 | 21 | accueil (hero compris) et cas à arbitrer (28, 32, 34, 36, 40 px, `clamp`) |
 | Rayons hors échelle | 10 | 4 | hero + onglet |
 | Graisses | 8 | 0 | |
 | Polices en dur | 35 | 0 | (le vérificateur ignore désormais `@font-face`) |
-| Durées | 6 | 1 | `earPop` (patch 10) |
+| Durées | 6 | 0 | |
 | Verre dépoli | 3 | 1 | hero seulement (voulu) |
-| Ruptures hors grille | 2 | 2 | patch 08 |
+| Ruptures hors grille | 2 | 1 | 900 px (hub mobile : 760 ou 1000, à arbitrer) |
 | Animations d'ambiance | 9 | 0 | |
 
 ## 3. Ce que j'ai corrigé après avoir regardé les écrans

@@ -1,6 +1,6 @@
 # Propositions (rien n'est appliqué dans la branche)
 
-Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Les patchs 03, 04, 06, 07, 11, 12, 13, 14, 15 et 16 sont déjà appliqués (dossier `appliquees/`). Les autres ont été regénérés le 23 oct. après les derniers commits (`git apply --check` OK). Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
+Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Les patchs 03, 04, 06 à 16 sont déjà appliqués ; restent seulement 01, 02 (404) et 05 (robots.txt) (dossier `appliquees/`). Les autres ont été regénérés le 23 oct. après les derniers commits (`git apply --check` OK). Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
 
 ## 01 — 404, solution A : pages-passerelles (`01-404-pages-passerelles.patch`)
 - Pourquoi : `/s-exercer/`, `/apprendre/`, `/reglages/` renvoient 404 (il n'y a qu'une page `index.html` et aucune règle de réécriture).
@@ -36,15 +36,15 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 - Pourquoi : le fond de l'écran de jeu dérive en boucle (26 s). Les 8 icônes flottantes ne sont plus dans le code (code mort retiré, commit 21d6eee). La direction « papier statique » n'est pas validée.
 - Risque : moyen (direction artistique). Les animations « tilt » des indices ne sont pas touchées.
 
-## 08 — Rupture 720 → 760 px (`08-rupture-720-vers-760.patch`)
+## 08 — Rupture 720 → 760 px — APPLIQUÉE (`appliquees/08-…`, commit 130f2f3)
 - Pourquoi : 720 px n'est pas sur la grille (520 / 760 / 1000). La rupture 900 px (hub mobile) n'est **pas** dans le patch : table « à arbitrer » (760 ou 1000).
 - Risque : faible, mais les téléphones larges (721–760 px) changent de comportement en portrait.
 
-## 09 — Tailles de police restantes (`09-tailles-de-police-restantes.patch`)
+## 09 — Tailles de police restantes — APPLIQUÉE (`appliquees/09-…`, commit 70f3b5c)
 - Pourquoi : valeurs de la table de `AUDIT.md` § 4 laissées de côté cette nuit (zones compactes : paysage mobile, étiquettes SVG, touches, rangées du hub) car un pixel de plus peut faire déborder.
 - Risque : moyen ; à regarder dans les jeux en paysage et dans le hub. Le patch ne touche pas `.home-*`.
 
-## 10 — Animation « earPop » (`10-earpop-duree.patch`)
+## 10 — Animation « earPop » — APPLIQUÉE (`appliquees/10-…`, commit e5579ce)
 - Pourquoi : durée de 0,5 s hors échelle (120 / 180 / 250 ms). Le patch la ramène à 250 ms.
 - Risque : faible (réaction visuelle plus vive sur la bonne réponse d'Oreille absolue).
 
