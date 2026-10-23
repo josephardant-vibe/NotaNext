@@ -1,8 +1,0 @@
-diff --git a/robots.txt b/robots.txt
-new file mode 100644
-index 0000000..c2a49f4
---- /dev/null
-+++ b/robots.txt
-@@ -0,0 +1,2 @@
-+User-agent: *
-+Allow: /

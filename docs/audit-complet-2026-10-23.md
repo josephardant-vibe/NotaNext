@@ -137,7 +137,7 @@ Présent : `title`, `meta description`, `lang="fr"`, `theme-color`, `og:type/loc
 - **Deux remèdes indépendants de l'hébergeur** (proposés en patchs, non appliqués) :
   1. **Vraies pages-passerelles** : créer `s-exercer/index.html`, `apprendre/index.html`, `reglages/index.html` qui redirigent vers `/#/exercer` etc. (`<meta http-equiv="refresh">` + `location.replace` + lien de secours). Fonctionne sur tout hébergeur statique.
   2. **`404.html` à la racine** qui lit `location.pathname` et redirige vers `/#/<route>` (ex. `/s-exercer/` → `/#/exercer`) ; la plupart des hébergeurs statiques servent `404.html` pour les adresses inconnues. Moins de fichiers, mais dépend de la convention `404.html` de l'hébergeur (quasi universelle).
-  Les deux conservent le site sans Functions/Redirects propriétaires. → `PROPOSITIONS/`.
+  Les deux conservent le site sans Functions/Redirects propriétaires. → patchs de la branche d'archive `nuit-2026-10-23` (dossier `PROPOSITIONS/`).
 
 ## 11. Légal et crédits
 - **Mentions légales** : existent (`#/mentions-legales`), en gabarit : 5 champs « À COMPLÉTER » (statut, identité/adresse, directeur de la publication, hébergeur, droits/licence). **Joseph doit fournir ces informations**; rien n'est inventé. Obligation légale en France pour un site professionnel/public (LCEN).
@@ -202,4 +202,4 @@ Mesures par script (`design-system/outils/audit-ecran.js`) et captures. Ce qui �
 - Jeu « Placer la note » à 1024 px : la portée occupe le tiers haut, beaucoup de vide dessous.
 - « Notation des notes » est écrit deux fois de suite dans Réglages > Affichage (libellé puis phrase d'aide).
 - `runner.js` (17,6 Ko) est chargé sur toutes les pages pour une page qui n'est plus liée.
-- Le nom accessible des 3 boutons-icônes et la structure `summary > h2` : voir `A11Y-FORK-RAPPORT.md`.
+- Le nom accessible des 3 boutons-icônes et la structure `summary > h2` : voir `docs/audit-accessibilite-2026-10-23.md`.
