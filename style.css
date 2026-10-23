@@ -207,7 +207,7 @@ h1 {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.7);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   color: var(--ink);
   padding: 6px 13px;
@@ -222,20 +222,20 @@ h1 {
 .ex-title {
   font-family: "Fraunces", Georgia, serif;
   font-weight: 600;
-  font-size: 18px;
+  font-size: var(--font-size-lg);
 }
 
 .ex-score {
   font-family: "Fraunces", Georgia, serif;
   font-weight: 600;
-  font-size: 22px;
+  font-size: var(--font-size-xl);
   color: var(--gold);
   font-variant-numeric: tabular-nums;
 }
 
 select {
   font: inherit;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   padding: 7px 26px 7px 10px;
   border: 1px solid var(--control-border);
@@ -267,7 +267,7 @@ select {
   background: rgba(255, 255, 255, 0.8);
   font-family: "Fraunces", Georgia, serif;
   font-weight: 600;
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   color: var(--accent-dark);
 }
 
@@ -365,7 +365,7 @@ select {
 .learn-label {
   fill: var(--accent-dark);
   font-family: "IBM Plex Sans", sans-serif;
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   font-weight: 600;
   text-anchor: middle;
   paint-order: stroke;
@@ -392,7 +392,7 @@ select {
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.7);
   font: inherit;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   color: var(--ink);
   cursor: pointer;
@@ -404,7 +404,7 @@ select {
 }
 
 .feedback {
-  font-size: 15px;
+  font-size: var(--font-size-md);
   font-weight: 600;
   color: var(--muted);
 }
@@ -461,12 +461,12 @@ select {
 .learn-left h2 {
   font-family: "Fraunces", Georgia, serif;
   font-weight: 600;
-  font-size: 18px;
+  font-size: var(--font-size-lg);
   margin: 0;
 }
 
 .learn-hint {
-  font-size: 11.5px;
+  font-size: var(--font-size-xs);
   color: var(--muted);
   margin: -4px 0 0;
 }
@@ -501,7 +501,7 @@ select {
 .faq h3 {
   font-family: "Fraunces", Georgia, serif;
   font-weight: 600;
-  font-size: 15px;
+  font-size: var(--font-size-md);
   margin: 0 0 4px;
 }
 
@@ -517,7 +517,7 @@ select {
 .faq summary {
   cursor: pointer;
   font-weight: 600;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   list-style: none;
   display: flex;
   justify-content: space-between;
@@ -541,7 +541,7 @@ select {
 
 .faq p {
   margin: 8px 0 2px;
-  font-size: 12.5px;
+  font-size: var(--font-size-xs);
   line-height: 1.55;
   color: #4a443c;
 }
@@ -615,7 +615,7 @@ select {
 .seg { display: flex; gap: 6px; }
 .seg-btn {
   font: inherit;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   font-weight: 600;
   padding: 7px 14px;
   border: 1.5px solid var(--control-border);
@@ -1430,7 +1430,7 @@ body.is-phone .gf-rotate-btn { display: inline-flex; }
 .gf-hint-icon { color: var(--accent); animation: tilt 1.6s ease-in-out infinite; }
 @keyframes tilt { 0%, 30% { transform: rotate(0); } 70%, 100% { transform: rotate(-90deg); } }
 
-.gf-hint h2 { margin: 10px 0 8px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 26px; line-height: 1.15; }
+.gf-hint h2 { margin: 10px 0 8px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: var(--font-size-xl); line-height: 1.15; }
 .gf-hint p { margin: 0; color: var(--muted); }
 
 /* Jeu tourné de force (téléphone) : la carte occupe tout l'écran, sans header */
@@ -1509,7 +1509,7 @@ body.game-rotated .nav { display: none; }
   align-items: center;
   gap: 8px;
   font: inherit;
-  font-size: 13px;
+  font-size: var(--font-size-sm);
   font-weight: 500;
   padding: 6px 12px 6px 10px;
   border: 1px solid var(--control-border);
@@ -1628,7 +1628,7 @@ body.game-rotated .nav { display: none; }
 .ear-stage .ear-play.small { position: static; transform: none; flex: 0 0 auto; width: 54px; height: 54px; }
 .gf .ear-stage .stage-row { flex: 1 1 0; }
 
-.switch { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.switch { display: inline-flex; align-items: center; gap: 8px; font-size: var(--font-size-sm); font-weight: 500; cursor: pointer; }
 .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .switch-track { position: relative; width: 38px; height: 22px; border-radius: 999px; background: var(--control-border); transition: background var(--motion-duration-base); flex: 0 0 auto; }
 .switch-thumb { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--color-sys-bg-raised); transition: transform var(--motion-duration-base); }
@@ -1714,7 +1714,7 @@ body.is-home .app { display: none; }
   background: var(--paper);
 }
 body.app-hint-on .app-hint { display: flex; }
-.app-hint h2 { margin: 10px 0 8px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 26px; line-height: 1.15; }
+.app-hint h2 { margin: 10px 0 8px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: var(--font-size-xl); line-height: 1.15; }
 .app-hint p { margin: 0; color: var(--muted); }
 .app-hint .gf-hint-icon { color: var(--accent); animation: tilt 1.6s ease-in-out infinite; }
 
@@ -1785,7 +1785,7 @@ body:not(.in-game) .bg { display: none; }
   cursor: pointer;
   font-family: "Fraunces", Georgia, serif;
   font-weight: 600;
-  font-size: 26px;
+  font-size: var(--font-size-xl);
   letter-spacing: -0.01em;
   color: var(--ink);
 }
@@ -1821,7 +1821,7 @@ body.m .nav {
 }
 body.m .nav .nav-home { font-size: 24px; }
 body.m .app-tabs { display: none; }
-body.m .app-user { font-size: 13px; }
+body.m .app-user { font-size: var(--font-size-sm); }
 body.m .tabbar {
   flex: 0 0 auto;
   position: relative;
@@ -1867,7 +1867,7 @@ body.in-game .tabbar { display: none; }
 .hub { padding-bottom: 56px; }
 .hub-head { padding: 40px 0 24px; }
 .hub-head h1 { margin: 0; font-size: 48px; line-height: 1.05; letter-spacing: -0.02em; }
-.hub-help { margin: 10px 0 0; font-size: 17px; color: var(--grey-text); }
+.hub-help { margin: 10px 0 0; font-size: var(--font-size-md); color: var(--grey-text); }
 .hub-grid { display: grid; grid-template-columns: 440px minmax(0, 1fr); gap: 72px; align-items: start; }
 
 .hub-search {
@@ -1911,7 +1911,7 @@ body.in-game .tabbar { display: none; }
 
 .hub-fam-head { padding: 0 16px 12px; }
 .hub-fam-head h2 { margin: 0; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 24px; color: var(--accent); }
-.hub-fam-head p { margin: 0; font-size: 15px; color: var(--grey-text); }
+.hub-fam-head p { margin: 0; font-size: var(--font-size-md); color: var(--grey-text); }
 .hub-fam.second { margin-top: 40px; }
 .hub-fam.second .hub-fam-head { padding-top: 18px; border-top: 2px solid var(--ink); }
 
@@ -1944,7 +1944,7 @@ body.in-game .tabbar { display: none; }
 .hub-thumb { display: none; }
 
 .hub-empty { padding: 32px 16px; }
-.hub-empty-t { margin: 0 0 6px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 22px; }
+.hub-empty-t { margin: 0 0 6px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: var(--font-size-xl); }
 .hub-empty-d { margin: 0 0 18px; color: var(--grey-text); }
 
 .hub-detail { padding: 8px 0 0 8px; min-width: 0; }
@@ -1952,7 +1952,7 @@ body.in-game .tabbar { display: none; }
 .hub-detail-fade.out { opacity: 0; }
 .hub-detail-text { display: block; width: 100%; padding: 0; border: 0; background: none; text-align: left; font: inherit; color: inherit; cursor: pointer; }
 .hub-detail-title { display: block; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 36px; line-height: 1.1; letter-spacing: -0.015em; color: var(--ink); }
-.hub-detail-desc { display: block; margin: 10px 0 24px; font-size: 17px; line-height: 26px; color: var(--grey-text); }
+.hub-detail-desc { display: block; margin: 10px 0 24px; font-size: var(--font-size-md); line-height: 26px; color: var(--grey-text); }
 .hub-preview-wrap {
   position: relative;
   width: 100%;
@@ -2028,14 +2028,14 @@ body.in-game .tabbar { display: none; }
 .set-sec { padding: 28px 0; border-top: 1px solid var(--hair); display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
 .set-sec:first-of-type { margin-top: 16px; }
 .set-sec h2 { margin: 0; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 24px; color: var(--accent); }
-.set-hint { margin: 0; font-size: 15px; line-height: 22px; color: var(--grey-text); max-width: 60ch; }
+.set-hint { margin: 0; font-size: var(--font-size-md); line-height: 22px; color: var(--grey-text); max-width: 60ch; }
 .set-warn { margin: 0; font-size: 14px; line-height: 20px; color: var(--grey-text); border-left: 3px solid var(--accent); padding-left: 10px; }
 .settings .seg-wrap { justify-content: flex-start; gap: 16px; }
-.settings .seg-btn { font-size: 15px; padding: 10px 18px; min-height: 44px; }
+.settings .seg-btn { font-size: var(--font-size-md); padding: 10px 18px; min-height: 44px; }
 .settings .seg-btn.on { background: rgba(184, 80, 47, 0.08); border-color: var(--accent); }
 .settings .kbd-rows { max-width: 360px; }
 .settings .kbd-row { font-size: 16px; }
-.settings .kbd-key { min-width: 140px; min-height: 44px; font-size: 15px; }
+.settings .kbd-key { min-width: 140px; min-height: 44px; font-size: var(--font-size-md); }
 .settings .kbd-key.dup { border-color: var(--accent); color: var(--accent-dark); }
 .settings .btn-primary, .settings .btn-secondary { min-height: 44px; }
 .settings .switch { font-size: 16px; min-height: 44px; }
@@ -2043,14 +2043,14 @@ body.in-game .tabbar { display: none; }
 .set-vol { display: flex; align-items: center; gap: 14px; width: 100%; max-width: 420px; }
 .set-vol label { font-size: 16px; font-weight: 500; }
 .set-vol input[type="range"] { flex: 1; min-height: 44px; accent-color: var(--accent); }
-.set-vol output { min-width: 3.2em; text-align: right; font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.set-vol output { min-width: 3.2em; text-align: right; font-size: var(--font-size-md); font-weight: 600; font-variant-numeric: tabular-nums; }
 .set-inst-label { margin: 0; }
 .set-inst { display: flex; flex-wrap: wrap; gap: 10px; }
 .set-inst .inst-big { min-height: 48px; padding: 8px 16px; }
 .set-confirm { padding: 16px; border: 1.5px solid var(--ink); border-radius: 12px; max-width: 460px; }
-.set-confirm p { margin: 0 0 12px; font-size: 15px; line-height: 22px; }
+.set-confirm p { margin: 0 0 12px; font-size: var(--font-size-md); line-height: 22px; }
 .set-links { width: 100%; margin: 0; padding: 0; list-style: none; }
-.set-links a { display: flex; align-items: center; justify-content: space-between; min-height: 56px; padding: 0 4px; border-bottom: 1px solid var(--hair); font-size: 17px; font-weight: 500; color: var(--ink); text-decoration: none; }
+.set-links a { display: flex; align-items: center; justify-content: space-between; min-height: 56px; padding: 0 4px; border-bottom: 1px solid var(--hair); font-size: var(--font-size-md); font-weight: 500; color: var(--ink); text-decoration: none; }
 .set-links a:hover { color: var(--accent-dark); }
 .set-links a svg { color: var(--grey-text); }
 body.m .settings { padding: 24px 0 40px; }
@@ -2060,7 +2060,7 @@ body.m .panel { padding-left: 20px; padding-right: 20px; padding-bottom: 56px; }
 /* ----- pages texte ----- */
 .doc { width: 100%; max-width: 68ch; padding: 32px 0 64px; }
 .doc h1 { font-size: 40px; line-height: 1.1; letter-spacing: -0.02em; margin: 18px 0 12px; }
-.doc h2 { margin: 32px 0 8px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 22px; }
+.doc h2 { margin: 32px 0 8px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: var(--font-size-xl); }
 .doc p, .doc li { font-size: 16px; line-height: 1.6; }
 .doc p { margin: 0 0 12px; }
 .doc ul { margin: 0 0 12px; padding-left: 22px; }
