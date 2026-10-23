@@ -1,6 +1,6 @@
 // Application : navigation (onglets, grille de cartes, pages d'exercice) et logique des exercices.
 (function () {
-  const { data, staff, scrollStaff, windowStaff, playTone, playNote, instruments, instrumentMenu } = window.Notanext;
+  const { data, staff, scrollStaff, windowStaff, playTone, playNote, instruments, instrumentMenu, sound } = window.Notanext;
   const { CLEFS, clefById, notesOf, FR, ANSWER_ORDER, createPicker, label, getNotation, setNotation, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS } = data;
   const { renderStaff, eventToStep, attachKeyboard } = staff;
   const { createScrollStaff, SPEED_LEVELS } = scrollStaff;
@@ -14,13 +14,7 @@
   ];
 
   const CORRECT_PHRASES = ['Bravo !', 'Exactement !', 'Bien vu !', 'Parfait !'];
-
-  // ---------- notes décoratives en fond ----------
-  const ICON_CLEF = '<svg viewBox="0 0 60 90" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M30 6 C 44 20, 44 34, 30 46 C 18 56, 14 44, 22 38 C 34 30, 44 44, 34 58 C 26 70, 12 66, 10 54 M30 6 C 22 22, 26 44, 30 60 C 33 74, 30 86, 22 86 C 14 86, 12 78, 18 76"/></svg>';
-  const ICON_NOTE = '<svg viewBox="0 0 40 60" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><ellipse cx="13" cy="47" rx="10" ry="7" transform="rotate(-20 13 47)"/><path d="M22 44 V 8 C 30 12, 36 18, 34 28"/></svg>';
-  const ICON_QNOTE = '<svg viewBox="0 0 40 60" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><ellipse cx="12" cy="47" rx="10" ry="7" transform="rotate(-20 12 47)"/><path d="M21 44 V 9"/></svg>';
-  const BG_ICONS = [ICON_CLEF, ICON_NOTE, ICON_QNOTE, ICON_CLEF, ICON_QNOTE, ICON_NOTE, ICON_QNOTE, ICON_NOTE];
-  document.getElementById('bg-icons').innerHTML = BG_ICONS.map((ic, i) => `<span class="bg-icon i${i + 1}">${ic}</span>`).join('');
+  const FIRST_NOTE_MS = 300; // attente avant la 1re note jouée d'un jeu (laisse l'écran se poser avant le son)
 
   // Réglage mobile : true = les jeux s'affichent en paysage (message « Tourne ton téléphone »,
   // puis rotation automatique après 3 s). Passer à false pour désactiver ce comportement.
@@ -168,7 +162,43 @@
   // qu'une entrée dans LEARN_CARDS + un mount*.
   function buildLearnGrid() {
     const tiles = LEARN_CARDS.map((c) => ({ title: c.title, desc: c.tag, action: 'Commencer', onOpen: () => openLearnCard(c.id) }));
-    buildTiles(document.getElementById('learn-card-grid'), tiles);
+    const grid = document.getElementById('learn-card-grid');
+    buildTiles(grid, tiles);
+
+    // Recherche (même champ que S'exercer) : filtre les cartes en direct, sans tenir compte des accents ni de la casse.
+    const input = document.getElementById('learn-search');
+    const clear = document.getElementById('learn-clear');
+    const empty = document.getElementById('learn-empty');
+    const norm = (t) => String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    const cards = Array.from(grid.children); // même ordre que LEARN_CARDS
+    const entries = LEARN_CARDS.map((c, i) => ({ el: cards[i], title: c.title, tag: c.tag, body: data.learnBody(c) }));
+    const esc = (t) => String(t).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+    function filter() {
+      // Titre d'abord, puis sous-titre, puis tout le reste de la carte (FAQ comprise).
+      const hits = data.searchRank(entries, input.value);
+      cards.forEach((el) => { el.hidden = true; });
+      hits.forEach((e) => { e.el.hidden = false; grid.appendChild(e.el); });
+      const shown = hits.length;
+      clear.hidden = !input.value;
+      empty.hidden = shown > 0;
+      if (!shown) {
+        empty.innerHTML = `<p class="hub-empty-t">Aucun résultat pour « ${esc(input.value.trim())} »</p><p class="hub-empty-d">Vérifie l'orthographe ou cherche un autre mot.</p>`;
+      }
+    }
+    input.addEventListener('input', filter);
+    clear.addEventListener('click', () => { input.value = ''; filter(); input.focus(); });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && input.value) { e.preventDefault(); input.value = ''; filter(); }
+      else if (e.key === 'Enter') { e.preventDefault(); const first = cards.find((el) => !el.hidden); if (first) first.click(); }
+    });
+    // « / » place le curseur dans la recherche (comme dans S'exercer), sauf dans un champ ou un jeu.
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey || learnGrid.hidden || viewLearn.hidden) return;
+      if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
+      e.preventDefault();
+      input.focus();
+      input.select();
+    });
   }
 
   function showLearnGrid(fromRoute) {
@@ -197,7 +227,7 @@
   // ----- Carte "Les clés" (clé + portée annotée + FAQ, inchangé) -----
   function mountClefsPage() {
     learnPage.innerHTML = `
-      <button type="button" class="backbtn" id="learn-back">&#8592; Apprendre</button>
+      <button type="button" class="backbtn" id="learn-back"><span aria-hidden="true">&#8592;</span>Apprendre</button>
       <div class="learn-layout">
         <div class="learn-left">
           <h1>Les clés</h1>
@@ -208,8 +238,9 @@
           </div>
         </div>
         <div class="faq">
-          <h3>FAQ</h3>
+          <h3 aria-level="2">FAQ</h3>
           <div id="faq-body"></div>
+          <p class="learn-sources">Sources : <a href="https://www.larousse.fr/encyclopedie/musdico/clef/166855" target="_blank" rel="noopener">Larousse, Dictionnaire de la musique, « Clef »</a> ; <a href="https://dolmetsch.com/musictheory14.htm" target="_blank" rel="noopener">Dolmetsch Online, Music Theory Online, leçon 14 « Other Clefs »</a> (B. Blood).</p>
         </div>
       </div>
     `;
@@ -228,7 +259,7 @@
   // Téléphone tenu en portrait : message « Tourne ton téléphone » pendant 3 s, puis le
   // jeu se tourne tout seul en paysage. Le bouton de rotation bascule paysage <-> portrait.
   // Les cours n'utilisent rien de tout cela. Désactivable avec MOBILE_LANDSCAPE.
-  const HINT_MS = 2100; // 30 % plus court qu'avant (3 s)
+  const HINT_MS = 1750; // 42 % plus court que les 3 s d'origine (2,1 s auparavant)
   const isPhone = () => Math.min(window.innerWidth, window.innerHeight) <= 500;
   let orient = null;        // null = automatique ; 'landscape' | 'portrait' = choix du joueur
   let gamePref = 'landscape'; // orientation voulue par le jeu en cours (l'oreille absolue se joue en portrait)
@@ -239,15 +270,16 @@
     document.body.classList.toggle('is-phone', isPhone());
     gameEl.classList.remove('rot-cw', 'rot-ccw', 'show-hint');
     document.body.classList.remove('game-rotated', 'game-portrait');
-    if (gameEl.hidden || !rotationOn() || !isPhone()) { hintPaused = false; syncPause(); return; }
+    if (gameEl.hidden || !isPhone() || (!rotationOn() && !orient)) { hintPaused = false; syncPause(); return; }
     const devicePortrait = window.innerHeight > window.innerWidth;
     const deviceOk = gamePref === 'portrait' ? devicePortrait : !devicePortrait;
     if (hintPending && deviceOk) { hintPending = false; clearTimeout(hintTimer); }
     hintPaused = hintPending;
     syncPause();
-    if (hintPending) { gameEl.classList.add('show-hint'); return; }
     const want = orient || gamePref;
     const rot = want === 'landscape' && devicePortrait ? 'rot-cw' : want === 'portrait' && !devicePortrait ? 'rot-ccw' : null;
+    // Le message « Tourne ton téléphone » est déjà affiché dans l'orientation à venir (horizontal pour les jeux de lecture).
+    if (hintPending) { gameEl.classList.add('show-hint'); if (rot) { gameEl.classList.add(rot); document.body.classList.add('game-rotated'); if (rot === 'rot-ccw') document.body.classList.add('game-portrait'); } return; }
     if (rot) {
       gameEl.classList.add(rot);
       document.body.classList.add('game-rotated');
@@ -296,8 +328,8 @@
   function syncRotateBtn() {
     const btn = document.getElementById('gf-rotate-btn');
     if (!btn) return;
-    btn.setAttribute('aria-pressed', String(autoRotate));
-    const text = autoRotate ? 'Rotation automatique activée : toucher pour la désactiver' : 'Rotation automatique désactivée : toucher pour l\'activer';
+    btn.removeAttribute('aria-pressed');
+    const text = 'Tourner le jeu : paysage ou portrait';
     btn.setAttribute('aria-label', text);
     btn.title = text;
   }
@@ -356,7 +388,7 @@
     out.innerHTML = `
       <div class="gf ${opts.cls || ''}">
         <div class="gf-top">
-          <button type="button" class="backbtn" id="back">&#8592; S'exercer</button>
+          <button type="button" class="backbtn" id="back"><span aria-hidden="true">&#8592;</span>S'exercer</button>
           <h1 class="gf-title" id="gf-heading">${opts.title}</h1>
           <span class="gf-right">
             <button type="button" class="gf-rotate-btn" id="gf-rotate-btn" aria-label="Rotation automatique" aria-pressed="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="3" width="8" height="14" rx="1.8"/><path d="M5 20.5h14M17 18.5l2 2-2 2" transform="translate(0 -2)"/></svg></button>
@@ -365,19 +397,20 @@
         </div>
         <div class="gf-config">
           ${opts.config || ''}
-          ${opts.replay === 'config' ? '<button type="button" class="replay" id="replay">&#9654; Réécouter</button>' : ''}
+          ${opts.soundToggle ? '<label class="switch"><input type="checkbox" id="sound-on" role="switch" checked><span class="switch-track"><span class="switch-thumb"></span></span><span>Son</span></label>' : ''}
+          ${opts.replay === 'config' ? '<button type="button" class="replay" id="replay"><span aria-hidden="true">&#9654;</span>Réécouter</button>' : ''}
           ${opts.configAfter || ''}
         </div>
         <div class="gf-stage" id="gf-stage">
-          ${opts.replay === 'stage' ? '<button type="button" class="replay big" id="replay">&#9654; Réécouter</button>' : ''}
+          ${opts.replay === 'stage' ? '<button type="button" class="replay big" id="replay"><span aria-hidden="true">&#9654;</span>Réécouter</button>' : ''}
           ${opts.stageHtml || ''}
         </div>
         <p class="feedback gf-feedback" id="feedback" aria-live="polite">&nbsp;</p>
-        <div class="gf-next"><button type="button" class="btn-primary" id="gf-next" hidden>Suivant &#8594;</button></div>
+        <div class="gf-next"><button type="button" class="btn-primary" id="gf-next" hidden>Suivant <span aria-hidden="true">&#8594;</span></button></div>
         <div class="gf-answers" id="answers">${opts.answersHtml || ''}</div>
       </div>
       ${demo ? '' : `<div class="gf-hint" role="status">
-        <button type="button" class="backbtn" id="hint-back">&#8592; S'exercer</button>
+        <button type="button" class="backbtn" id="hint-back"><span aria-hidden="true">&#8592;</span>S'exercer</button>
         <div class="gf-hint-body">
           <svg class="gf-hint-icon" width="84" height="84" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="22" y="10" width="20" height="34" rx="4"/><path d="M30 38h4"/><path d="M50 22a20 20 0 0 1 0 24M50 46l-1.5-6M50 46l6-1"/></svg>
           <h2>${opts.portrait ? 'Tourne ton téléphone à la verticale' : 'Tourne ton téléphone à l\'horizontale'}</h2>
@@ -410,10 +443,24 @@
       return frame;
     }
     focusHeading(q('gf-heading'));
+    // Interrupteur « Son » (jeux sans « Réécouter ») : c'est le même réglage que Réglages > Son > Couper le son.
+    const soundBox = q('sound-on');
+    if (soundBox) {
+      soundBox.checked = !sound.isMuted();
+      soundBox.addEventListener('change', () => sound.setMuted(!soundBox.checked));
+    }
     q('back').addEventListener('click', opts.onBack);
     q('hint-back').addEventListener('click', opts.onBack);
     q('hint-keep').addEventListener('click', () => setAutoRotate(false));
-    q('gf-rotate-btn').addEventListener('click', () => setAutoRotate(!autoRotate));
+    // Le bouton tourne le jeu en cours (paysage <-> portrait), même pour « Placer la note » ; la rotation automatique
+    // se règle dans Réglages ou avec « Garder cette orientation ».
+    q('gf-rotate-btn').addEventListener('click', () => {
+      const cur = orient || gamePref;
+      orient = cur === 'landscape' ? 'portrait' : 'landscape';
+      clearTimeout(hintTimer);
+      hintPending = false;
+      refreshLayout();
+    });
     syncRotateBtn();
 
     // ----- compteur : bonnes réponses / total -----
@@ -450,6 +497,7 @@
 
   // Boîte à outils pour les jeux écrits dans d'autres fichiers (js/ear.js).
   const kit = {
+    FIRST_NOTE_MS,
     openFrame,
     showGrid: () => showGrid(),
     CORRECT_PHRASES,
@@ -459,6 +507,7 @@
   // Boîte à outils des aperçus : mêmes jeux, mais montés dans un conteneur à part (voir openFrame).
   function demoKit(demo) {
     return {
+      FIRST_NOTE_MS,
       openFrame: (o) => openFrame(Object.assign({}, o, { demo })),
       showGrid: () => {},
       CORRECT_PHRASES,
@@ -523,10 +572,15 @@
     const isPlace = ex.mode === 'place';
     const frame = openFrame({
       title: ex.title,
+      // Placer la note : on vise une position précise sur la portée. Le jeu se joue donc en portrait (comme Oreille
+      // absolue — placer), où la portée est deux fois plus haute qu'en paysage, avec un geste « touche, glisse, relâche ».
+      cls: isPlace ? 'place-game' : '',
+      portrait: isPlace,
       config: `
         ${isPlace ? '<div class="namebox" id="namebox">–</div>' : ''}
         ${ex.mode === 'guess-scroll' ? `<select id="speed-sel" aria-label="Choisir une vitesse">${SPEED_LABELS.map(([v, label]) => `<option value="${v}"${v === 'intermediaire' ? ' selected' : ''}>${label}</option>`).join('')}</select>` : ''}`,
-      replay: 'config',
+      replay: null,
+      soundToggle: !isPlace,
       configAfter: `${instrumentMenu.html()}<span class="inst-note" id="inst-note" hidden></span>`,
       // Le sélecteur de clé est à gauche de la portée, centré en hauteur.
       stageHtml: `<div class="stage-row"><div class="clef-side"><select id="clef-sel" aria-label="Choisir une clé">${CLEFS.map((c) => `<option value="${c.id}">${c.label}</option>`).join('')}</select></div><div class="staff-box"><svg class="staff-svg" id="staff" role="img" aria-label="Portée"></svg></div></div>`,
@@ -550,8 +604,7 @@
       session.record(false);
     }
 
-    const tone = (note) => playNote(note.freq);
-
+    const SPD = demo ? demo.speed || 1 : 1; // aperçus du hub : pauses et défilement accélérés
     let controller;
     if (ex.mode === 'guess-scroll') controller = mountGuessScroll(svg, clef, markCorrect, markWrong);
     else if (ex.mode === 'guess-window') controller = mountGuessWindow(svg, clef, markCorrect, markWrong);
@@ -575,10 +628,12 @@
       window.removeEventListener('notanext:instrument', paintFoldNote);
       if (controller.destroy) controller.destroy();
     });
-    frame.replay.addEventListener('click', () => {
-      const note = controller.currentNote();
-      if (note) playNote(note.freq);
-    });
+    if (frame.replay) {
+      frame.replay.addEventListener('click', () => {
+        const note = controller.currentNote();
+        if (note) playNote(note.freq);
+      });
+    }
     $('clef-sel').addEventListener('change', (e) => {
       clefId = e.target.value;
       paintFoldNote();
@@ -598,7 +653,7 @@
         const ok = name === current.name;
         picker.record(current, ok);
         scroll.answer(ok, current.name);
-        if (ok) onGood();
+        if (ok) { playNote(current.freq); onGood(); } // seule la bonne note est jouée, quand elle est devinée
         else onBad(current.name);
       });
 
@@ -609,11 +664,11 @@
       const scroll = createScrollStaff(svgEl, {
         clef: clefFn(),
         pickNote,
-        onDue: tone,
         // Une note qui dépasse le repère sans réponse compte comme une erreur,
         // exactement comme une mauvaise réponse donnée à temps.
         onMiss: (name, note) => { if (note) picker.record(note, false); onBad(name); },
-        initialSpeed: SPEED_LEVELS.intermediaire,
+        initialSpeed: SPEED_LEVELS.intermediaire * SPD,
+        preRoll: !!demo, // aperçu : la 1re note est déjà près de la clé, prête à être « devinée »
       });
 
       // Mise en pause pendant le message de rotation (voir syncPause) ; pas dans un aperçu.
@@ -640,7 +695,7 @@
         const ok = name === current.name;
         picker.record(current, ok); // avant answer() : la note ratée est la prochaine à entrer sur la portée
         win.answer(ok, current.name);
-        if (ok) onGood();
+        if (ok) { playNote(current.freq); onGood(); } // seule la bonne note est jouée, quand elle est devinée
         else onBad(current.name);
       });
 
@@ -651,7 +706,6 @@
       const win = createWindowStaff(svgEl, {
         clef: clefFn(),
         pickNote,
-        onDue: tone,
       });
 
       return {
@@ -685,11 +739,13 @@
 
     // Aperçu : « répond » en appuyant sur le bouton (bonne note, ou une autre note si `ok` est faux).
     function demoPressAnswer(current, ok) {
-      if (!current) return;
+      if (!current) return false;
       const names = ANSWER_ORDER.filter((n) => n !== current.name);
       const name = ok ? current.name : names[Math.floor(Math.random() * names.length)];
       const btn = frame.answers.querySelector(`[data-note="${name}"]`);
-      if (btn) btn.click();
+      if (!btn) return false;
+      btn.click();
+      return true;
     }
 
     // ----- Placer la note : clic sur la portée (inchangé) -----
@@ -701,7 +757,7 @@
       let hoverStep = null; // dernier pas affiché par l'indice de survol
       let dead = false;
 
-      function next() {
+      function next(first) {
         if (dead) return;
         locked = false;
         hoverStep = null;
@@ -711,7 +767,10 @@
         nameBox.textContent = label(current.name);
         svgEl.classList.add('placing');
         renderStaff(svgEl, { wide: true, clef: clefFn() });
-        playNote(current.freq);
+        const note = current;
+        // 1re note : on attend un instant avant de la jouer ; les suivantes partent tout de suite.
+        if (first === true) setTimeout(() => { if (!dead && current === note) playNote(note.freq); }, FIRST_NOTE_MS);
+        else playNote(note.freq);
       }
 
       svgEl.addEventListener('mousemove', (e) => {
@@ -741,10 +800,10 @@
         });
         if (ok) {
           onGood();
-          setTimeout(next, 900);
+          setTimeout(next, demo ? 1500 : 900);
         } else {
           onBad(current.name);
-          setTimeout(next, 1200);
+          setTimeout(next, demo ? 1700 : 1200);
         }
       }
       svgEl.addEventListener('click', (e) => {
@@ -752,6 +811,28 @@
         // Toujours placer exactement là où l'indice en pointillés était affiché,
         // plutôt que de recalculer une position potentiellement différente au clic.
         commit(hoverStep != null ? hoverStep : eventToStep(svgEl, e.clientY, e.clientX));
+      });
+      // Toucher (comme dans Oreille absolue — placer) : on pose le doigt, on le glisse jusqu'à la bonne position
+      // (la note fantôme suit), on relâche pour valider. La souris garde survol + clic ci-dessus.
+      svgEl.style.touchAction = 'none';
+      const stepOf = (e) => eventToStep(svgEl, e.clientY, e.clientX);
+      const showGhost = (step) => { hoverStep = step; renderStaff(svgEl, { wide: true, clef: clefFn(), ghostStep: step }); };
+      svgEl.addEventListener('pointerdown', (e) => {
+        if (locked || e.pointerType === 'mouse') return;
+        try { svgEl.setPointerCapture(e.pointerId); } catch (err) { /* capture indisponible : on suit quand même */ }
+        showGhost(stepOf(e));
+      });
+      svgEl.addEventListener('pointermove', (e) => {
+        if (locked || e.pointerType === 'mouse' || !e.buttons) return;
+        showGhost(stepOf(e));
+      });
+      svgEl.addEventListener('pointerup', (e) => {
+        if (locked || e.pointerType === 'mouse') return;
+        commit(stepOf(e));
+      });
+      svgEl.addEventListener('pointercancel', () => {
+        hoverStep = null;
+        if (!locked) renderStaff(svgEl, { wide: true, clef: clefFn() });
       });
       // Clavier : flèches pour déplacer la note fantôme, Entrée pour valider.
       const kb = attachKeyboard(svgEl, {
@@ -768,18 +849,19 @@
       const onResize = () => { if (!locked) renderStaff(svgEl, { wide: true, clef: clefFn() }); };
       window.addEventListener('resize', onResize);
 
-      next();
+      next(true);
 
       return {
         currentNote: () => current,
         onClefChange: () => { picker.reset(); next(); },
         // Aperçu : pose la note au bon endroit, ou sur une autre position de la portée.
         demoAnswer: (ok) => {
-          if (locked || !current) return;
+          if (locked || !current) return false;
           const all = notesOf(clefFn());
           const good = all.filter((n) => n.name === current.name).map((n) => n.step);
           const others = all.filter((n) => n.name !== current.name).map((n) => n.step);
           commit(ok ? good[0] : others[Math.floor(Math.random() * others.length)]);
+          return true;
         },
         demoPause: () => {},
         destroy: () => { dead = true; window.removeEventListener('resize', onResize); window.removeEventListener('notanext:notation', onNotation); },

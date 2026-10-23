@@ -42,14 +42,17 @@ window.Notanext = window.Notanext || {};
     // Une note ratée revient dès que possible (après une autre note).
     const picker = createPicker(() => FR.map((n) => ({ name: n })), { minGap: 1 });
     const play = () => { if (current) playNote(FREQ[current + '4']); };
+    const SPD = kit.demo ? kit.demo.speed || 1 : 1; // aperçus du hub : pauses accélérées
 
-    function next() {
+    function next(first) {
       if (dead) return;
       locked = false;
       Object.values(byName).forEach((b) => { b.classList.remove('good', 'bad', 'reveal'); });
       current = picker.next().name;
       frame.setFeedback('');
-      play();
+      // 1re note : on attend un instant avant de la jouer ; les suivantes partent tout de suite.
+      if (first === true) { const note = current; setTimeout(() => { if (!dead && current === note) play(); }, kit.FIRST_NOTE_MS); }
+      else play();
     }
 
     function answer(name) {
@@ -62,7 +65,7 @@ window.Notanext = window.Notanext || {};
       if (ok) frame.setFeedback(rand(kit.CORRECT_PHRASES), 'correct');
       else frame.setFeedback(`Raté, c'était <b>${label(current)}</b>`);
       frame.session.record(ok);
-      timer = setTimeout(next, ok ? 1000 : 1600);
+      timer = setTimeout(next, kit.demo ? (ok ? 1500 : 1700) : (ok ? 1000 : 1600));
     }
 
     Object.entries(byName).forEach(([name, b]) => b.addEventListener('click', () => answer(name)));
@@ -77,14 +80,15 @@ window.Notanext = window.Notanext || {};
       clearTimeout(timer);
       unmountRow();
     });
-    next();
+    next(true);
     if (demo) {
       // Aperçu : répond en appuyant sur la bonne note ou sur une autre.
       return {
         answer: (ok) => {
-          if (locked || !current) return;
+          if (locked || !current) return false;
           const others = FR.filter((n) => n !== current);
           answer(ok ? current : others[Math.floor(Math.random() * others.length)]);
+          return true;
         },
         pause: () => {},
       };
@@ -135,6 +139,7 @@ window.Notanext = window.Notanext || {};
     let timer = null;
 
     const play = () => { if (current) playNote(current.freq); };
+    const SPD = kit.demo ? kit.demo.speed || 1 : 1; // aperçus du hub : pauses accélérées
     const nameAt = (step) => {
       const n = notesOf(clef()).find((x) => x.step === step);
       return n ? label(n.name) : '';
@@ -157,7 +162,7 @@ window.Notanext = window.Notanext || {};
     // Une note ratée revient dès que possible (après une autre note).
     const picker = createPicker(pool, { minGap: 1 });
 
-    function next() {
+    function next(first) {
       if (dead) return;
       clearTimeout(timer);
       hoverStep = null;
@@ -176,7 +181,9 @@ window.Notanext = window.Notanext || {};
       current = picker.next();
       frame.setFeedback(IDLE);
       draw();
-      play();
+      // 1re note : on attend un instant avant de la jouer ; les suivantes partent tout de suite.
+      if (first === true) { const note = current; setTimeout(() => { if (!dead && current === note) play(); }, kit.FIRST_NOTE_MS); }
+      else play();
     }
 
     function commit(step) {
@@ -189,7 +196,7 @@ window.Notanext = window.Notanext || {};
       if (ok) frame.setFeedback(rand(kit.CORRECT_PHRASES), 'correct');
       else frame.setFeedback(`Raté, c'était <b>${label(current.name)}</b>`);
       frame.session.record(ok);
-      timer = setTimeout(next, ok ? 1000 : 1600);
+      timer = setTimeout(next, kit.demo ? (ok ? 1500 : 1700) : (ok ? 1000 : 1600));
     }
 
     const stepOf = (e) => eventToStep(svg, e.clientY, e.clientX);
@@ -247,14 +254,15 @@ window.Notanext = window.Notanext || {};
       window.removeEventListener('notanext:instrument', next);
       unmountMenu();
     });
-    next();
+    next(true);
     if (demo) {
       // Aperçu : pose la note au bon endroit, ou ailleurs sur la portée.
       return {
         answer: (ok) => {
-          if (locked || !current) return;
+          if (locked || !current) return false;
           const others = notesOf(clef()).filter((n) => n.step !== current.step).map((n) => n.step);
           commit(ok ? current.step : others[Math.floor(Math.random() * others.length)]);
+          return true;
         },
         pause: () => {},
       };

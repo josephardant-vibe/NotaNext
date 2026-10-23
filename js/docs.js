@@ -43,9 +43,10 @@ window.Notanext = window.Notanext || {};
           <li>Les touches de clavier associées aux notes, et la disposition de clavier que tu as choisie quand ton navigateur ne la détecte pas.</li>
           <li>Le volume, le choix « Couper le son » et l'instrument choisi.</li>
           <li>La rotation automatique des jeux (téléphone) et l'option « Afficher le nom de la note » de « Oreille absolue — placer ».</li>
-          <li>La position et l'état (affichée ou masquée) de l'icône de retours.</li>
+          <li>L'état (affichée ou masquée) de l'icône de retours.</li>
+          <li>Un repère indiquant que tu as déjà ouvert le site (page d'accueil).</li>
         </ul>
-        <p>Tu peux tout effacer dans Réglages, section « Mes données » : « Réinitialiser tous mes réglages ». Tu peux aussi vider les données du site dans ton navigateur.</p>
+        <p>Tu peux effacer tes réglages dans Réglages, section « Mes données » : « Réinitialiser tous mes réglages ». Cette réinitialisation ne touche pas au repère de première visite ni à l'état de l'icône de retours ; pour tout effacer, vide les données du site dans ton navigateur.</p>
 
         <h2>Ce que le site appelle sur Internet</h2>
         <p>Les polices, les sons des instruments, le code et les images viennent tous du site lui-même : aucune police ni aucun script n'est chargé depuis un autre service pour afficher les pages ou jouer. Le site n'utilise aucun outil de mesure d'audience ni aucun traceur.</p>
@@ -97,7 +98,7 @@ window.Notanext = window.Notanext || {};
       document.title = `NotaNext — ${p.title}`;
       root.innerHTML = `
         <div class="doc">
-          <a class="backbtn doc-back" href="#/reglages">&#8592; Réglages</a>
+          <a class="backbtn doc-back" href="#/reglages"><span aria-hidden="true">&#8592;</span>Réglages</a>
           <h1>${p.title}</h1>
           ${p.html()}
         </div>`;

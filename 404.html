@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NotaNext — page introuvable</title>
+  <link rel="stylesheet" href="/design-system/tokens.css">
+  <link rel="stylesheet" href="/fonts/fonts.css">
+  <style>
+    body { background: var(--color-sys-bg-page); color: var(--color-sys-text-primary); padding: var(--space-6); font-family: var(--font-family-text); font-size: var(--font-size-md); line-height: var(--font-line-height-normal); }
+    h1 { font-family: var(--font-family-display); font-weight: 600; font-size: var(--font-size-2xl); line-height: var(--font-line-height-tight); margin: 0 0 var(--space-4); }
+    a { color: var(--color-sys-text-accent); }
+  </style>
+  <script>
+    // Adresse directe (/s-exercer/, /reglages…) : on renvoie vers la route de l'application (#/…).
+    (function () {
+      var routes = { 's-exercer': 'exercer', 'exercer': 'exercer', 'apprendre': 'apprendre', 'reglages': 'reglages',
+        'mentions-legales': 'mentions-legales', 'confidentialite': 'confidentialite', 'credits': 'credits', 'accueil': 'accueil' };
+      var parts = location.pathname.toLowerCase().split('/').filter(Boolean);
+      var seg = parts[0];
+      // hasOwnProperty : sans lui, /constructor ou /__proto__ trouveraient une « route » héritée d'Object.
+      if (!seg || !Object.prototype.hasOwnProperty.call(routes, seg)) return;
+      var route = '/#/' + routes[seg];
+      // /exercer/place, /apprendre/clefs : on garde le jeu ou le cours (un nom inconnu ramène à la liste).
+      if ((routes[seg] === 'exercer' || routes[seg] === 'apprendre') && /^[a-z0-9-]+$/.test(parts[1] || '')) route += '/' + parts[1];
+      location.replace(route);
+    })();
+  </script>
+</head>
+<body>
+  <h1>Page introuvable</h1>
+  <p><a href="/">Retour à l'accueil de NotaNext</a></p>
+</body>
+</html>

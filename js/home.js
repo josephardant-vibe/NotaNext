@@ -74,6 +74,7 @@
 
   let index = 0;
   let done = 0;
+  let good = 0;
   let picked = null;
 
   const btns = BUTTONS.map((name) => {
@@ -93,7 +94,7 @@
     noteEl.setAttribute('cy', y);
     noteEl.setAttribute('transform', `rotate(-20 250 ${y})`);
     stemEl.setAttribute('d', `M${up ? 259 : 241} ${y}V${up ? y - 38 : y + 38}`);
-    countEl.textContent = `${(done % 8) + 1} / 8`;
+    countEl.textContent = `${good} / ${done}`;
 
     btns.forEach((b) => {
       b.className = '';
@@ -115,10 +116,11 @@
   function pick(name) {
     if (picked) return;
     picked = name;
+    done++; // comme dans les vrais jeux : le total monte dès la réponse, jamais « 1 / 0 »
+    if (name === NAMES[STEPS[index] % 7]) good++;
     render();
     setTimeout(() => {
       index = (index + 1) % STEPS.length;
-      done++;
       picked = null;
       render();
     }, 1100);
@@ -154,7 +156,7 @@
       </svg>
       <div class="home-tile-foot">
         <span class="home-tile-msg">${t.soon ? '' : 'Quelle est cette note ?'}</span>
-        ${t.soon ? '<span class="home-soon" aria-disabled="true">Bientôt</span>' : '<a href="#" class="home-try">Jouer</a>'}
+        ${t.soon ? '<span class="home-soon" aria-disabled="true">Bientôt</span>' : `<a href="#" class="home-try" aria-label="Jouer : ${t.title}">Jouer</a>`}
       </div>`;
     if (!t.soon) {
       el.querySelector('.home-try').addEventListener('click', (e) => {
@@ -188,7 +190,7 @@
 
   // ----- "Les cours" : bandeau défilant -----
   const COURSES = [
-    { title: 'Les clés', desc: "Clé de sol, clé de fa, clé d'ut : lire une portée quelle que soit la clé.", open: { learn: 'clefs' } },
+    { title: 'Les clés', desc: "Clé de sol, clé de fa, clé d'ut (alto et ténor) : lire une portée dans les clés les plus courantes.", open: { learn: 'clefs' } },
   ];
   const coursesEl = document.getElementById('home-courses');
   COURSES.forEach((c) => {

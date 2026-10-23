@@ -48,9 +48,25 @@ window.Notanext = window.Notanext || {};
       });
     }).catch(() => {
       // Hors ligne ou script bloqué : on le dit simplement, sans rien envoyer.
-      alert("Impossible d'ouvrir le formulaire pour l'instant. Vérifie ta connexion et réessaie.");
+      say("Impossible d'ouvrir le formulaire pour l'instant. Vérifie ta connexion et réessaie.");
     });
   }
+
+  // Petit message d'état (région vivante, annoncée par les lecteurs d'écran) : se ferme tout seul ou au clic.
+  const NOTE_MS = 10000;
+  const note = document.createElement('div');
+  note.className = 'fb-note';
+  note.setAttribute('role', 'status');
+  document.body.appendChild(note);
+  let noteTimer = 0;
+  function hideNote() { clearTimeout(noteTimer); note.classList.remove('on'); note.textContent = ''; } // vidée : plus rien à lire pour un lecteur d'écran
+  function say(msg) {
+    clearTimeout(noteTimer);
+    note.textContent = msg;
+    note.classList.add('on');
+    noteTimer = setTimeout(hideNote, NOTE_MS);
+  }
+  note.addEventListener('click', hideNote);
   function close() { if (window.Tally && window.Tally.closePopup) window.Tally.closePopup(FORM_ID); isOpen = false; }
 
   // ----- icône -----

@@ -22,7 +22,10 @@ window.Notanext = window.Notanext || {};
   const THUMB_SCALE = 0.5;
 
   // Réponses de la démonstration : un enchaînement naturel de réussites et d'erreurs (8 essais, puis on recommence).
+  // La première est juste : dès qu'un aperçu s'affiche, c'est comme si on venait de deviner une note.
   const SCRIPT = [true, true, false, true, true, true, false, true];
+  const DEMO_SPEED = 1.25; // les aperçus vont 1,25 fois plus vite que l'ancienne vitesse (pauses, défilement)
+  const DEMO_FIRST_MS = 500; // attente avant la première réponse d'un aperçu
 
   const $ = (id) => document.getElementById(id);
   const listEl = $('hub-list');
@@ -40,8 +43,9 @@ window.Notanext = window.Notanext || {};
 
   // ----- les éléments de la liste (lus dans le code : jamais recopiés à la main) -----
   const gameOf = (id) => EXERCISES.find((e) => e.id === id);
-  const exItem = (ex) => ({ kind: 'ex', id: ex.id, title: ex.title, desc: ex.tag, tag: 'Jeu', hash: `#/exercer/${ex.id}` });
-  const learnItem = (c) => ({ kind: 'learn', id: c.id, title: c.title, desc: c.tag, tag: 'Apprendre', hash: `#/apprendre/${c.id}` });
+  const familyOf = (id) => FAMILIES.find((f) => f.ids.includes(id));
+  const exItem = (ex) => { const f = familyOf(ex.id); return { kind: 'ex', id: ex.id, title: ex.title, desc: ex.tag, tag: 'Jeu', body: f ? `${f.title} ${f.sub}` : '', hash: `#/exercer/${ex.id}` }; };
+  const learnItem = (c) => ({ kind: 'learn', id: c.id, title: c.title, desc: c.tag, tag: 'Apprendre', body: data.learnBody(c), hash: `#/apprendre/${c.id}` });
   const allItems = () => EXERCISES.map(exItem).concat(LEARN_CARDS.map(learnItem));
 
   let visible = false;      // le hub est affiché
@@ -49,13 +53,12 @@ window.Notanext = window.Notanext || {};
   let rows = [];            // rangées affichées : { item, el }
   let selected = null;      // item sélectionné (ordinateur)
   const demos = new Map();  // clé -> démonstration en cours
-  let swapTimer = null;
   let io = null;            // observe les miniatures mobiles
 
   // ----- démonstration -----
   function startDemo(key, ex, host) {
     stopDemo(key);
-    const run = { host, ex, timer: null, handle: null, demo: { host }, step: 0, dead: false };
+    const run = { host, ex, timer: null, handle: null, demo: { host, speed: DEMO_SPEED }, step: 0, dead: false };
     demos.set(key, run);
     sound.setDemoSilent(true);
     host.innerHTML = '';
@@ -67,16 +70,26 @@ window.Notanext = window.Notanext || {};
     }
     if (!run.handle) return run;
     if (reduce()) { run.handle.pause(true); return run; } // mouvement réduit : image fixe, rien ne bouge
+    const delay = () => (1700 + Math.random() * 900) / DEMO_SPEED;
+    // Une réponse de la démonstration. Renvoie faux si le jeu n'est pas encore prêt (ex. aucune note à l'écran).
+    const answerOnce = () => {
+      let done = false;
+      try { done = run.handle.answer(SCRIPT[run.step % SCRIPT.length]) !== false; } catch (e) { /* le jeu a changé d'état : on réessaie au prochain tour */ }
+      if (done) run.step++;
+      return done;
+    };
     const tick = () => {
       if (run.dead) return;
-      if (!document.hidden && visible) {
-        const ok = SCRIPT[run.step % SCRIPT.length];
-        run.step++;
-        try { run.handle.answer(ok); } catch (e) { /* le jeu a changé d'état : on réessaie au prochain tour */ }
-      }
-      run.timer = setTimeout(tick, 1700 + Math.random() * 900);
+      if (!document.hidden && visible) answerOnce();
+      run.timer = setTimeout(tick, delay());
     };
-    run.timer = setTimeout(tick, 1200);
+    // Départ immédiat : la première réponse est jouée dès que le jeu est prêt (quelques dizaines de ms au plus).
+    const begin = (tries) => {
+      if (run.dead) return;
+      if (!document.hidden && visible && answerOnce()) { run.timer = setTimeout(tick, delay()); return; }
+      run.timer = setTimeout(() => (tries < 40 ? begin(tries + 1) : tick()), 40);
+    };
+    run.timer = setTimeout(() => begin(0), DEMO_FIRST_MS);
     return run;
   }
 
@@ -95,6 +108,7 @@ window.Notanext = window.Notanext || {};
   // ----- recadrage mobile : la zone utile (portée, notes) à l'échelle 0,5 -----
   function cropThumb(run) {
     const host = run.host;
+    host.style.transform = ''; // mesure à l'échelle réelle, sans l'effet d'un recadrage précédent
     const hostRect = host.getBoundingClientRect();
     const target = host.querySelector('.ear-wheel') || host.querySelector('.staff-box') || host.querySelector('.stage-row');
     if (!target) return;
@@ -105,14 +119,17 @@ window.Notanext = window.Notanext || {};
     const w = r.width / k;
     const h = r.height / k;
     const isWheel = target.classList.contains('ear-wheel');
-    // Échelle : 0,5 quand la zone utile tient en hauteur ; sinon on réduit pour que toute sa hauteur utile
-    // (le cercle entier, ou les cinq lignes de la portée) entre dans la miniature.
-    const usefulH = isWheel ? h : h * 0.62;
-    const scale = Math.min(THUMB_SCALE, THUMB_H / usefulH);
-    const cropW = THUMB_W / scale;
-    const cropH = THUMB_H / scale;
-    // Horizontalement : cercle centré ; portée calée à droite (la clé de sol est rognée à gauche).
-    const x = isWheel ? x0 + (w - cropW) / 2 : x0 + Math.max(0, w - cropW) * 0.62;
+    // Échelle : 0,5 quand la zone utile tient en hauteur ; sinon on réduit pour que toute sa hauteur
+    // (le cercle entier, ou la portée avec ses lignes supplémentaires) entre dans la miniature.
+    const thumbW = host.parentElement.clientWidth || THUMB_W; // la miniature fait 132 px sur écran étroit, 168 sinon
+    const thumbH = host.parentElement.clientHeight || THUMB_H;
+    // Portée : la miniature doit contenir la clé ET l'endroit où les notes se posent (≈ 55 % de la largeur, + marge).
+    const need = isWheel ? Infinity : thumbW / (w * 0.55 + 70);
+    const scale = Math.min(THUMB_SCALE, thumbH / h, need);
+    const cropW = thumbW / scale;
+    const cropH = thumbH / scale;
+    // Horizontalement : cercle centré ; portée calée à gauche (on voit la clé, puis les premières notes).
+    const x = isWheel ? x0 + (w - cropW) / 2 : x0;
     const y = y0 + (h - cropH) / 2;
     host.style.transform = `scale(${scale}) translate(${-Math.round(x)}px, ${-Math.round(y)}px)`;
   }
@@ -150,8 +167,8 @@ window.Notanext = window.Notanext || {};
         </details>`).join('');
       list = FAMILIES.flatMap((f) => f.ids).map((id) => exItem(gameOf(id)));
     } else {
-      const nq = norm(q);
-      list = allItems().filter((it) => norm(`${it.title} ${it.desc || ''}`).includes(nq));
+      // titre d'abord, puis sous-titre, puis le reste de la carte
+      list = data.searchRank(allItems().map((it) => ({ ref: it, title: it.title, tag: it.desc, body: it.body })), q).map((x) => x.ref);
       listEl.innerHTML = list.map((it) => rowHtml(it, q)).join('');
     }
     const empty = q && !list.length;
@@ -182,17 +199,19 @@ window.Notanext = window.Notanext || {};
     if (selected && selected.kind === item.kind && selected.id === item.id) return;
     selected = item;
     rows.forEach((r) => r.el.classList.toggle('sel', r.item === item));
-    clearTimeout(swapTimer);
-    const apply = () => {
-      detail.title.textContent = item.title;
-      detail.desc.textContent = item.desc || '';
-      $('hub-launch').firstChild.textContent = item.kind === 'ex' ? 'Lancer le jeu ' : 'Ouvrir la carte ';
-      detail.fade.classList.remove('out');
-      mountPreview(item);
-    };
-    if (immediate || reduce()) { apply(); return; }
-    detail.fade.classList.add('out');          // fondu de 140 ms (voir style.css), désactivé si mouvement réduit
-    swapTimer = setTimeout(apply, 140);
+    // Le détail et l'aperçu changent tout de suite (aucune attente) ; un fondu d'entrée rapide les accompagne
+    // (--motion-duration-fast, voir style.css), désactivé si mouvement réduit.
+    detail.title.textContent = item.title;
+    detail.desc.textContent = item.desc || '';
+    $('hub-launch').firstChild.textContent = item.kind === 'ex' ? 'Lancer le jeu ' : 'Ouvrir la carte ';
+    if (!immediate && !reduce()) {
+      detail.fade.style.transition = 'none';
+      detail.fade.classList.add('out');
+      void detail.fade.offsetWidth;            // fixe l'état transparent avant de relancer la transition
+      detail.fade.style.transition = '';
+    }
+    detail.fade.classList.remove('out');
+    mountPreview(item);
   }
 
   function mountPreview(item) {
@@ -287,7 +306,6 @@ window.Notanext = window.Notanext || {};
     },
     hide() {
       visible = false;
-      clearTimeout(swapTimer);
       if (io) io.disconnect();
       stopAllDemos();
     },
