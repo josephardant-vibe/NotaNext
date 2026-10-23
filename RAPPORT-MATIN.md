@@ -25,6 +25,7 @@
 | Animations d'ambiance | 9 | 0 | |
 
 ## 3. Ce que j'ai corrigé après avoir regardé les écrans
+Titre « Les cours » et carte de l'accueil alignés avec les autres sections (390, 760, 1440 et 1920 px mesurés : même bord à chaque largeur, défilement des cartes accroché à ce bord).
 Score illisible en paysage ; lignes de cours trop petites ; en-tête de l'accueil mobile écrasé ; FAQ du cours coincée dans une boîte qui défile seule ; recherche du hub surlignée par la couleur seule.
 
 ## 4. Ce que je n'ai pas pu vérifier
