@@ -208,7 +208,7 @@
           </div>
         </div>
         <div class="faq">
-          <h3>FAQ</h3>
+          <h3 aria-level="2">FAQ</h3>
           <div id="faq-body"></div>
         </div>
       </div>
