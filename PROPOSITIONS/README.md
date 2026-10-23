@@ -67,7 +67,7 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 
 ## 14 — Accueil : textes conformes aux sources (`14-accueil-textes-conformes-aux-sources.patch`)
 - Pourquoi : Roediger & Karpicke (2006) ne montrent l'avantage du test qu'à long terme (à 5 minutes la relecture gagne) ; Dunlosky et al. (2013) parlent d'espacer l'étude, pas de séances « courtes ». « tu apprends à chaque note » est une promesse non sourcée.
-- Ce que ça fait : reformule 4 phrases. **Remplace la proposition 04 déjà appliquée** (le mot « courtes » n'est pas démontré par la source) : à appliquer sur la branche telle quelle, il s'applique après 04.
+- Ce que ça fait : reformule 3 phrases. La phrase sur « séances courtes » (proposition 04 déjà appliquée) a été corrigée par la revue de code (commit e0f9e6d) ; ce patch reprend les 3 autres reformulations.
 - Risque : formulation pédagogique, à valider.
 
 ## 15 — Cours « Les clés » : ligne « Sources » (`15-cours-cles-ligne-sources.patch`)
@@ -79,6 +79,11 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 - Pourquoi : le hero affiche une grande ellipse cuivre translucide derrière le titre (`.home-blob`). Les règles (BRIEF § 4, AGENTS.md) interdisent les cercles décoratifs.
 - Ce que ça fait : retire l'élément SVG de `index.html` et sa règle CSS.
 - Risque : faible techniquement, **mais c'est le hero (figé)** : à toi de décider. Le bouton « Commencer gratuitement » a aussi un liseré bas de 3 px (`border-bottom`) qui ressemble à une ombre : non touché.
+
+## Avant de fusionner (décisions hors patch)
+
+- `netlify.toml` publie tout le dépôt (`publish = "."`) : une fois fusionnés, `RAPPORT-MATIN.md`, `NUIT-JOURNAL.md`, `PROPOSITIONS/` et `design-system/*.md` seraient publics sur le site. Ne fusionne pas ces fichiers dans `main` (ou publie un dossier dédié).
+- `CLAUDE.md` se contredit : « Un seul panneau verre par écran » (charte) contre « verre dépoli hors du hero : interdit » (bloc design system). À trancher avec le patch 12.
 
 ---
 
