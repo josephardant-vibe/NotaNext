@@ -16,8 +16,13 @@
     (function () {
       var routes = { 's-exercer': 'exercer', 'exercer': 'exercer', 'apprendre': 'apprendre', 'reglages': 'reglages',
         'mentions-legales': 'mentions-legales', 'confidentialite': 'confidentialite', 'credits': 'credits', 'accueil': 'accueil' };
-      var seg = location.pathname.split('/').filter(Boolean)[0];
-      if (seg && routes[seg]) location.replace('/#/' + routes[seg]);
+      var parts = location.pathname.toLowerCase().split('/').filter(Boolean);
+      var seg = parts[0];
+      if (!seg || !routes[seg]) return;
+      var route = '/#/' + routes[seg];
+      // /exercer/place, /apprendre/clefs : on garde le jeu ou le cours (un nom inconnu ramène à la liste).
+      if ((routes[seg] === 'exercer' || routes[seg] === 'apprendre') && /^[a-z0-9-]+$/.test(parts[1] || '')) route += '/' + parts[1];
+      location.replace(route);
     })();
   </script>
 </head>
