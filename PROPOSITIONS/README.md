@@ -1,6 +1,6 @@
 # Propositions (rien n'est appliqué dans la branche)
 
-Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
+Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Les patchs 03 et 04 sont déjà appliqués (dossier `appliquees/`). Les autres ont été regénérés le 23 oct. après les derniers commits (`git apply --check` OK). Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
 
 ## 01 — 404, solution A : pages-passerelles (`01-404-pages-passerelles.patch`)
 - Pourquoi : `/s-exercer/`, `/apprendre/`, `/reglages/` renvoient 404 (il n'y a qu'une page `index.html` et aucune règle de réécriture).
@@ -13,12 +13,12 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 - Risque : faible ; suppose que l'hébergeur sert `404.html` pour les adresses inconnues (Netlify, GitHub Pages, Cloudflare Pages le font) et que le site est à la racine du domaine.
 - Le 404 des adresses inconnues sans correspondance reste affiché (« Page introuvable » + lien d'accueil).
 
-## 03 — Confidentialité : clé `notanext.visited` (`03-confidentialite-cle-visited.patch`)
+## 03 — Confidentialité : clé `notanext.visited` — APPLIQUÉE (`appliquees/03-…`, commit 99d391d)
 - Pourquoi : `js/home.js` écrit `notanext.visited` dans le navigateur et la page ne le dit pas ; or elle prétend être complète.
 - Ce que ça fait : ajoute une ligne à la liste des données stockées.
 - Risque : texte légal, donc à faire relire. Le bouton « Réinitialiser » n'efface ni cette clé ni celle de l'icône masquée : à décider (corriger la phrase « tu peux tout effacer » ou ajouter ces clés à `RESET_KEYS`, `js/settings.js:16`).
 
-## 04 — Textes de l'accueil (`04-textes-accueil.patch`)
+## 04 — Textes de l'accueil — APPLIQUÉE (`appliquees/04-…`, commit d923e00), à corriger par la 14
 - Pourquoi : « dix minutes plusieurs fois par semaine » ne figure dans aucune des deux sources citées ; « manches courtes » est du jargon.
 - Ce que ça fait : « des séances courtes et régulières » et « des exercices courts, corrigés ».
 - Risque : formulation pédagogique, à valider. Si la précision « dix minutes » est voulue, il faut une source.
@@ -33,7 +33,7 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 - Risque : **moyen** — les écrans de jeu (`.gf`, `.faq`, boutons) perdent la transparence sur le fond animé ; à regarder en jeu et en paysage.
 
 ## 07 — Animations d'ambiance (`07-animations-d-ambiance.patch`)
-- Pourquoi : fond qui dérive (26 s) et 8 icônes qui flottent en boucle (ambient-animation 9 → 0). La direction « papier statique » n'est pas validée.
+- Pourquoi : le fond de l'écran de jeu dérive en boucle (26 s). Les 8 icônes flottantes ne sont plus dans le code (code mort retiré, commit 21d6eee). La direction « papier statique » n'est pas validée.
 - Risque : moyen (direction artistique). Les animations « tilt » des indices ne sont pas touchées.
 
 ## 08 — Rupture 720 → 760 px (`08-rupture-720-vers-760.patch`)
@@ -58,7 +58,7 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 - Vérificateur après le patch : pure-white 2, glass 1 (hero), ambient-animation 0, color-literal 27.
 - Testé à l'écran (jeu 1440 px, oreille absolue, Apprendre) : lisible, cohérent avec le hub ; à regarder en paysage mobile.
 - Risque : moyen (direction artistique). **Ne pas appliquer en plus de 06 et 07** (il les contient).
-- Note : `.bg-icons` est déjà en `display: none` ; les 8 animations `.bg-icon` du patch 07 n'ont aucun effet visible (code mort). Seule la dérive du fond change l'écran.
+- Note : le code mort des icônes de fond a été retiré à part (commit 21d6eee).
 
 ## 13 — Cours « Les clés » : corrections sourcées (`13-cours-cles-corrections-sourcees.patch`)
 - Pourquoi : `design-system/SOURCES-COURS-CLES.md` (sources lues : Larousse, Dolmetsch Online). La FAQ de l'ut alto dit « la seule clé d'ut encore couramment utilisée » : c'est contredit par ces sources (la clé d'ut ténor sert couramment au basson).

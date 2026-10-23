@@ -1,24 +1,24 @@
 diff --git a/style.css b/style.css
-index 596b8ac..3be6e65 100644
+index 3f5c5eb..0fb195e 100644
 --- a/style.css
 +++ b/style.css
-@@ -340,13 +340,13 @@ select {
+@@ -274,13 +274,13 @@ select {
  
  .side-label {
-   font-family: "IBM Plex Sans", sans-serif;
+   font-family: var(--font-family-text);
 -  font-size: 13px;
 +  font-size: var(--font-size-sm);
    font-weight: 600;
  }
  
  .head-label {
-   font-family: "IBM Plex Sans", sans-serif;
+   font-family: var(--font-family-text);
 -  font-size: 11px;
 +  font-size: var(--font-size-xs);
    font-weight: 600;
    fill: var(--ink);
    pointer-events: none;
-@@ -604,7 +604,7 @@ select {
+@@ -542,7 +542,7 @@ select {
  .key-hint {
    display: block;
    min-height: 12px;
@@ -27,7 +27,7 @@ index 596b8ac..3be6e65 100644
    font-weight: 600;
    color: var(--muted);
    line-height: 12px;
-@@ -646,7 +646,7 @@ select {
+@@ -584,7 +584,7 @@ select {
  .kbd-key {
    min-width: 150px;
    font: inherit;
@@ -36,7 +36,7 @@ index 596b8ac..3be6e65 100644
    font-weight: 600;
    padding: 7px 12px;
    border: 1.5px solid var(--control-border);
-@@ -1461,12 +1461,12 @@ body.game-rotated .nav { display: none; }
+@@ -1399,12 +1399,12 @@ body.game-rotated .nav { display: none; }
    body:not(.game-portrait) .gf-answers .answer-btn { padding: 5px 0; font-size: 14px; }
    body:not(.game-portrait) .gf .stage-row { flex-basis: 100%; }
    body:not(.game-portrait) .gf .key-hint { display: none; }
@@ -46,12 +46,12 @@ index 596b8ac..3be6e65 100644
    body:not(.game-portrait) .gf-config select, body:not(.game-portrait) .gf-config .replay { padding-top: 4px; padding-bottom: 4px; font-size: 12px; }
    body:not(.game-portrait) .gf-config .namebox { height: 30px; }
    body:not(.game-portrait) .stage-row { gap: 3px; }
--  body:not(.game-portrait) .clef-side select { font-size: 11px; padding: 3px 18px 3px 7px; background-position: right 6px center; }
-+  body:not(.game-portrait) .clef-side select { font-size: var(--font-size-xs); padding: 3px 18px 3px 7px; background-position: right 6px center; }
+-  body:not(.game-portrait) .clef-side select { min-height: var(--component-target-min); font-size: 11px; padding: 3px 18px 3px 7px; background-position: right 6px center; }
++  body:not(.game-portrait) .clef-side select { min-height: var(--component-target-min); font-size: var(--font-size-xs); padding: 3px 18px 3px 7px; background-position: right 6px center; }
  }
  
  .game.rot-cw .gf { gap: 4px; padding: 8px 16px; }
-@@ -1476,12 +1476,12 @@ body.game-rotated .nav { display: none; }
+@@ -1414,12 +1414,12 @@ body.game-rotated .nav { display: none; }
  .game.rot-cw .gf-answers .answer-btn { padding: 5px 0; font-size: 14px; }
  .game.rot-cw .gf .stage-row { flex-basis: 100%; }
  .game.rot-cw .gf .key-hint { display: none; }
@@ -61,12 +61,12 @@ index 596b8ac..3be6e65 100644
  .game.rot-cw .gf-config select, .game.rot-cw .gf-config .replay { padding-top: 4px; padding-bottom: 4px; font-size: 12px; }
  .game.rot-cw .gf-config .namebox { height: 30px; }
  .game.rot-cw .stage-row { gap: 3px; }
--.game.rot-cw .clef-side select { font-size: 11px; padding: 3px 18px 3px 7px; background-position: right 6px center; }
-+.game.rot-cw .clef-side select { font-size: var(--font-size-xs); padding: 3px 18px 3px 7px; background-position: right 6px center; }
+-.game.rot-cw .clef-side select { min-height: var(--component-target-min); font-size: 11px; padding: 3px 18px 3px 7px; background-position: right 6px center; }
++.game.rot-cw .clef-side select { min-height: var(--component-target-min); font-size: var(--font-size-xs); padding: 3px 18px 3px 7px; background-position: right 6px center; }
  
  /* ---------- PAGE SE CONNECTER ---------- */
  .page-panel { max-width: 860px; height: auto; max-height: 100%; align-self: flex-start; margin-top: clamp(0px, 3vh, 28px); }
-@@ -1550,12 +1550,12 @@ body.game-rotated .nav { display: none; }
+@@ -1488,12 +1488,12 @@ body.game-rotated .nav { display: none; }
  @media (max-height: 520px) {
    body:not(.game-portrait) .inst-trigger { padding: 3px 9px 3px 8px; font-size: 12px; }
    body:not(.game-portrait) .inst-ico svg { width: 16px; height: 16px; }
@@ -81,18 +81,18 @@ index 596b8ac..3be6e65 100644
  .game.rot-cw .inst-note { display: none; }
  
  /* ---------- OREILLE ABSOLUE ---------- */
-@@ -1636,8 +1636,8 @@ body.game-rotated .nav { display: none; }
+@@ -1574,8 +1574,8 @@ body.game-rotated .nav { display: none; }
  .switch input:checked + .switch-track .switch-thumb { transform: translateX(16px); }
  .switch input:focus-visible + .switch-track { outline: 2px solid var(--accent); outline-offset: 2px; }
  
--.ghost-label { font-family: "IBM Plex Sans", sans-serif; font-size: 11px; font-weight: 600; fill: var(--ink); pointer-events: none; }
+-.ghost-label { font-family: var(--font-family-text); font-size: 11px; font-weight: 600; fill: var(--ink); pointer-events: none; }
 -.ghost-label.above { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; font-size: 13px; }
-+.ghost-label { font-family: "IBM Plex Sans", sans-serif; font-size: var(--font-size-xs); font-weight: 600; fill: var(--ink); pointer-events: none; }
++.ghost-label { font-family: var(--font-family-text); font-size: var(--font-size-xs); font-weight: 600; fill: var(--ink); pointer-events: none; }
 +.ghost-label.above { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; font-size: var(--font-size-sm); }
  
  /* Choix d'instrument en 5 grands boutons (Oreille absolue — deviner). */
  .gf-answers:has(.inst-row) { display: block; width: 100%; }
-@@ -1651,7 +1651,7 @@ body.game-rotated .nav { display: none; }
+@@ -1589,7 +1589,7 @@ body.game-rotated .nav { display: none; }
    gap: 6px;
    padding: 10px 6px;
    font: inherit;
@@ -101,7 +101,7 @@ index 596b8ac..3be6e65 100644
    font-weight: 500;
    color: var(--ink);
    background: var(--color-sys-bg-raised);
-@@ -1900,7 +1900,7 @@ body.in-game .tabbar { display: none; }
+@@ -1838,7 +1838,7 @@ body.in-game .tabbar { display: none; }
    border: 1.5px solid var(--hair);
    border-radius: var(--radius-sm);
    font: inherit;
@@ -110,9 +110,9 @@ index 596b8ac..3be6e65 100644
    font-weight: 600;
    color: var(--grey-text);
  }
-@@ -1937,7 +1937,7 @@ body.in-game .tabbar { display: none; }
+@@ -1875,7 +1875,7 @@ body.in-game .tabbar { display: none; }
  .hub-row-text { flex: 1; min-width: 0; display: block; }
- .hub-row-title { display: block; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 20px; line-height: 1.2; }
+ .hub-row-title { display: block; font-family: var(--font-family-display); font-weight: 600; font-size: 20px; line-height: 1.2; }
  .hub-row-title b { font-weight: 600; color: var(--accent-dark); }
 -.hub-row-desc { display: block; margin-top: 2px; font-size: 15px; line-height: 22px; color: var(--grey-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 +.hub-row-desc { display: block; margin-top: 2px; font-size: var(--font-size-md); line-height: 22px; color: var(--grey-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

@@ -1,9 +1,9 @@
 diff --git a/style.css b/style.css
-index 22deff0..1423d8a 100644
+index 3f5c5eb..26d6293 100644
 --- a/style.css
 +++ b/style.css
-@@ -25,21 +25,10 @@ body {
- 
+@@ -22,21 +22,10 @@ body {
+ /* ---------- FOND ---------- */
  .bg {
    position: fixed;
 -  inset: -20%;
@@ -25,31 +25,8 @@ index 22deff0..1423d8a 100644
 +  background: var(--color-sys-bg-page);
  }
  
- .bg-icons {
-@@ -62,14 +51,14 @@ body {
-   height: 100%;
- }
- 
--.bg-icon.i1 { top: 8%;  left: 5%;  width: 70px; height: 104px; animation: fl 18s ease-in-out infinite; }
--.bg-icon.i2 { top: 60%; left: 88%; width: 44px; height: 68px;  animation: fl 22s ease-in-out infinite 1s; }
--.bg-icon.i3 { top: 82%; left: 9%;  width: 34px; height: 52px;  animation: fl 20s ease-in-out infinite 3s; }
--.bg-icon.i4 { top: 16%; left: 84%; width: 50px; height: 76px;  animation: fl 24s ease-in-out infinite; }
--.bg-icon.i5 { top: 40%; left: 2%;  width: 30px; height: 46px;  animation: fl 26s ease-in-out infinite 2s; }
--.bg-icon.i6 { top: 34%; left: 94%; width: 34px; height: 52px;  animation: fl 19s ease-in-out infinite 4s; }
--.bg-icon.i7 { top: 70%; left: 46%; width: 26px; height: 40px;  animation: fl 28s ease-in-out infinite 1.5s; opacity: 0.09; }
--.bg-icon.i8 { top: 6%;  left: 60%; width: 24px; height: 38px;  animation: fl 23s ease-in-out infinite 5s; opacity: 0.09; }
-+.bg-icon.i1 { top: 8%;  left: 5%;  width: 70px; height: 104px; }
-+.bg-icon.i2 { top: 60%; left: 88%; width: 44px; height: 68px; }
-+.bg-icon.i3 { top: 82%; left: 9%;  width: 34px; height: 52px; }
-+.bg-icon.i4 { top: 16%; left: 84%; width: 50px; height: 76px; }
-+.bg-icon.i5 { top: 40%; left: 2%;  width: 30px; height: 46px; }
-+.bg-icon.i6 { top: 34%; left: 94%; width: 34px; height: 52px; }
-+.bg-icon.i7 { top: 70%; left: 46%; width: 26px; height: 40px; opacity: 0.09; }
-+.bg-icon.i8 { top: 6%;  left: 60%; width: 24px; height: 38px; opacity: 0.09; }
- 
- @keyframes fl {
-   0%, 100% { transform: translateY(0) rotate(-3deg); }
-@@ -140,7 +129,7 @@ h1 {
+ /* ---------- COQUILLE ---------- */
+@@ -103,7 +92,7 @@ h1 {
    text-align: left;
    font: inherit;
    color: var(--ink);
@@ -58,7 +35,7 @@ index 22deff0..1423d8a 100644
    border: 1px solid var(--border);
    border-radius: 20px;
    cursor: pointer;
-@@ -205,7 +194,7 @@ h1 {
+@@ -160,7 +149,7 @@ h1 {
    gap: 6px;
    border: 1.5px solid var(--control-border);
    border-radius: 999px;
@@ -67,7 +44,7 @@ index 22deff0..1423d8a 100644
    font: inherit;
    font-size: var(--font-size-sm);
    font-weight: 500;
-@@ -241,7 +230,7 @@ select {
+@@ -182,7 +171,7 @@ select {
    border: 1px solid var(--control-border);
    border-radius: 8px;
    color: var(--ink);
@@ -76,16 +53,16 @@ index 22deff0..1423d8a 100644
    -webkit-appearance: none;
    appearance: none;
    cursor: pointer;
-@@ -264,7 +253,7 @@ select {
+@@ -198,7 +187,7 @@ select {
    padding: clamp(12px, 2.4vh, 16px) 0;
    border: 1.5px solid var(--accent);
    border-radius: 8px;
 -  background: rgba(255, 255, 255, 0.8);
 +  background: var(--color-sys-bg-raised);
-   font-family: "Fraunces", Georgia, serif;
+   font-family: var(--font-family-display);
    font-weight: 600;
    font-size: var(--font-size-lg);
-@@ -390,7 +379,7 @@ select {
+@@ -317,7 +306,7 @@ select {
    padding: 7px 14px;
    border: 1.5px solid var(--control-border);
    border-radius: 999px;
@@ -94,7 +71,7 @@ index 22deff0..1423d8a 100644
    font: inherit;
    font-size: var(--font-size-sm);
    font-weight: 500;
-@@ -492,10 +481,8 @@ select {
+@@ -419,10 +408,8 @@ select {
    overflow: auto;
    padding: 16px;
    border-radius: var(--radius-md);
@@ -107,7 +84,7 @@ index 22deff0..1423d8a 100644
  }
  
  .faq h3 {
-@@ -572,14 +559,14 @@ select {
+@@ -499,14 +486,14 @@ select {
    padding: 9.5px 22px;
    border: 1.5px solid var(--accent);
    border-radius: 999px;
@@ -124,7 +101,7 @@ index 22deff0..1423d8a 100644
  }
  
  .theory-nav {
-@@ -1267,11 +1254,8 @@ body.in-game .shell { display: none; }
+@@ -1203,11 +1190,8 @@ body.in-game .shell { display: none; }
    gap: 10px;
    padding: clamp(14px, 2.4vh, 22px) clamp(14px, 2.4vw, 30px);
    border-radius: var(--radius-lg);
@@ -138,7 +115,7 @@ index 22deff0..1423d8a 100644
    overflow: hidden;
  }
  
-@@ -1320,7 +1304,7 @@ body.in-game .shell { display: none; }
+@@ -1257,7 +1241,7 @@ body.in-game .shell { display: none; }
    height: 34px;
    border: 1.5px solid var(--control-border);
    border-radius: 50%;
@@ -147,7 +124,7 @@ index 22deff0..1423d8a 100644
    color: var(--ink);
    cursor: pointer;
  }
-@@ -1517,7 +1501,7 @@ body.game-rotated .nav { display: none; }
+@@ -1453,7 +1437,7 @@ body.game-rotated .nav { display: none; }
    border: 1px solid var(--control-border);
    border-radius: 8px;
    color: var(--ink);
