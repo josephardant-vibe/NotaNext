@@ -1,6 +1,6 @@
 # Propositions (rien n'est appliqué dans la branche)
 
-Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Les patchs 03, 04, 06 à 16 sont déjà appliqués ; restent seulement 01, 02 (404) et 05 (robots.txt) (dossier `appliquees/`). Les autres ont été regénérés le 23 oct. après les derniers commits (`git apply --check` OK). Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
+Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Les patchs 03, 04 et 06 à 16 sont déjà appliqués (dossier `appliquees/`). Il reste le 404 (01 ou 02) et `robots.txt` (05), vérifiés avec `git apply --check` le 23 oct. sur le dernier commit. Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
 
 ## 01 — 404, solution A : pages-passerelles (`01-404-pages-passerelles.patch`)
 - Pourquoi : `/s-exercer/`, `/apprendre/`, `/reglages/` renvoient 404 (il n'y a qu'une page `index.html` et aucune règle de réécriture).
