@@ -18,7 +18,8 @@
         'mentions-legales': 'mentions-legales', 'confidentialite': 'confidentialite', 'credits': 'credits', 'accueil': 'accueil' };
       var parts = location.pathname.toLowerCase().split('/').filter(Boolean);
       var seg = parts[0];
-      if (!seg || !routes[seg]) return;
+      // hasOwnProperty : sans lui, /constructor ou /__proto__ trouveraient une « route » héritée d'Object.
+      if (!seg || !Object.prototype.hasOwnProperty.call(routes, seg)) return;
       var route = '/#/' + routes[seg];
       // /exercer/place, /apprendre/clefs : on garde le jeu ou le cours (un nom inconnu ramène à la liste).
       if ((routes[seg] === 'exercer' || routes[seg] === 'apprendre') && /^[a-z0-9-]+$/.test(parts[1] || '')) route += '/' + parts[1];
