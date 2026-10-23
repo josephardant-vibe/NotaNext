@@ -355,7 +355,7 @@ select {
 /* Défilement continu : la prochaine note à deviner est cerclée. */
 .scroll-note.is-target .note-head { stroke: var(--accent-dark); stroke-width: 2.2; }
 
-.side-label.ok { fill: var(--success); }
+.side-label.ok { fill: var(--color-sys-feedback-correct-text); }
 .side-label.no { fill: var(--grey-text); }
 
 .learn-note {
@@ -410,7 +410,7 @@ select {
 }
 
 .feedback.correct {
-  color: var(--success);
+  color: var(--color-sys-feedback-correct-text);
 }
 
 .feedback b {
@@ -1162,7 +1162,7 @@ body.is-home .game {
   font-size: 18px;
 }
 
-.home-tile-msg.ok { color: var(--success); }
+.home-tile-msg.ok { color: var(--color-sys-feedback-correct-text); }
 .home-tile-msg.no { color: var(--grey-text); }
 
 .home-try {
@@ -1590,9 +1590,9 @@ body.game-rotated .nav { display: none; }
   transition: border-color 0.12s, background 0.12s;
 }
 .ear-note:hover { border-color: var(--accent); background: #f7f4ee; }
-.ear-note.good { border-color: var(--success); background: rgba(63, 125, 82, 0.14); color: var(--success); animation: earPop 0.5s ease; }
+.ear-note.good { border-color: var(--success); background: rgba(63, 125, 82, 0.14); color: var(--color-sys-feedback-correct-text); animation: earPop 0.5s ease; }
 .ear-note.bad { border-color: var(--grey-ind); background: #e6e2da; color: var(--grey-text); }
-.ear-note.reveal { border-color: var(--success); background: rgba(63, 125, 82, 0.14); color: var(--success); outline: 2px solid rgba(63, 125, 82, 0.35); outline-offset: 3px; }
+.ear-note.reveal { border-color: var(--success); background: rgba(63, 125, 82, 0.14); color: var(--color-sys-feedback-correct-text); outline: 2px solid rgba(63, 125, 82, 0.35); outline-offset: 3px; }
 .ear-note.good { outline: 2px solid rgba(63, 125, 82, 0.35); outline-offset: 3px; }
 @keyframes earPop { 0% { transform: translate(-50%, -50%) scale(1); } 40% { transform: translate(-50%, -50%) scale(1.14); } 100% { transform: translate(-50%, -50%) scale(1); } }
 
