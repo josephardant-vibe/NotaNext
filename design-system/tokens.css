@@ -39,6 +39,12 @@
   --color-sys-stamp-navy: var(--color-ref-navy-800);
   --color-sys-stamp-burgundy: var(--color-ref-burgundy-700);
   --color-sys-stamp-teal: var(--color-ref-teal-700);
+  --color-sys-tint-copper-subtle: rgba(184, 80, 47, 0.08);
+  --color-sys-tint-copper-soft: rgba(184, 80, 47, 0.12);
+  --color-sys-tint-copper-strong: rgba(184, 80, 47, 0.18);
+  --color-sys-tint-correct-soft: rgba(63, 125, 82, 0.14);
+  --color-sys-tint-correct-line: rgba(63, 125, 82, 0.35);
+  --color-sys-tint-wrong-soft: rgba(154, 147, 138, 0.14);
   /* font-family */
   --font-family-display: Fraunces, Georgia, serif;
   --font-family-text: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;

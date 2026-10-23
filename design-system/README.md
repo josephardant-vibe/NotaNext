@@ -32,3 +32,4 @@ SemVer. MINEUR : nouveau jeton ou composant. CORRECTIF : valeur corrigée. MAJEU
 
 ## Changelog
 - **0.1.0 (22 oct. 2026)** — Création : jetons (couleur, police, espacement, rayon, mouvement, rupture), règles, audit, vérificateur. Décisions : vert du code (#3F7D52) retenu face à la Charte (#4C7A52) ; gris texte fusionnés en #6B635A ; laiton #A9791B ; échelle de 8 tailles de police ; 3 largeurs de rupture ; jetons « proposés » (cachets, Parisienne) non livrés.
+- **0.2.0 (23 oct. 2026, PROPOSÉ)** — Ajout de 6 jetons de teinte (`color.sys.tint.*` : copper-subtle/soft/strong, correct-soft/line, wrong-soft) pour remplacer les `rgba()` en dur du code. À valider par Joseph.
