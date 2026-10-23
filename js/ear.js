@@ -65,7 +65,7 @@ window.Notanext = window.Notanext || {};
       if (ok) frame.setFeedback(rand(kit.CORRECT_PHRASES), 'correct');
       else frame.setFeedback(`Raté, c'était <b>${label(current)}</b>`);
       frame.session.record(ok);
-      timer = setTimeout(next, (ok ? 1000 : 1600) / SPD);
+      timer = setTimeout(next, kit.demo ? (ok ? 1500 : 1700) : (ok ? 1000 : 1600));
     }
 
     Object.entries(byName).forEach(([name, b]) => b.addEventListener('click', () => answer(name)));
@@ -196,7 +196,7 @@ window.Notanext = window.Notanext || {};
       if (ok) frame.setFeedback(rand(kit.CORRECT_PHRASES), 'correct');
       else frame.setFeedback(`Raté, c'était <b>${label(current.name)}</b>`);
       frame.session.record(ok);
-      timer = setTimeout(next, (ok ? 1000 : 1600) / SPD);
+      timer = setTimeout(next, kit.demo ? (ok ? 1500 : 1700) : (ok ? 1000 : 1600));
     }
 
     const stepOf = (e) => eventToStep(svg, e.clientY, e.clientX);

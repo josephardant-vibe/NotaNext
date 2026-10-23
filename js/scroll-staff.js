@@ -164,8 +164,14 @@ window.Notanext = window.Notanext || {};
         rafId = requestAnimationFrame(tick);
         return;
       }
+      // En pause (message « Tourne ton téléphone », réglage du clavier) : rien ne naît, rien n'avance, rien n'est mesuré.
+      if (paused) {
+        lastReal = nowReal;
+        rafId = requestAnimationFrame(tick);
+        return;
+      }
       let dt = 0;
-      if (!document.hidden && !paused) dt = Math.min(nowReal - lastReal, 100);
+      if (!document.hidden) dt = Math.min(nowReal - lastReal, 100);
       lastReal = nowReal;
       clock += dt;
       if (preRoll && !primed) {
@@ -235,6 +241,7 @@ window.Notanext = window.Notanext || {};
       // Gèle l'horloge (ex. pendant la configuration du clavier) : rien n'avance ni n'est compté raté.
       setPaused(value) {
         paused = value;
+        if (!value) { updateGeometry(); drawStatic(); } // la portée a pu changer de taille pendant la pause (rotation)
       },
       setSpeed(newSpeed) {
         SPEED = newSpeed;

@@ -1356,9 +1356,6 @@ body.game-rotated .nav { display: none; }
   body:not(.game-portrait) .gf { gap: 4px; padding: 8px 16px; }
   body:not(.game-portrait) .gf-title { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   body:not(.game-portrait) .gf-answers { gap: 6px; }
-  body:not(.game-portrait) .gf-answers:has(.answer-btn) { grid-template-columns: repeat(7, 1fr); }
-  body:not(.game-portrait) .gf-answers:has(.answer-btn) .answer-btn,
-  body:not(.game-portrait) .gf-answers:has(.answer-btn) .answer-btn:nth-child(5) { grid-column: auto; }
   body:not(.game-portrait) .gf-answers .answer-btn { padding: 5px 0; font-size: 14px; }
   body:not(.game-portrait) .gf .stage-row { flex-basis: 100%; }
   body:not(.game-portrait) .gf .key-hint { display: none; }
@@ -1373,9 +1370,6 @@ body.game-rotated .nav { display: none; }
 .game.rot-cw .gf { gap: 4px; padding: 8px 16px; }
 .game.rot-cw .gf-title { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .game.rot-cw .gf-answers { gap: 6px; }
-.game.rot-cw .gf-answers:has(.answer-btn) { grid-template-columns: repeat(7, 1fr); }
-.game.rot-cw .gf-answers:has(.answer-btn) .answer-btn,
-.game.rot-cw .gf-answers:has(.answer-btn) .answer-btn:nth-child(5) { grid-column: auto; }
 .game.rot-cw .gf-answers .answer-btn { padding: 5px 0; font-size: 14px; }
 .game.rot-cw .gf .stage-row { flex-basis: 100%; }
 .game.rot-cw .gf .key-hint { display: none; }
@@ -1630,6 +1624,9 @@ body.app-hint-on .app-hint { display: flex; }
 body.m #game .gf.ear-place .stage-row .staff-box,
 body.m #game .gf.place-game .stage-row .staff-box { flex: 0 1 auto; width: 100%; aspect-ratio: 1.1 / 1; max-height: 100%; }
 body.m #game .gf.place-game .gf-answers { display: none; }
+/* Si le joueur passe « Placer la note » en paysage, la portée reprend sa forme large. */
+body.m #game.rot-cw .gf.place-game .stage-row .staff-box { flex: 1 1 0; aspect-ratio: auto; }
+@media (max-height: 520px) { body.m:not(.game-portrait) #game .gf.place-game .stage-row .staff-box { flex: 1 1 0; aspect-ratio: auto; } }
 
 /* ---------- FOCUS CLAVIER ---------- */
 :where(a, button, select, input, [tabindex]):focus-visible,
@@ -1993,11 +1990,12 @@ body.m .doc h1 { font-size: 32px; }
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: var(--grey-text);
+  color: var(--accent-dark); /* bordeaux du site */
   cursor: pointer;
   touch-action: none;
 }
 .fb-btn:hover { color: var(--ink); }
+.fb-btn svg { stroke-width: 1.8; }
 .fb-btn.dragging { cursor: grabbing; color: var(--ink); }
 .fb-btn[hidden] { display: none; }
 .fb-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
@@ -2023,6 +2021,9 @@ body.m.in-game .fb-note { bottom: calc(var(--space-3) + var(--component-target-c
 body.is-home .fb-note { display: none; }
 body.m .fb-btn { right: 16px; bottom: calc(72px + env(safe-area-inset-bottom, 0px)); }
 body.m.in-game .fb-btn { bottom: 12px; }
+/* Jeu tourné de force : l'icône reste en bas à droite de l'écran de jeu (de la partition), donc elle tourne avec lui. */
+body.game-rotated:not(.game-portrait) .fb-btn { left: calc(var(--space-3) + env(safe-area-inset-left, 0px)); right: auto; bottom: var(--space-3); transform: rotate(90deg); }
+body.game-portrait .fb-btn { top: var(--space-3); right: var(--space-3); bottom: auto; left: auto; transform: rotate(-90deg); }
 /* Téléphone en paysage : la barre d'onglets est un peu plus basse et laisse la place à l'icône de retours, qui reste
    ainsi tout en bas à droite de l'écran, comme dans les jeux. */
 @media (max-height: 520px) and (orientation: landscape) {

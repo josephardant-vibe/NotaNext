@@ -184,7 +184,24 @@ window.Notanext = window.Notanext || {};
     ],
   };
 
+  // ----- recherche : titre d'abord, puis sous-titre, puis le reste de la carte -----
+  const normText = (t) => String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  // Tout le texte d'une carte d'Apprendre : clés (noms), questions et réponses de la FAQ.
+  function learnBody(card) {
+    if (card.id !== 'clefs') return '';
+    return CLEFS.map((c) => c.label).concat(FAQ_QUESTIONS, Object.values(FAQ_ANSWERS).flat()).join(' ');
+  }
+  // `items` : { title, tag, body }. Renvoie les éléments qui contiennent la requête, classés
+  // (0 = titre, 1 = sous-titre, 2 = reste), à rang égal dans l'ordre d'origine.
+  function searchRank(items, query) {
+    const q = normText(query.trim());
+    if (!q) return items.slice();
+    const rank = (it) => (normText(it.title).includes(q) ? 0 : normText(it.tag || '').includes(q) ? 1 : normText(it.body || '').includes(q) ? 2 : 3);
+    return items.map((it, i) => ({ it, i, r: rank(it) })).filter((x) => x.r < 3).sort((a, b) => a.r - b.r || a.i - b.i).map((x) => x.it);
+  }
+
   window.Notanext.data = {
+    searchRank, learnBody, normText,
     FR, ANSWER_ORDER, createPicker, label, getNotation, setNotation, FREQ, CLEFS, clefById, notesOf, EXERCISES, LEARN_CARDS, FAQ_QUESTIONS, FAQ_ANSWERS,
   };
 })();

@@ -171,15 +171,14 @@
     const empty = document.getElementById('learn-empty');
     const norm = (t) => String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
     const cards = Array.from(grid.children); // même ordre que LEARN_CARDS
+    const entries = LEARN_CARDS.map((c, i) => ({ el: cards[i], title: c.title, tag: c.tag, body: data.learnBody(c) }));
     const esc = (t) => String(t).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
     function filter() {
-      const q = norm(input.value.trim());
-      let shown = 0;
-      cards.forEach((el, i) => {
-        const hit = !q || norm(`${LEARN_CARDS[i].title} ${LEARN_CARDS[i].tag || ''}`).includes(q);
-        el.hidden = !hit;
-        if (hit) shown++;
-      });
+      // Titre d'abord, puis sous-titre, puis tout le reste de la carte (FAQ comprise).
+      const hits = data.searchRank(entries, input.value);
+      cards.forEach((el) => { el.hidden = true; });
+      hits.forEach((e) => { e.el.hidden = false; grid.appendChild(e.el); });
+      const shown = hits.length;
       clear.hidden = !input.value;
       empty.hidden = shown > 0;
       if (!shown) {
@@ -260,7 +259,7 @@
   // Téléphone tenu en portrait : message « Tourne ton téléphone » pendant 3 s, puis le
   // jeu se tourne tout seul en paysage. Le bouton de rotation bascule paysage <-> portrait.
   // Les cours n'utilisent rien de tout cela. Désactivable avec MOBILE_LANDSCAPE.
-  const HINT_MS = 2100; // 30 % plus court qu'avant (3 s)
+  const HINT_MS = 1750; // 42 % plus court que les 3 s d'origine (2,1 s auparavant)
   const isPhone = () => Math.min(window.innerWidth, window.innerHeight) <= 500;
   let orient = null;        // null = automatique ; 'landscape' | 'portrait' = choix du joueur
   let gamePref = 'landscape'; // orientation voulue par le jeu en cours (l'oreille absolue se joue en portrait)
@@ -271,15 +270,16 @@
     document.body.classList.toggle('is-phone', isPhone());
     gameEl.classList.remove('rot-cw', 'rot-ccw', 'show-hint');
     document.body.classList.remove('game-rotated', 'game-portrait');
-    if (gameEl.hidden || !rotationOn() || !isPhone()) { hintPaused = false; syncPause(); return; }
+    if (gameEl.hidden || !isPhone() || (!rotationOn() && !orient)) { hintPaused = false; syncPause(); return; }
     const devicePortrait = window.innerHeight > window.innerWidth;
     const deviceOk = gamePref === 'portrait' ? devicePortrait : !devicePortrait;
     if (hintPending && deviceOk) { hintPending = false; clearTimeout(hintTimer); }
     hintPaused = hintPending;
     syncPause();
-    if (hintPending) { gameEl.classList.add('show-hint'); return; }
     const want = orient || gamePref;
     const rot = want === 'landscape' && devicePortrait ? 'rot-cw' : want === 'portrait' && !devicePortrait ? 'rot-ccw' : null;
+    // Le message « Tourne ton téléphone » est déjà affiché dans l'orientation à venir (horizontal pour les jeux de lecture).
+    if (hintPending) { gameEl.classList.add('show-hint'); if (rot) { gameEl.classList.add(rot); document.body.classList.add('game-rotated'); if (rot === 'rot-ccw') document.body.classList.add('game-portrait'); } return; }
     if (rot) {
       gameEl.classList.add(rot);
       document.body.classList.add('game-rotated');
@@ -328,8 +328,8 @@
   function syncRotateBtn() {
     const btn = document.getElementById('gf-rotate-btn');
     if (!btn) return;
-    btn.setAttribute('aria-pressed', String(autoRotate));
-    const text = autoRotate ? 'Rotation automatique activée : toucher pour la désactiver' : 'Rotation automatique désactivée : toucher pour l\'activer';
+    btn.removeAttribute('aria-pressed');
+    const text = 'Tourner le jeu : paysage ou portrait';
     btn.setAttribute('aria-label', text);
     btn.title = text;
   }
@@ -452,7 +452,15 @@
     q('back').addEventListener('click', opts.onBack);
     q('hint-back').addEventListener('click', opts.onBack);
     q('hint-keep').addEventListener('click', () => setAutoRotate(false));
-    q('gf-rotate-btn').addEventListener('click', () => setAutoRotate(!autoRotate));
+    // Le bouton tourne le jeu en cours (paysage <-> portrait), même pour « Placer la note » ; la rotation automatique
+    // se règle dans Réglages ou avec « Garder cette orientation ».
+    q('gf-rotate-btn').addEventListener('click', () => {
+      const cur = orient || gamePref;
+      orient = cur === 'landscape' ? 'portrait' : 'landscape';
+      clearTimeout(hintTimer);
+      hintPending = false;
+      refreshLayout();
+    });
     syncRotateBtn();
 
     // ----- compteur : bonnes réponses / total -----
@@ -571,7 +579,7 @@
       config: `
         ${isPlace ? '<div class="namebox" id="namebox">–</div>' : ''}
         ${ex.mode === 'guess-scroll' ? `<select id="speed-sel" aria-label="Choisir une vitesse">${SPEED_LABELS.map(([v, label]) => `<option value="${v}"${v === 'intermediaire' ? ' selected' : ''}>${label}</option>`).join('')}</select>` : ''}`,
-      replay: isPlace ? 'config' : null,
+      replay: null,
       soundToggle: !isPlace,
       configAfter: `${instrumentMenu.html()}<span class="inst-note" id="inst-note" hidden></span>`,
       // Le sélecteur de clé est à gauche de la portée, centré en hauteur.
@@ -792,10 +800,10 @@
         });
         if (ok) {
           onGood();
-          setTimeout(next, 900 / SPD);
+          setTimeout(next, demo ? 1500 : 900);
         } else {
           onBad(current.name);
-          setTimeout(next, 1200 / SPD);
+          setTimeout(next, demo ? 1700 : 1200);
         }
       }
       svgEl.addEventListener('click', (e) => {

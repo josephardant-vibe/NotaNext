@@ -24,7 +24,8 @@ window.Notanext = window.Notanext || {};
   // Réponses de la démonstration : un enchaînement naturel de réussites et d'erreurs (8 essais, puis on recommence).
   // La première est juste : dès qu'un aperçu s'affiche, c'est comme si on venait de deviner une note.
   const SCRIPT = [true, true, false, true, true, true, false, true];
-  const DEMO_SPEED = 1.9; // les aperçus vont ~1,9 fois plus vite que le vrai jeu (pauses, défilement)
+  const DEMO_SPEED = 1.25; // les aperçus vont 1,25 fois plus vite que l'ancienne vitesse (pauses, défilement)
+  const DEMO_FIRST_MS = 500; // attente avant la première réponse d'un aperçu
 
   const $ = (id) => document.getElementById(id);
   const listEl = $('hub-list');
@@ -42,8 +43,9 @@ window.Notanext = window.Notanext || {};
 
   // ----- les éléments de la liste (lus dans le code : jamais recopiés à la main) -----
   const gameOf = (id) => EXERCISES.find((e) => e.id === id);
-  const exItem = (ex) => ({ kind: 'ex', id: ex.id, title: ex.title, desc: ex.tag, tag: 'Jeu', hash: `#/exercer/${ex.id}` });
-  const learnItem = (c) => ({ kind: 'learn', id: c.id, title: c.title, desc: c.tag, tag: 'Apprendre', hash: `#/apprendre/${c.id}` });
+  const familyOf = (id) => FAMILIES.find((f) => f.ids.includes(id));
+  const exItem = (ex) => { const f = familyOf(ex.id); return { kind: 'ex', id: ex.id, title: ex.title, desc: ex.tag, tag: 'Jeu', body: f ? `${f.title} ${f.sub}` : '', hash: `#/exercer/${ex.id}` }; };
+  const learnItem = (c) => ({ kind: 'learn', id: c.id, title: c.title, desc: c.tag, tag: 'Apprendre', body: data.learnBody(c), hash: `#/apprendre/${c.id}` });
   const allItems = () => EXERCISES.map(exItem).concat(LEARN_CARDS.map(learnItem));
 
   let visible = false;      // le hub est affiché
@@ -87,7 +89,7 @@ window.Notanext = window.Notanext || {};
       if (!document.hidden && visible && answerOnce()) { run.timer = setTimeout(tick, delay()); return; }
       run.timer = setTimeout(() => (tries < 40 ? begin(tries + 1) : tick()), 40);
     };
-    run.timer = setTimeout(() => begin(0), 0);
+    run.timer = setTimeout(() => begin(0), DEMO_FIRST_MS);
     return run;
   }
 
@@ -106,6 +108,7 @@ window.Notanext = window.Notanext || {};
   // ----- recadrage mobile : la zone utile (portée, notes) à l'échelle 0,5 -----
   function cropThumb(run) {
     const host = run.host;
+    host.style.transform = ''; // mesure à l'échelle réelle, sans l'effet d'un recadrage précédent
     const hostRect = host.getBoundingClientRect();
     const target = host.querySelector('.ear-wheel') || host.querySelector('.staff-box') || host.querySelector('.stage-row');
     if (!target) return;
@@ -118,9 +121,13 @@ window.Notanext = window.Notanext || {};
     const isWheel = target.classList.contains('ear-wheel');
     // Échelle : 0,5 quand la zone utile tient en hauteur ; sinon on réduit pour que toute sa hauteur
     // (le cercle entier, ou la portée avec ses lignes supplémentaires) entre dans la miniature.
-    const scale = Math.min(THUMB_SCALE, THUMB_H / h);
-    const cropW = THUMB_W / scale;
-    const cropH = THUMB_H / scale;
+    const thumbW = host.parentElement.clientWidth || THUMB_W; // la miniature fait 132 px sur écran étroit, 168 sinon
+    const thumbH = host.parentElement.clientHeight || THUMB_H;
+    // Portée : la miniature doit contenir la clé ET l'endroit où les notes se posent (≈ 55 % de la largeur, + marge).
+    const need = isWheel ? Infinity : thumbW / (w * 0.55 + 70);
+    const scale = Math.min(THUMB_SCALE, thumbH / h, need);
+    const cropW = thumbW / scale;
+    const cropH = thumbH / scale;
     // Horizontalement : cercle centré ; portée calée à gauche (on voit la clé, puis les premières notes).
     const x = isWheel ? x0 + (w - cropW) / 2 : x0;
     const y = y0 + (h - cropH) / 2;
@@ -160,8 +167,8 @@ window.Notanext = window.Notanext || {};
         </details>`).join('');
       list = FAMILIES.flatMap((f) => f.ids).map((id) => exItem(gameOf(id)));
     } else {
-      const nq = norm(q);
-      list = allItems().filter((it) => norm(`${it.title} ${it.desc || ''}`).includes(nq));
+      // titre d'abord, puis sous-titre, puis le reste de la carte
+      list = data.searchRank(allItems().map((it) => ({ ref: it, title: it.title, tag: it.desc, body: it.body })), q).map((x) => x.ref);
       listEl.innerHTML = list.map((it) => rowHtml(it, q)).join('');
     }
     const empty = q && !list.length;
