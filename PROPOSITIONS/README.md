@@ -75,6 +75,11 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 - Ce que ça fait : une ligne « Sources » (Larousse, Dolmetsch) sous la FAQ, stylée par jetons.
 - Risque : faible.
 
+## 16 — Hero : retirer l'ellipse décorative (`16-hero-retire-ellipse-decorative.patch`)
+- Pourquoi : le hero affiche une grande ellipse cuivre translucide derrière le titre (`.home-blob`). Les règles (BRIEF § 4, AGENTS.md) interdisent les cercles décoratifs.
+- Ce que ça fait : retire l'élément SVG de `index.html` et sa règle CSS.
+- Risque : faible techniquement, **mais c'est le hero (figé)** : à toi de décider. Le bouton « Commencer gratuitement » a aussi un liseré bas de 3 px (`border-bottom`) qui ressemble à une ombre : non touché.
+
 ---
 
 ## Sujets sans patch (décision préalable de Joseph)
