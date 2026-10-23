@@ -1,0 +1,13 @@
+diff --git a/style.css b/style.css
+index 596b8ac..f81f9c9 100644
+--- a/style.css
++++ b/style.css
+@@ -1590,7 +1590,7 @@ body.game-rotated .nav { display: none; }
+   transition: border-color 0.12s, background 0.12s;
+ }
+ .ear-note:hover { border-color: var(--accent); background: #f7f4ee; }
+-.ear-note.good { border-color: var(--success); background: rgba(63, 125, 82, 0.14); color: var(--success); animation: earPop 0.5s ease; }
++.ear-note.good { border-color: var(--success); background: rgba(63, 125, 82, 0.14); color: var(--success); animation: earPop var(--motion-duration-slow) ease; }
+ .ear-note.bad { border-color: var(--grey-ind); background: #e6e2da; color: var(--grey-text); }
+ .ear-note.reveal { border-color: var(--success); background: rgba(63, 125, 82, 0.14); color: var(--success); outline: 2px solid rgba(63, 125, 82, 0.35); outline-offset: 3px; }
+ .ear-note.good { outline: 2px solid rgba(63, 125, 82, 0.35); outline-offset: 3px; }

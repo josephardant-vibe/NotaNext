@@ -1,0 +1,62 @@
+# Propositions (rien n'est appliqué dans la branche)
+
+Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
+
+## 01 — 404, solution A : pages-passerelles (`01-404-pages-passerelles.patch`)
+- Pourquoi : `/s-exercer/`, `/apprendre/`, `/reglages/` renvoient 404 (il n'y a qu'une page `index.html` et aucune règle de réécriture).
+- Ce que ça fait : crée 3 petits dossiers avec un `index.html` qui redirige vers `/#/exercer` etc.
+- Risque : faible ; fonctionne sur n'importe quel hébergeur statique. Ne couvre que les 3 adresses créées.
+- Choisir A **ou** B (pas les deux).
+
+## 02 — 404, solution B : `404.html` (`02-404-page-unique.patch`)
+- Pourquoi : même problème, un seul fichier à la racine qui lit l'adresse et redirige vers la bonne route (`#/…`) ; couvre aussi les pages texte.
+- Risque : faible ; suppose que l'hébergeur sert `404.html` pour les adresses inconnues (Netlify, GitHub Pages, Cloudflare Pages le font) et que le site est à la racine du domaine.
+- Le 404 des adresses inconnues sans correspondance reste affiché (« Page introuvable » + lien d'accueil).
+
+## 03 — Confidentialité : clé `notanext.visited` (`03-confidentialite-cle-visited.patch`)
+- Pourquoi : `js/home.js` écrit `notanext.visited` dans le navigateur et la page ne le dit pas ; or elle prétend être complète.
+- Ce que ça fait : ajoute une ligne à la liste des données stockées.
+- Risque : texte légal, donc à faire relire. Le bouton « Réinitialiser » n'efface ni cette clé ni celle de l'icône masquée : à décider (corriger la phrase « tu peux tout effacer » ou ajouter ces clés à `RESET_KEYS`, `js/settings.js:16`).
+
+## 04 — Textes de l'accueil (`04-textes-accueil.patch`)
+- Pourquoi : « dix minutes plusieurs fois par semaine » ne figure dans aucune des deux sources citées ; « manches courtes » est du jargon.
+- Ce que ça fait : « des séances courtes et régulières » et « des exercices courts, corrigés ».
+- Risque : formulation pédagogique, à valider. Si la précision « dix minutes » est voulue, il faut une source.
+
+## 05 — `robots.txt` (`05-robots-txt.patch`)
+- Pourquoi : aucun fichier `robots.txt`. Ce patch autorise tout, sans plan de site (l'adresse définitive du site n'est pas connue, je ne l'invente pas).
+- Risque : nul.
+
+## 06 — Verre dépoli et blancs translucides (`06-verre-et-blancs-translucides.patch`)
+- Pourquoi : `backdrop-filter` en dehors du hero (3 → 1 restant : le hero) et blancs translucides `rgba(255,255,255,…)` (pure-white 16 → 2 restants, tous dans le hero).
+- Ce que ça fait : fonds pleins `bg-raised`, filets `border-subtle`, retrait des reflets internes.
+- Risque : **moyen** — les écrans de jeu (`.gf`, `.faq`, boutons) perdent la transparence sur le fond animé ; à regarder en jeu et en paysage.
+
+## 07 — Animations d'ambiance (`07-animations-d-ambiance.patch`)
+- Pourquoi : fond qui dérive (26 s) et 8 icônes qui flottent en boucle (ambient-animation 9 → 0). La direction « papier statique » n'est pas validée.
+- Risque : moyen (direction artistique). Les animations « tilt » des indices ne sont pas touchées.
+
+## 08 — Rupture 720 → 760 px (`08-rupture-720-vers-760.patch`)
+- Pourquoi : 720 px n'est pas sur la grille (520 / 760 / 1000). La rupture 900 px (hub mobile) n'est **pas** dans le patch : table « à arbitrer » (760 ou 1000).
+- Risque : faible, mais les téléphones larges (721–760 px) changent de comportement en portrait.
+
+## 09 — Tailles de police restantes (`09-tailles-de-police-restantes.patch`)
+- Pourquoi : valeurs de la table de `AUDIT.md` § 4 laissées de côté cette nuit (zones compactes : paysage mobile, étiquettes SVG, touches, rangées du hub) car un pixel de plus peut faire déborder.
+- Risque : moyen ; à regarder dans les jeux en paysage et dans le hub. Le patch ne touche pas `.home-*`.
+
+## 10 — Animation « earPop » (`10-earpop-duree.patch`)
+- Pourquoi : durée de 0,5 s hors échelle (120 / 180 / 250 ms). Le patch la ramène à 250 ms.
+- Risque : faible (réaction visuelle plus vive sur la bonne réponse d'Oreille absolue).
+
+---
+
+## Sujets sans patch (décision préalable de Joseph)
+
+- **Instruments : 3 ou 5 ?** Le code propose 5 instruments (piano, violon, flûte, trompette, guitare) ; le brief retient Piano / Guitare / Flûte ; `CLAUDE.md` valide 5 teintes d'instrument. À trancher, puis mettre en cohérence `audio.js`, `instrument-menu.js`, `docs.js`, `CREDITS.md` et le dossier `audio/` (jamais touché cette nuit).
+- **Hero de l'accueil** (figé) : les rayons 28 et 14 px, le verre (`blur(20px)`) et les blancs de `.home-demo` ne sont pas modifiés. Proposition : les migrer seulement si Joseph valide un nouveau hero.
+- **Couleurs en dur restantes (32)** : teintes cuivre `rgba(184,80,47,…)` et vertes `rgba(63,125,82,…)`, hex dans le SVG et `instrument-menu.js`. Il faut d'abord **créer des jetons de teinte** dans `tokens.json` (avec contraste) : décision de Joseph.
+- **Tailles de police hors table** : 28 px (`.learn-left h1`), 32 et 40 px (titres des pages texte), 34 px (titres du hub et de Réglages), 36 px (`.hub-detail-title`), et les `clamp(...)` : 30 ou 38 ? À arbitrer sur rendu.
+- **Polices en dur (35)** : `font-family: "Fraunces", Georgia, serif` partout ; remplacement par `var(--font-family-…)` sûr mais mécanique (35 lignes) : je ne l'ai pas fait faute de temps de vérification visuelle ; patch faisable sur demande.
+- **Mentions légales** : 5 champs « À COMPLÉTER » à fournir par Joseph (statut, identité/adresse, directeur de la publication, hébergeur, droits).
+- **Partage** : `og:image`, `og:url`, canonical, favicon PNG : il faut l'adresse définitive et une image fournie par Joseph.
+- **Repère `<main>`** pour l'application (accessibilité) : ajout simple mais touche la structure de `index.html` ; à faire avec une relecture.

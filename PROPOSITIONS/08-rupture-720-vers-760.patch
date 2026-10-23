@@ -1,0 +1,13 @@
+diff --git a/style.css b/style.css
+index 596b8ac..8d20250 100644
+--- a/style.css
++++ b/style.css
+@@ -2098,7 +2098,7 @@ body.m.in-game .fb-btn { bottom: 12px; }
+ /* Écran de jeu : l'icône reste dans une marge réservée, jamais sur la portée ni sur les touches. */
+ body.in-game .game { padding-right: 72px; }
+ body.m.in-game .game { padding-right: 12px; }
+-@media (max-width: 720px) and (orientation: portrait) { body.in-game .game { padding-bottom: 64px; } }
++@media (max-width: 760px) and (orientation: portrait) { body.in-game .game { padding-bottom: 64px; } }
+ @media (max-height: 520px) and (orientation: landscape) { body.m.in-game .game { padding-right: 72px; } }
+ /* Jeu tourné de force : la marge de l'icône suit la rotation (le bas de l'écran pour rot-cw, la droite pour rot-ccw). */
+ .game.rot-cw { padding: 0 72px 12px 12px !important; }

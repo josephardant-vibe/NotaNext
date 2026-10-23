@@ -1,0 +1,35 @@
+diff --git a/style.css b/style.css
+index 596b8ac..fcdbf21 100644
+--- a/style.css
++++ b/style.css
+@@ -33,7 +33,6 @@ body {
+     radial-gradient(55% 60% at 84% 84%, rgba(169, 121, 27, 0.12), transparent 68%),
+     linear-gradient(118deg, #faf6ef 0%, #e7cba2 24%, #f3e4c8 48%, #d9a866 74%, #faf6ef 100%);
+   background-size: 100% 100%, 100% 100%, 240% 240%;
+-  animation: bgDrift 26s ease-in-out infinite;
+ }
+ 
+ @keyframes bgDrift {
+@@ -62,14 +61,14 @@ body {
+   height: 100%;
+ }
+ 
+-.bg-icon.i1 { top: 8%;  left: 5%;  width: 70px; height: 104px; animation: fl 18s ease-in-out infinite; }
+-.bg-icon.i2 { top: 60%; left: 88%; width: 44px; height: 68px;  animation: fl 22s ease-in-out infinite 1s; }
+-.bg-icon.i3 { top: 82%; left: 9%;  width: 34px; height: 52px;  animation: fl 20s ease-in-out infinite 3s; }
+-.bg-icon.i4 { top: 16%; left: 84%; width: 50px; height: 76px;  animation: fl 24s ease-in-out infinite; }
+-.bg-icon.i5 { top: 40%; left: 2%;  width: 30px; height: 46px;  animation: fl 26s ease-in-out infinite 2s; }
+-.bg-icon.i6 { top: 34%; left: 94%; width: 34px; height: 52px;  animation: fl 19s ease-in-out infinite 4s; }
+-.bg-icon.i7 { top: 70%; left: 46%; width: 26px; height: 40px;  animation: fl 28s ease-in-out infinite 1.5s; opacity: 0.09; }
+-.bg-icon.i8 { top: 6%;  left: 60%; width: 24px; height: 38px;  animation: fl 23s ease-in-out infinite 5s; opacity: 0.09; }
++.bg-icon.i1 { top: 8%;  left: 5%;  width: 70px; height: 104px; }
++.bg-icon.i2 { top: 60%; left: 88%; width: 44px; height: 68px; }
++.bg-icon.i3 { top: 82%; left: 9%;  width: 34px; height: 52px; }
++.bg-icon.i4 { top: 16%; left: 84%; width: 50px; height: 76px; }
++.bg-icon.i5 { top: 40%; left: 2%;  width: 30px; height: 46px; }
++.bg-icon.i6 { top: 34%; left: 94%; width: 34px; height: 52px; }
++.bg-icon.i7 { top: 70%; left: 46%; width: 26px; height: 40px; opacity: 0.09; }
++.bg-icon.i8 { top: 6%;  left: 60%; width: 24px; height: 38px; opacity: 0.09; }
+ 
+ @keyframes fl {
+   0%, 100% { transform: translateY(0) rotate(-3deg); }

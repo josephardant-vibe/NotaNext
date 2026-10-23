@@ -4,3 +4,5 @@
 - Phase 1 — Audit complet : design-system/AUDIT-COMPLET-2026-10-23.md (12 chapitres + backlog). Lecture seule, aucun fichier du site modifié.
 - Phase 2 — Installation : tokens.css chargé avant fonts.css/style.css dans index.html (seule page) ; deux blocs :root retirés de style.css ; AGENTS.md ajouté à CLAUDE.md ; baseline écrite.
 - Phase 3 — Corrections sûres (vérificateur après chaque commit, aucune hausse) : 3a gris (déjà couvert par les alias, aucun littéral restant) ; 3b blancs purs opaques → bg-raised / text-on-accent (pure-white 25→16) ; 3c graisses 700→600 (8→0) ; 3d rayons hors hero (10→4) ; 3e durées (6→1, earPop 0,5 s laissé) ; 3f tailles de police hors accueil/SVG/zones compactes (67→36) ; 3g aucun reste obsolète trouvé (« 1/8 », « 7 questions »…), rien à corriger. Contrôle visuel rapide (hub 1440 px et 390 px, Réglages 1440 px) : rien de cassé, pas d'erreur console.
+- Phase 4 — PROPOSITIONS/ : 10 patchs (vérifiés avec git apply --check) + README d'explications.
+- Phase 5 — RAPPORT-MATIN.md écrit. Fin de mission : aucun push, aucune PR.
