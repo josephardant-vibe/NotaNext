@@ -1,6 +1,6 @@
 # Propositions (rien n'est appliqué dans la branche)
 
-Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Les patchs 03, 04, 06, 07, 12, 13, 14 et 15 sont déjà appliqués (dossier `appliquees/`). Les autres ont été regénérés le 23 oct. après les derniers commits (`git apply --check` OK). Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
+Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Les patchs 03, 04, 06, 07, 11, 12, 13, 14, 15 et 16 sont déjà appliqués (dossier `appliquees/`). Les autres ont été regénérés le 23 oct. après les derniers commits (`git apply --check` OK). Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
 
 ## 01 — 404, solution A : pages-passerelles (`01-404-pages-passerelles.patch`)
 - Pourquoi : `/s-exercer/`, `/apprendre/`, `/reglages/` renvoient 404 (il n'y a qu'une page `index.html` et aucune règle de réécriture).
@@ -48,7 +48,7 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 - Pourquoi : durée de 0,5 s hors échelle (120 / 180 / 250 ms). Le patch la ramène à 250 ms.
 - Risque : faible (réaction visuelle plus vive sur la bonne réponse d'Oreille absolue).
 
-## 11 — Compteur de la démo du hero (`11-hero-compteur-demo.patch`)
+## 11 — Compteur de la démo du hero — APPLIQUÉE (`appliquees/11-…`, commit 67bdceb + correctif 0aab355 : le patch affichait « 1 / 0 » 1,1 s après une bonne réponse)
 - Pourquoi : la démo du hero affiche « 1 / 8 » en boucle (`js/home.js`, `index.html`), reste des anciennes manches de 8 questions. Les vrais jeux affichent « bonnes réponses / total » sans fin (« 0 / 0 »).
 - Ce que ça fait : la démo compte comme les vrais jeux (`0 / 0`, puis `1 / 1`…).
 - Risque : faible, **mais c'est le hero (figé)** : à toi de décider.
@@ -75,7 +75,7 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 - Ce que ça fait : une ligne « Sources » (Larousse, Dolmetsch) sous la FAQ, stylée par jetons.
 - Risque : faible.
 
-## 16 — Hero : retirer l'ellipse décorative (`16-hero-retire-ellipse-decorative.patch`)
+## 16 — Hero : retirer l'ellipse décorative — APPLIQUÉE (`appliquees/16-…`, commit b240686)
 - Pourquoi : le hero affiche une grande ellipse cuivre translucide derrière le titre (`.home-blob`). Les règles (BRIEF § 4, AGENTS.md) interdisent les cercles décoratifs.
 - Ce que ça fait : retire l'élément SVG de `index.html` et sa règle CSS.
 - Risque : faible techniquement, **mais c'est le hero (figé)** : à toi de décider. Le bouton « Commencer gratuitement » a aussi un liseré bas de 3 px (`border-bottom`) qui ressemble à une ombre : non touché.

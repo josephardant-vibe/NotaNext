@@ -9,3 +9,4 @@
 - Session interactive (suite) : contrôle à l'écran complet, forks a11y et sources fusionnés, jetons de teinte, polices, code mort, revue de code (12 constats, 8 corrigés), outil design-system/outils/audit-ecran.js, propositions 11 à 16. RAPPORT-MATIN.md et AUDIT-COMPLET (addendum) mis à jour.
 - Patch 12 (papier statique) appliqué et contrôlé à l'écran (5 jeux, 390/760/1440 px, paysage). Correctifs : empilement de .gf (message de rotation), roue d'Oreille absolue à 390 px. CLAUDE.md mis à jour (verre réservé au hero).
 - Patchs 13, 14, 15 (textes sourcés) appliqués, un commit chacun, vérificateur vert ; Les clés (4 clés) et accueil contrôlés à 390 et 1440 px.
+- Patchs 11 et 16 (hero) appliqués ; correctif du total de la démo (« 1 / 0 »). Accueil contrôlé à 390 et 1440 px.

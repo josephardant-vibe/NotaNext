@@ -34,7 +34,7 @@ Vrais téléphones (rotation automatique des jeux), lecteur d'écran sur `<main>
 1. ~~Fond des jeux : « papier statique » ?~~ **Fait** (patch 12 appliqué, `CLAUDE.md` mis à jour). Contrôlé à l'écran : 5 jeux à 390, 760, 1440 px et en paysage. Deux défauts révélés et corrigés : le message « Tourne ton téléphone » ne recouvrait plus les réglages (empilement de `.gf`), et la roue d'Oreille absolue dépassait de la carte à 390 px (défaut ancien).
 2. **Instruments : 3 ou 5 ?** Réglages en montre 3, Oreille absolue 5, `CLAUDE.md` valide 5 teintes. *Garder 3, retirer violon et trompette d'un coup (menus, crédits, `audio/`).*
 3. **404 : patch 01 ou 02 ?** *02.*
-4. **Hero** : compteur « 1 / 8 » (11) et ellipse décorative (16). *Appliquer les deux.*
+4. ~~Hero : compteur « 1 / 8 » (11) et ellipse décorative (16)~~ **Appliqués** (compteur « bonnes réponses / total » comme les vrais jeux, ellipse retirée) et contrôlés à 390 et 1440 px. Le hero a donc été modifié sur ton accord explicite.
 5. ~~Textes pédagogiques (13, 14, 15)~~ **Appliqués** et contrôlés à l'écran (Les clés : 4 clés, 390 et 1440 px ; accueil). Les formulations restent à relire par toi. Limites : voir `design-system/SOURCES-COURS-CLES.md` § 4 et 5 (listes d'instruments non confirmées dans un ouvrage d'orchestration ; Roediger lu par son résumé).
 6. **Mentions légales** : 5 champs à fournir (obligatoire avant public).
 7. **Jetons de teinte (v0.2.0)** : à valider.
