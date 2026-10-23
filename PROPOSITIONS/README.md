@@ -48,6 +48,33 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 - Pourquoi : durée de 0,5 s hors échelle (120 / 180 / 250 ms). Le patch la ramène à 250 ms.
 - Risque : faible (réaction visuelle plus vive sur la bonne réponse d'Oreille absolue).
 
+## 11 — Compteur de la démo du hero (`11-hero-compteur-demo.patch`)
+- Pourquoi : la démo du hero affiche « 1 / 8 » en boucle (`js/home.js`, `index.html`), reste des anciennes manches de 8 questions. Les vrais jeux affichent « bonnes réponses / total » sans fin (« 0 / 0 »).
+- Ce que ça fait : la démo compte comme les vrais jeux (`0 / 0`, puis `1 / 1`…).
+- Risque : faible, **mais c'est le hero (figé)** : à toi de décider.
+
+## 12 — Papier statique complet (`12-papier-statique-complet.patch`)
+- Pourquoi : les écrans de jeu gardent un fond dégradé beige qui dérive, un cadre en verre dépoli et des blancs translucides, alors que tout le shell (hub, Réglages, Apprendre) est plat sur papier. Ce patch regroupe 06 + 07 + un fond uni `bg-page` (retrait de `bgDrift`). Les verres/blancs du hero restent.
+- Vérificateur après le patch : pure-white 2, glass 1 (hero), ambient-animation 0, color-literal 27.
+- Testé à l'écran (jeu 1440 px, oreille absolue, Apprendre) : lisible, cohérent avec le hub ; à regarder en paysage mobile.
+- Risque : moyen (direction artistique). **Ne pas appliquer en plus de 06 et 07** (il les contient).
+- Note : `.bg-icons` est déjà en `display: none` ; les 8 animations `.bg-icon` du patch 07 n'ont aucun effet visible (code mort). Seule la dérive du fond change l'écran.
+
+## 13 — Cours « Les clés » : corrections sourcées (`13-cours-cles-corrections-sourcees.patch`)
+- Pourquoi : `design-system/SOURCES-COURS-CLES.md` (sources lues : Larousse, Dolmetsch Online). La FAQ de l'ut alto dit « la seule clé d'ut encore couramment utilisée » : c'est contredit par ces sources (la clé d'ut ténor sert couramment au basson).
+- Ce que ça fait : 6 textes (notes.js : sol, fa, ut alto ×2, ut ténor ; home.js : carte du cours).
+- Risque : contenu pédagogique : à valider par toi avant d'appliquer (règle du projet).
+
+## 14 — Accueil : textes conformes aux sources (`14-accueil-textes-conformes-aux-sources.patch`)
+- Pourquoi : Roediger & Karpicke (2006) ne montrent l'avantage du test qu'à long terme (à 5 minutes la relecture gagne) ; Dunlosky et al. (2013) parlent d'espacer l'étude, pas de séances « courtes ». « tu apprends à chaque note » est une promesse non sourcée.
+- Ce que ça fait : reformule 4 phrases. **Remplace la proposition 04 déjà appliquée** (le mot « courtes » n'est pas démontré par la source) : à appliquer sur la branche telle quelle, il s'applique après 04.
+- Risque : formulation pédagogique, à valider.
+
+## 15 — Cours « Les clés » : ligne « Sources » (`15-cours-cles-ligne-sources.patch`)
+- Pourquoi : les Mentions légales promettent « les sources figurent dans les pages concernées » ; la page du cours n'en affiche aucune.
+- Ce que ça fait : une ligne « Sources » (Larousse, Dolmetsch) sous la FAQ, stylée par jetons.
+- Risque : faible.
+
 ---
 
 ## Sujets sans patch (décision préalable de Joseph)

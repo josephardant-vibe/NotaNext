@@ -1,0 +1,26 @@
+diff --git a/js/game.js b/js/game.js
+index 7200663..3621c07 100644
+--- a/js/game.js
++++ b/js/game.js
+@@ -210,6 +210,7 @@
+         <div class="faq">
+           <h3 aria-level="2">FAQ</h3>
+           <div id="faq-body"></div>
++          <p class="learn-sources">Sources : <a href="https://www.larousse.fr/encyclopedie/musdico/clef/166855" target="_blank" rel="noopener">Larousse, Dictionnaire de la musique, « Clef »</a> ; <a href="https://dolmetsch.com/musictheory14.htm" target="_blank" rel="noopener">Dolmetsch Online, Music Theory Online, leçon 14 « Other Clefs »</a> (B. Blood).</p>
+         </div>
+       </div>
+     `;
+diff --git a/style.css b/style.css
+index 7c89bc8..3644c57 100644
+--- a/style.css
++++ b/style.css
+@@ -541,6 +541,9 @@ select {
+   content: "–";
+ }
+ 
++.learn-sources { margin: var(--space-4) 0 0; font-size: var(--font-size-xs); line-height: 1.55; color: var(--color-sys-text-secondary); }
++.learn-sources a { color: var(--color-sys-text-accent); }
++
+ .faq p {
+   margin: 8px 0 2px;
+   font-size: var(--font-size-xs);
