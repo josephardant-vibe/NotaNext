@@ -35,7 +35,7 @@ Vrais téléphones (rotation automatique des jeux), lecteur d'écran sur `<main>
 2. **Instruments : 3 ou 5 ?** Réglages en montre 3, Oreille absolue 5, `CLAUDE.md` valide 5 teintes. *Garder 3, retirer violon et trompette d'un coup (menus, crédits, `audio/`).*
 3. **404 : patch 01 ou 02 ?** *02.*
 4. **Hero** : compteur « 1 / 8 » (11) et ellipse décorative (16). *Appliquer les deux.*
-5. **Textes pédagogiques** (13, 14, 15) : valider les formulations ; la FAQ de l'ut alto est probablement fausse. *Appliquer 13, 14, 15.*
+5. ~~Textes pédagogiques (13, 14, 15)~~ **Appliqués** et contrôlés à l'écran (Les clés : 4 clés, 390 et 1440 px ; accueil). Les formulations restent à relire par toi. Limites : voir `design-system/SOURCES-COURS-CLES.md` § 4 et 5 (listes d'instruments non confirmées dans un ouvrage d'orchestration ; Roediger lu par son résumé).
 6. **Mentions légales** : 5 champs à fournir (obligatoire avant public).
 7. **Jetons de teinte (v0.2.0)** : à valider.
 8. **Avant de fusionner dans `main`** : ne pas y mettre `RAPPORT-MATIN.md`, `NUIT-JOURNAL.md`, `PROPOSITIONS/`, `design-system/*.md` (Netlify publie tout le dépôt) ; `design-system/` n'est que sur ta `main` locale (la tâche de nuit programmée échouera tant que ce n'est pas poussé).

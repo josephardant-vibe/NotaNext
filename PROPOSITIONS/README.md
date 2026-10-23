@@ -1,6 +1,6 @@
 # Propositions (rien n'est appliqué dans la branche)
 
-Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Les patchs 03, 04, 06, 07 et 12 sont déjà appliqués (dossier `appliquees/`). Les autres ont été regénérés le 23 oct. après les derniers commits (`git apply --check` OK). Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
+Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-2026-10-23`. Les patchs 03, 04, 06, 07, 12, 13, 14 et 15 sont déjà appliqués (dossier `appliquees/`). Les autres ont été regénérés le 23 oct. après les derniers commits (`git apply --check` OK). Pour en appliquer un : `git apply PROPOSITIONS/NN-nom.patch`, puis relancer `python3 design-system/check-design-system.py` et **regarder à l'écran** (390 / 760 / 1440 px).
 
 ## 01 — 404, solution A : pages-passerelles (`01-404-pages-passerelles.patch`)
 - Pourquoi : `/s-exercer/`, `/apprendre/`, `/reglages/` renvoient 404 (il n'y a qu'une page `index.html` et aucune règle de réécriture).
@@ -60,17 +60,17 @@ Chaque patch a été vérifié avec `git apply --check` sur la branche `nuit-202
 - Risque : moyen (direction artistique). **Ne pas appliquer en plus de 06 et 07** (il les contient).
 - Note : le code mort des icônes de fond a été retiré à part (commit 21d6eee).
 
-## 13 — Cours « Les clés » : corrections sourcées (`13-cours-cles-corrections-sourcees.patch`)
+## 13 — Cours « Les clés » : corrections sourcées — APPLIQUÉE (`appliquees/13-…`, commit 41a0b65)
 - Pourquoi : `design-system/SOURCES-COURS-CLES.md` (sources lues : Larousse, Dolmetsch Online). La FAQ de l'ut alto dit « la seule clé d'ut encore couramment utilisée » : c'est contredit par ces sources (la clé d'ut ténor sert couramment au basson).
 - Ce que ça fait : 6 textes (notes.js : sol, fa, ut alto ×2, ut ténor ; home.js : carte du cours).
 - Risque : contenu pédagogique : à valider par toi avant d'appliquer (règle du projet).
 
-## 14 — Accueil : textes conformes aux sources (`14-accueil-textes-conformes-aux-sources.patch`)
+## 14 — Accueil : textes conformes aux sources — APPLIQUÉE (`appliquees/14-…`, commit 3872140)
 - Pourquoi : Roediger & Karpicke (2006) ne montrent l'avantage du test qu'à long terme (à 5 minutes la relecture gagne) ; Dunlosky et al. (2013) parlent d'espacer l'étude, pas de séances « courtes ». « tu apprends à chaque note » est une promesse non sourcée.
 - Ce que ça fait : reformule 3 phrases. La phrase sur « séances courtes » (proposition 04 déjà appliquée) a été corrigée par la revue de code (commit e0f9e6d) ; ce patch reprend les 3 autres reformulations.
 - Risque : formulation pédagogique, à valider.
 
-## 15 — Cours « Les clés » : ligne « Sources » (`15-cours-cles-ligne-sources.patch`)
+## 15 — Cours « Les clés » : ligne « Sources » — APPLIQUÉE (`appliquees/15-…`, commit ef836d7)
 - Pourquoi : les Mentions légales promettent « les sources figurent dans les pages concernées » ; la page du cours n'en affiche aucune.
 - Ce que ça fait : une ligne « Sources » (Larousse, Dolmetsch) sous la FAQ, stylée par jetons.
 - Risque : faible.
