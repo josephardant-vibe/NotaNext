@@ -1,5 +1,5 @@
 {
-  "color-literal": 32,
+  "color-literal": 19,
   "pure-white": 16,
   "font-size-off-scale": 36,
   "radius-off-scale": 4,
@@ -8,6 +8,6 @@
   "glass": 3,
   "breakpoint-off-grid": 2,
   "duration-off-scale": 1,
-  "font-family-literal": 35,
-  "ambient-animation": 9
+  "font-family-literal": 0,
+  "ambient-animation": 1
 }

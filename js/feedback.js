@@ -59,7 +59,7 @@ window.Notanext = window.Notanext || {};
   note.setAttribute('role', 'status');
   document.body.appendChild(note);
   let noteTimer = 0;
-  function hideNote() { clearTimeout(noteTimer); note.classList.remove('on'); }
+  function hideNote() { clearTimeout(noteTimer); note.classList.remove('on'); note.textContent = ''; } // vidée : plus rien à lire pour un lecteur d'écran
   function say(msg) {
     clearTimeout(noteTimer);
     note.textContent = msg;

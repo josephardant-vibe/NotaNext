@@ -191,8 +191,8 @@ window.Notanext = window.Notanext || {};
       mountPreview(item);
     };
     if (immediate || reduce()) { apply(); return; }
-    detail.fade.classList.add('out');          // fondu de 140 ms (voir style.css), désactivé si mouvement réduit
-    swapTimer = setTimeout(apply, 140);
+    detail.fade.classList.add('out');          // fondu de 120 ms (--motion-duration-fast, voir style.css), désactivé si mouvement réduit
+    swapTimer = setTimeout(apply, 120);
   }
 
   function mountPreview(item) {

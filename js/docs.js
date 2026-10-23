@@ -46,7 +46,7 @@ window.Notanext = window.Notanext || {};
           <li>La position et l'état (affichée ou masquée) de l'icône de retours.</li>
           <li>Un repère indiquant que tu as déjà ouvert le site (page d'accueil).</li>
         </ul>
-        <p>Tu peux tout effacer dans Réglages, section « Mes données » : « Réinitialiser tous mes réglages ». Tu peux aussi vider les données du site dans ton navigateur.</p>
+        <p>Tu peux effacer tes réglages dans Réglages, section « Mes données » : « Réinitialiser tous mes réglages ». Cette réinitialisation ne touche pas au repère de première visite ni à l'état de l'icône de retours ; pour tout effacer, vide les données du site dans ton navigateur.</p>
 
         <h2>Ce que le site appelle sur Internet</h2>
         <p>Les polices, les sons des instruments, le code et les images viennent tous du site lui-même : aucune police ni aucun script n'est chargé depuis un autre service pour afficher les pages ou jouer. Le site n'utilise aucun outil de mesure d'audience ni aucun traceur.</p>

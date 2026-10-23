@@ -109,7 +109,7 @@ def check_css(path, text, found):
                 add("shadow", m.start(), f"{prop}: {val}")
         elif prop == "backdrop-filter" and val != "none":
             add("glass", m.start(), f"{prop}: {val}")
-        elif prop == "font-family" and "var(" not in val:
+        elif prop == "font-family" and "var(" not in val and path.name != "fonts.css":  # @font-face : le nom de la famille doit y être écrit en toutes lettres
             add("font-family-literal", m.start(), f"{prop}: {val}")
         elif prop in ("transition", "animation"):
             for num, unit in re.findall(r"(\d*\.?\d+)(ms|s)\b", val):
