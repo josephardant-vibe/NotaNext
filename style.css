@@ -522,6 +522,8 @@ select {
   display: flex;
   justify-content: space-between;
   gap: 8px;
+  align-items: center;
+  min-height: var(--component-target-comfort);
   color: var(--ink);
 }
 
@@ -1456,7 +1458,7 @@ body.game-rotated .nav { display: none; }
   body:not(.game-portrait) .nav { padding-top: 8px; padding-bottom: 4px; }
   body:not(.game-portrait) .gf { gap: 4px; padding: 8px 16px; }
   body:not(.game-portrait) .gf-title { display: none; }
-  body:not(.game-portrait) .gf-count { font-size: 20px; }
+  body:not(.game-portrait) .gf-count { font-size: var(--font-size-xl); }
   body:not(.game-portrait) .gf-answers { gap: 6px; }
   body:not(.game-portrait) .gf-answers .answer-btn { padding: 5px 0; font-size: 14px; }
   body:not(.game-portrait) .gf .stage-row { flex-basis: 100%; }
@@ -1466,12 +1468,12 @@ body.game-rotated .nav { display: none; }
   body:not(.game-portrait) .gf-config select, body:not(.game-portrait) .gf-config .replay { padding-top: 4px; padding-bottom: 4px; font-size: 12px; }
   body:not(.game-portrait) .gf-config .namebox { height: 30px; }
   body:not(.game-portrait) .stage-row { gap: 3px; }
-  body:not(.game-portrait) .clef-side select { font-size: 11px; padding: 3px 18px 3px 7px; background-position: right 6px center; }
+  body:not(.game-portrait) .clef-side select { min-height: var(--component-target-min); font-size: 11px; padding: 3px 18px 3px 7px; background-position: right 6px center; }
 }
 
 .game.rot-cw .gf { gap: 4px; padding: 8px 16px; }
 .game.rot-cw .gf-title { display: none; }
-.game.rot-cw .gf-count { font-size: 20px; }
+.game.rot-cw .gf-count { font-size: var(--font-size-xl); }
 .game.rot-cw .gf-answers { gap: 6px; }
 .game.rot-cw .gf-answers .answer-btn { padding: 5px 0; font-size: 14px; }
 .game.rot-cw .gf .stage-row { flex-basis: 100%; }
@@ -1481,7 +1483,7 @@ body.game-rotated .nav { display: none; }
 .game.rot-cw .gf-config select, .game.rot-cw .gf-config .replay { padding-top: 4px; padding-bottom: 4px; font-size: 12px; }
 .game.rot-cw .gf-config .namebox { height: 30px; }
 .game.rot-cw .stage-row { gap: 3px; }
-.game.rot-cw .clef-side select { font-size: 11px; padding: 3px 18px 3px 7px; background-position: right 6px center; }
+.game.rot-cw .clef-side select { min-height: var(--component-target-min); font-size: 11px; padding: 3px 18px 3px 7px; background-position: right 6px center; }
 
 /* ---------- PAGE SE CONNECTER ---------- */
 .page-panel { max-width: 860px; height: auto; max-height: 100%; align-self: flex-start; margin-top: clamp(0px, 3vh, 28px); }
@@ -1992,6 +1994,7 @@ body.in-game .tabbar { display: none; }
   color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 5px;
+  min-height: var(--component-target-min);
   cursor: pointer;
 }
 .hub-launch:hover { color: var(--accent-dark); }
