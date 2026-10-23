@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NotaNext — page introuvable</title>
+  <link rel="stylesheet" href="/design-system/tokens.css">
+  <style>body { background: var(--color-sys-bg-page); color: var(--color-sys-text-primary); padding: var(--space-6); }</style>
+  <script>
+    // Adresse directe (/s-exercer/, /reglages…) : on renvoie vers la route de l'application (#/…).
+    (function () {
+      var routes = { 's-exercer': 'exercer', 'exercer': 'exercer', 'apprendre': 'apprendre', 'reglages': 'reglages',
+        'mentions-legales': 'mentions-legales', 'confidentialite': 'confidentialite', 'credits': 'credits', 'accueil': 'accueil' };
+      var seg = location.pathname.split('/').filter(Boolean)[0];
+      if (seg && routes[seg]) location.replace('/#/' + routes[seg]);
+    })();
+  </script>
+</head>
+<body>
+  <h1>Page introuvable</h1>
+  <p><a href="/">Retour à l'accueil de NotaNext</a></p>
+</body>
+</html>
