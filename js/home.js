@@ -74,6 +74,7 @@
 
   let index = 0;
   let done = 0;
+  let good = 0;
   let picked = null;
 
   const btns = BUTTONS.map((name) => {
@@ -93,7 +94,7 @@
     noteEl.setAttribute('cy', y);
     noteEl.setAttribute('transform', `rotate(-20 250 ${y})`);
     stemEl.setAttribute('d', `M${up ? 259 : 241} ${y}V${up ? y - 38 : y + 38}`);
-    countEl.textContent = `${(done % 8) + 1} / 8`;
+    countEl.textContent = `${good} / ${done}`;
 
     btns.forEach((b) => {
       b.className = '';
@@ -115,6 +116,7 @@
   function pick(name) {
     if (picked) return;
     picked = name;
+    if (name === NAMES[STEPS[index] % 7]) good++;
     render();
     setTimeout(() => {
       index = (index + 1) % STEPS.length;
