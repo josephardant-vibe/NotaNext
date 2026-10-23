@@ -1,13 +1,13 @@
 {
   "color-literal": 32,
-  "pure-white": 25,
-  "font-size-off-scale": 67,
-  "radius-off-scale": 10,
-  "font-weight-off-scale": 8,
+  "pure-white": 16,
+  "font-size-off-scale": 36,
+  "radius-off-scale": 4,
+  "font-weight-off-scale": 0,
   "shadow": 0,
   "glass": 3,
   "breakpoint-off-grid": 2,
-  "duration-off-scale": 6,
+  "duration-off-scale": 1,
   "font-family-literal": 35,
   "ambient-animation": 9
 }
