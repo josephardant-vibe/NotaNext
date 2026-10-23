@@ -707,16 +707,6 @@ body.is-home .game {
   padding: clamp(24px, 5vw, 64px) clamp(20px, 4vw, 56px);
 }
 
-.home-blob {
-  position: absolute;
-  left: -60px;
-  top: 6%;
-  width: min(52vw, 560px);
-  fill: var(--accent);
-  opacity: 0.13;
-  pointer-events: none;
-}
-
 /* direction: rtl place le texte à droite et l'aperçu à gauche en large ;
    en étroit, le texte reste au-dessus (comme sur la maquette). */
 .home-grid {
