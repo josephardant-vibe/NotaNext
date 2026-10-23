@@ -11,7 +11,7 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-family-text);
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
@@ -104,7 +104,7 @@ body {
 }
 
 h1 {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-weight: 600;
   font-size: clamp(19px, 4.5vw, 25px);
   margin: 0;
@@ -152,7 +152,7 @@ h1 {
 .tile-icon { color: var(--accent); margin-bottom: 8px; }
 
 .tile-title {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-weight: 600;
   font-size: 24px;
   line-height: 1.15;
@@ -220,13 +220,13 @@ h1 {
 }
 
 .ex-title {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-weight: 600;
   font-size: var(--font-size-lg);
 }
 
 .ex-score {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-weight: 600;
   font-size: var(--font-size-xl);
   color: var(--gold);
@@ -265,7 +265,7 @@ select {
   border: 1.5px solid var(--accent);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.8);
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-weight: 600;
   font-size: var(--font-size-lg);
   color: var(--accent-dark);
@@ -301,7 +301,7 @@ select {
 }
 
 .clef-glyph {
-  font-family: "Noto Music", serif;
+  font-family: var(--font-family-music);
   fill: var(--ink);
   stroke: none;
 }
@@ -339,13 +339,13 @@ select {
 }
 
 .side-label {
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: var(--font-family-text);
   font-size: 13px;
   font-weight: 600;
 }
 
 .head-label {
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: var(--font-family-text);
   font-size: 11px;
   font-weight: 600;
   fill: var(--ink);
@@ -364,7 +364,7 @@ select {
 
 .learn-label {
   fill: var(--accent-dark);
-  font-family: "IBM Plex Sans", sans-serif;
+  font-family: var(--font-family-text);
   font-size: var(--font-size-xs);
   font-weight: 600;
   text-anchor: middle;
@@ -459,7 +459,7 @@ select {
 }
 
 .learn-left h2 {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-weight: 600;
   font-size: var(--font-size-lg);
   margin: 0;
@@ -499,7 +499,7 @@ select {
 }
 
 .faq h3 {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-weight: 600;
   font-size: var(--font-size-md);
   margin: 0 0 4px;
@@ -712,7 +712,7 @@ body.is-home .game {
 .home-logo {
   order: 1;
   padding: 14px 0 8px;
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-weight: 600;
   font-size: 24px;
   letter-spacing: -0.01em;
@@ -933,7 +933,7 @@ body.is-home .game {
 }
 
 .home-clef {
-  font-family: "Noto Music", serif;
+  font-family: var(--font-family-music);
   fill: var(--ink);
 }
 
@@ -951,7 +951,7 @@ body.is-home .game {
   display: flex;
   align-items: center;
   min-height: 34px;
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-size: clamp(20px, 2.2vw, 26px);
   color: var(--ink);
 }
@@ -1027,7 +1027,7 @@ body.is-home .game {
 
 .home-section h2 {
   margin: 0 0 clamp(28px, 4vw, 52px);
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-weight: 400;
   font-size: clamp(30px, 4vw, 48px);
   line-height: 1.1;
@@ -1049,7 +1049,7 @@ body.is-home .game {
 }
 
 .home-step span {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-size: 56px;
   line-height: 1;
   letter-spacing: -0.03em;
@@ -1060,7 +1060,7 @@ body.is-home .game {
 .home-tile h3,
 .home-course h3 {
   margin: 0;
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-weight: 600;
   line-height: 1.25;
 }
@@ -1160,7 +1160,7 @@ body.is-home .game {
 }
 
 .home-tile-msg {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-size: 18px;
 }
 
@@ -1286,7 +1286,7 @@ body.in-game .shell { display: none; }
 .gf-top .backbtn { justify-self: start; }
 
 .gf-title {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-weight: 600;
   font-size: 20px;
   text-align: center;
@@ -1301,7 +1301,7 @@ body.in-game .shell { display: none; }
 }
 
 .gf-count {
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-weight: 600;
   font-size: 24px;
   color: var(--gold);
@@ -1433,7 +1433,7 @@ body.is-phone .gf-rotate-btn { display: inline-flex; }
 .gf-hint-icon { color: var(--accent); animation: tilt 1.6s ease-in-out infinite; }
 @keyframes tilt { 0%, 30% { transform: rotate(0); } 70%, 100% { transform: rotate(-90deg); } }
 
-.gf-hint h2 { margin: 10px 0 8px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: var(--font-size-xl); line-height: 1.15; }
+.gf-hint h2 { margin: 10px 0 8px; font-family: var(--font-family-display); font-weight: 600; font-size: var(--font-size-xl); line-height: 1.15; }
 .gf-hint p { margin: 0; color: var(--muted); }
 
 /* Jeu tourné de force (téléphone) : la carte occupe tout l'écran, sans header */
@@ -1639,7 +1639,7 @@ body.game-rotated .nav { display: none; }
 .switch input:checked + .switch-track .switch-thumb { transform: translateX(16px); }
 .switch input:focus-visible + .switch-track { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-.ghost-label { font-family: "IBM Plex Sans", sans-serif; font-size: 11px; font-weight: 600; fill: var(--ink); pointer-events: none; }
+.ghost-label { font-family: var(--font-family-text); font-size: 11px; font-weight: 600; fill: var(--ink); pointer-events: none; }
 .ghost-label.above { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; font-size: 13px; }
 
 /* Choix d'instrument en 5 grands boutons (Oreille absolue — deviner). */
@@ -1717,7 +1717,7 @@ body.is-home .app { display: none; }
   background: var(--paper);
 }
 body.app-hint-on .app-hint { display: flex; }
-.app-hint h2 { margin: 10px 0 8px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: var(--font-size-xl); line-height: 1.15; }
+.app-hint h2 { margin: 10px 0 8px; font-family: var(--font-family-display); font-weight: 600; font-size: var(--font-size-xl); line-height: 1.15; }
 .app-hint p { margin: 0; color: var(--muted); }
 .app-hint .gf-hint-icon { color: var(--accent); animation: tilt 1.6s ease-in-out infinite; }
 
@@ -1786,7 +1786,7 @@ body:not(.in-game) .bg { display: none; }
   border: 0;
   background: none;
   cursor: pointer;
-  font-family: "Fraunces", Georgia, serif;
+  font-family: var(--font-family-display);
   font-weight: 600;
   font-size: var(--font-size-xl);
   letter-spacing: -0.01em;
@@ -1913,7 +1913,7 @@ body.in-game .tabbar { display: none; }
 .hub-search:has(.hub-clear:not([hidden])) .hub-slash { display: none; }
 
 .hub-fam-head { padding: 0 16px 12px; }
-.hub-fam-head h2 { margin: 0; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 24px; color: var(--accent); }
+.hub-fam-head h2 { margin: 0; font-family: var(--font-family-display); font-weight: 600; font-size: 24px; color: var(--accent); }
 .hub-fam-head p { margin: 0; font-size: var(--font-size-md); color: var(--grey-text); }
 .hub-fam.second { margin-top: 40px; }
 .hub-fam.second .hub-fam-head { padding-top: 18px; border-top: 2px solid var(--ink); }
@@ -1938,7 +1938,7 @@ body.in-game .tabbar { display: none; }
 .hub-row:active { background: rgba(184, 80, 47, 0.18); }
 .hub-row:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .hub-row-text { flex: 1; min-width: 0; display: block; }
-.hub-row-title { display: block; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 20px; line-height: 1.2; }
+.hub-row-title { display: block; font-family: var(--font-family-display); font-weight: 600; font-size: 20px; line-height: 1.2; }
 .hub-row-title b { font-weight: 600; color: var(--accent-dark); }
 .hub-row-desc { display: block; margin-top: 2px; font-size: 15px; line-height: 22px; color: var(--grey-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hub-tag { flex: none; padding: 2px 10px; border: 1.5px solid var(--hair); border-radius: 999px; font-size: 12px; font-weight: 600; color: var(--grey-text); }
@@ -1947,14 +1947,14 @@ body.in-game .tabbar { display: none; }
 .hub-thumb { display: none; }
 
 .hub-empty { padding: 32px 16px; }
-.hub-empty-t { margin: 0 0 6px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: var(--font-size-xl); }
+.hub-empty-t { margin: 0 0 6px; font-family: var(--font-family-display); font-weight: 600; font-size: var(--font-size-xl); }
 .hub-empty-d { margin: 0 0 18px; color: var(--grey-text); }
 
 .hub-detail { padding: 8px 0 0 8px; min-width: 0; }
 .hub-detail-fade { transition: opacity var(--motion-duration-fast); }
 .hub-detail-fade.out { opacity: 0; }
 .hub-detail-text { display: block; width: 100%; padding: 0; border: 0; background: none; text-align: left; font: inherit; color: inherit; cursor: pointer; }
-.hub-detail-title { display: block; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 36px; line-height: 1.1; letter-spacing: -0.015em; color: var(--ink); }
+.hub-detail-title { display: block; font-family: var(--font-family-display); font-weight: 600; font-size: 36px; line-height: 1.1; letter-spacing: -0.015em; color: var(--ink); }
 .hub-detail-desc { display: block; margin: 10px 0 24px; font-size: var(--font-size-md); line-height: 26px; color: var(--grey-text); }
 .hub-preview-wrap {
   position: relative;
@@ -2031,7 +2031,7 @@ body.in-game .tabbar { display: none; }
 .settings h1 { font-size: 48px; line-height: 1.05; letter-spacing: -0.02em; margin: 0 0 8px; }
 .set-sec { padding: 28px 0; border-top: 1px solid var(--hair); display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
 .set-sec:first-of-type { margin-top: 16px; }
-.set-sec h2 { margin: 0; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: 24px; color: var(--accent); }
+.set-sec h2 { margin: 0; font-family: var(--font-family-display); font-weight: 600; font-size: 24px; color: var(--accent); }
 .set-hint { margin: 0; font-size: var(--font-size-md); line-height: 22px; color: var(--grey-text); max-width: 60ch; }
 .set-warn { margin: 0; font-size: 14px; line-height: 20px; color: var(--grey-text); border-left: 3px solid var(--accent); padding-left: 10px; }
 .settings .seg-wrap { justify-content: flex-start; gap: 16px; }
@@ -2064,7 +2064,7 @@ body.m .panel { padding-left: 20px; padding-right: 20px; padding-bottom: 56px; }
 /* ----- pages texte ----- */
 .doc { width: 100%; max-width: 68ch; padding: 32px 0 64px; }
 .doc h1 { font-size: 40px; line-height: 1.1; letter-spacing: -0.02em; margin: 18px 0 12px; }
-.doc h2 { margin: 32px 0 8px; font-family: "Fraunces", Georgia, serif; font-weight: 600; font-size: var(--font-size-xl); }
+.doc h2 { margin: 32px 0 8px; font-family: var(--font-family-display); font-weight: 600; font-size: var(--font-size-xl); }
 .doc p, .doc li { font-size: 16px; line-height: 1.6; }
 .doc p { margin: 0 0 12px; }
 .doc ul { margin: 0 0 12px; padding-left: 22px; }
