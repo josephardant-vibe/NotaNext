@@ -177,3 +177,29 @@ Présent : `title`, `meta description`, `lang="fr"`, `theme-color`, `og:type/loc
 | P2 | Code mort (`ex-*`, `view-account`/runner) | 1 h | moyen | Décision sur la page « Se connecter » |
 | P2 | Remplacer `alert()` du retour par un message dans l'interface | 30 min | faible | Non |
 | P2 | Ajouter un `LICENSE` au dépôt | 10 min | faible | Choix de licence |
+
+---
+
+# Addendum — contrôle à l'écran (23 oct., navigateur, 390 / 760 / 1024-1440 px, paysage 740×360)
+
+Mesures par script (`design-system/outils/audit-ecran.js`) et captures. Ce qui était « non vérifié » dans l'audit statique est maintenant vu, sauf mention.
+
+**Mesuré et correct.** Aucun débordement horizontal sur 14 routes à 1024 et 390 px. Contrastes calculés sur tous les textes visibles : aucun sous le seuil (sauf le point 1 ci-dessous). Une réponse fausse affiche bien le nom (« C'était Si »), le gris n'est jamais seul. Le clavier fonctionne (touches lues par position physique, préréglage « rangée du milieu »). Recherche du hub en direct (filtre, état vide, effacement). Focus visible partout (anneau cuivre de 2 px). Aucune erreur dans la console. Poids : 389 Ko décodés sur 24 fichiers au chargement du hub (polices 143 Ko, CSS 60 Ko, JS 156 Ko), DOMContentLoaded 39 ms en local.
+
+**Défauts trouvés et corrigés (commits dédiés).**
+1. Score « 0 / 0 » en paysage : 20 px en 600 = 3,7:1 donc sous 4,5 (le passage 700 → 600 lui avait retiré le statut de « gras »). Remis à 24 px.
+2. Lignes du cours « Les clés » : 19 px de haut (cible < 24 px). Portées à 44 px. « Lancer le jeu » (22 px) et les listes déroulantes compactes (23 px) à 24 px mini.
+3. Accueil mobile : l'en-tête collant se faisait écraser (min-height fixe + flex-shrink) : la navigation sur 2 lignes passait sous le texte. Corrigé.
+4. Apprendre mobile : la FAQ était dans une boîte de 134 px qui défilait toute seule (389 px de contenu). La page défile maintenant en entier.
+5. Code mort retiré : pictogrammes de fond masqués (JS + HTML + CSS + keyframes) et 5 règles `.ex-*`.
+
+**Défauts trouvés, non corrigés (décision ou patch).**
+- Les écrans de jeu gardent un fond dégradé beige qui dérive, un cadre en verre et des blancs translucides, alors que le reste est plat sur papier : incohérence visible. Patch 12 (testé à l'écran, plus cohérent).
+- Le hero affiche « 1 / 8 » (restes des manches de 8 questions) : patch 11. Il porte aussi une ellipse décorative (patch 16).
+- Réglages > Son montre 3 instruments (Piano, Guitare, Flûte), Oreille absolue en propose 5 : à trancher.
+- Paysage téléphone : l'écran S'exercer ne montre que le titre et la recherche avant de défiler (barre du haut + barre du bas + titre ≈ 1/3 de 360 px) ; en « app tournée », la FAQ du cours reste dans une petite boîte.
+- Les étiquettes de notes de la page « Les clés » passent sur les lignes de la portée (lisibles mais serrées).
+- Jeu « Placer la note » à 1024 px : la portée occupe le tiers haut, beaucoup de vide dessous.
+- « Notation des notes » est écrit deux fois de suite dans Réglages > Affichage (libellé puis phrase d'aide).
+- `runner.js` (17,6 Ko) est chargé sur toutes les pages pour une page qui n'est plus liée.
+- Le nom accessible des 3 boutons-icônes et la structure `summary > h2` : voir `A11Y-FORK-RAPPORT.md`.
