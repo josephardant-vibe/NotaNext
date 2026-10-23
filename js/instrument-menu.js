@@ -41,6 +41,7 @@ window.Notanext = window.Notanext || {};
     const paint = () => {
       const id = instruments.get();
       trigger.innerHTML = `${iconHtml(id)}<span class="inst-name">${label(id)}</span>${CHEVRON}`;
+      trigger.setAttribute('aria-label', `Instrument : ${label(id)}`); // le nom contient le texte visible (WCAG 2.5.3)
       options.forEach((o) => o.setAttribute('aria-selected', String(o.dataset.id === id)));
     };
     const close = () => { list.hidden = true; trigger.setAttribute('aria-expanded', 'false'); };

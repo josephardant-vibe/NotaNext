@@ -154,7 +154,7 @@
       </svg>
       <div class="home-tile-foot">
         <span class="home-tile-msg">${t.soon ? '' : 'Quelle est cette note ?'}</span>
-        ${t.soon ? '<span class="home-soon" aria-disabled="true">Bientôt</span>' : '<a href="#" class="home-try">Jouer</a>'}
+        ${t.soon ? '<span class="home-soon" aria-disabled="true">Bientôt</span>' : `<a href="#" class="home-try" aria-label="Jouer : ${t.title}">Jouer</a>`}
       </div>`;
     if (!t.soon) {
       el.querySelector('.home-try').addEventListener('click', (e) => {
