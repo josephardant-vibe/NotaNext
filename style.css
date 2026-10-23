@@ -19,15 +19,6 @@ body {
   position: relative;
 }
 
-/* ---------- FOND ---------- */
-.bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: var(--color-sys-bg-page);
-}
-
 /* ---------- COQUILLE ---------- */
 /* Habillage plat partout (hub, jeux, Réglages) : fond parchemin, filets fins, ni ombre ni verre sur le shell. */
 .shell {
@@ -595,7 +586,6 @@ body.is-home {
   background: var(--paper);
 }
 
-body.is-home .bg,
 body.is-home .nav,
 body.is-home .shell,
 body.is-home .game {
@@ -1667,9 +1657,6 @@ h1.gf-title { margin: 0; }
    SHELL V2 (maquette design/shell-v2-2026-10-20.html) : en-tête, barre d'onglets, hub, Réglages, pages texte
    Plat : fond parchemin, filets d'1 px, aucune ombre, aucun verre, aucun cercle décoratif.
    ===================================================================== */
-
-/* Hors jeu, le fond animé disparaît : parchemin uni. Il reste derrière les écrans de jeu (hors périmètre). */
-body:not(.in-game) .bg { display: none; }
 
 /* ----- en-tête (ordinateur) ----- */
 .nav {
