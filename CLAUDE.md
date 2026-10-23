@@ -55,6 +55,9 @@ déployée sur Netlify depuis GitHub (josephardant-vibe/NotaNext).
   affichage (première réponse juste).
 - Retours bêta : formulaire Tally (hors Netlify) → base Notion « Retours bêta —
   NotaNext ». Champs cachés : version, page.
+  Thème du formulaire réglé côté Tally (23 oct. 2026) : fond papier #FAF6EF,
+  texte #211D18, accent et bouton cuivre foncé #8F3C22, police IBM Plex Sans ;
+  le cadre de la fenêtre (3 px, même teinte) est dans style.css (.tally-popup).
 
 ## Accès complet (à venir)
 - Modèle prévu : paiement unique de 3 €, accès complet ; un interrupteur par compte
