@@ -705,6 +705,7 @@ body.is-home .game {
   justify-content: space-between;
   column-gap: 24px;
   min-height: 68px;
+  flex: none; /* ne rétrécit pas : sans cela, le min-height fixe l'écrase quand la navigation passe sur 2 lignes (mobile) */
   padding: 0 clamp(20px, 4vw, 56px);
   background: var(--paper);
 }
