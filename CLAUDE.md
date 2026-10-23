@@ -49,8 +49,10 @@ déployée sur Netlify depuis GitHub (josephardant-vibe/NotaNext).
   clic), version.js (numéro de version joint aux retours), access.js.
 - Aperçus du hub : les vrais jeux montés en mode démonstration (openFrame avec
   `demo`) ; muet (Notanext.sound.setDemoSilent), conteneur inerte, aucun
-  stockage ni clavier. Tout nouveau jeu doit fournir `answer(ok)` / `pause(p)`
-  quand il est monté avec `demo`.
+  stockage ni clavier. Tout nouveau jeu doit fournir `answer(ok)` (renvoie
+  faux tant que le jeu n'est pas prêt) / `pause(p)` quand il est monté avec
+  `demo` ; `demo.speed` (1,9) accélère ses pauses. Un aperçu répond dès son
+  affichage (première réponse juste).
 - Retours bêta : formulaire Tally (hors Netlify) → base Notion « Retours bêta —
   NotaNext ». Champs cachés : version, page.
 

@@ -47,7 +47,7 @@ window.Notanext = window.Notanext || {};
 
   // `pickNote()` est appelée à chaque note générée : elle lit toujours la clé courante.
   // `onDue(note)` est appelée dès qu'une note devient la cible active (celle que les
-  // boutons de réponse évaluent et que "Réécouter" rejoue) — au montage puis après chaque avancée.
+  // boutons de réponse évaluent) — au montage puis après chaque avancée.
   function createWindowStaff(svg, { clef, pickNote, onDue }) {
     svg.innerHTML = '';
 

@@ -16,6 +16,7 @@ window.Notanext = window.Notanext || {};
   const CLIP_X = 68;             // les notes glissent sous le bord droit de la clé
   const EXIT_MARGIN = -30;       // les notes sont retirées un peu après être sorties à gauche
   const SPACING_X = 95;          // écart (unités de viewBox) entre deux notes générées : cibles bien distinctes, aussi au doigt
+  const PRE_ROLL_GAP = 70;       // aperçu : la 1re note démarre à cette distance du repère (unités de viewBox)
 
   const REF_SPEED = 44; // vitesse de référence (unités de viewBox / seconde) = "Intermédiaire" (55 * 0.8 : tous les niveaux ralentis de 20 %)
   const SPEED_LEVELS = {
@@ -43,9 +44,10 @@ window.Notanext = window.Notanext || {};
   // `pickNote()` est appelée à chaque nouvelle note : elle lit toujours la clé
   // courante, donc un changement de clé s'applique de lui-même aux notes à venir.
   // `onDue(note)` est appelée dès qu'une note devient la cible active (celle que
-  // les boutons de réponse évaluent et que "Réécouter" rejoue).
+  // les boutons de réponse évaluent).
   // `onMiss(correctName)` est appelée quand une note dépasse le repère sans réponse.
-  function createScrollStaff(svg, { clef, pickNote, onDue, onMiss, initialSpeed }) {
+  // `preRoll` (aperçus du hub) : le temps est avancé au premier affichage pour que la 1re note soit déjà près du repère.
+  function createScrollStaff(svg, { clef, pickNote, onDue, onMiss, initialSpeed, preRoll }) {
     svg.innerHTML = '';
     const staticLayer = el('g', { class: 'scroll-static' });
     const notesLayer = el('g', { class: 'scroll-notes' });
@@ -70,6 +72,7 @@ window.Notanext = window.Notanext || {};
     let paused = false;
     let clock = 0;
     let nextSpawnAt = 0;
+    let primed = false;
 
     // Horloge virtuelle : n'avance que pendant que l'onglet est visible, pour que
     // les notes ne "téléportent" pas après un changement d'onglet ou une mise en veille.
@@ -102,11 +105,13 @@ window.Notanext = window.Notanext || {};
       staticLayer.appendChild(el('line', { class: 'marker-line', x1: MARKER_X, x2: MARKER_X, y1: -36, y2: 142 }));
     }
 
-    function spawnNote() {
+    // `age` (ms) : temps écoulé depuis l'instant prévu d'apparition (rattrapage après une image longue ou un pré-déroulé).
+    function spawnNote(age) {
       const note = pickNote();
       const cy = yOf(note.step);
+      const x0 = SPAWN_X - (SPEED * (age || 0)) / 1000;
 
-      const group = el('g', { class: 'scroll-note', transform: `translate(${SPAWN_X},0)` });
+      const group = el('g', { class: 'scroll-note', transform: `translate(${x0},0)` });
       ledgerSteps(note.step).forEach((s) =>
         group.appendChild(el('line', { class: 'ledger-line', x1: -15, x2: 15, y1: yOf(s), y2: yOf(s) }))
       );
@@ -115,7 +120,7 @@ window.Notanext = window.Notanext || {};
       group.appendChild(spin);
       notesLayer.appendChild(group);
 
-      const entry = { note, x: SPAWN_X, group, state: 'pending' };
+      const entry = { note, x: x0, group, state: 'pending' };
       notes.push(entry);
       const wasEmpty = queue.length === 0;
       queue.push(entry);
@@ -163,9 +168,13 @@ window.Notanext = window.Notanext || {};
       if (!document.hidden && !paused) dt = Math.min(nowReal - lastReal, 100);
       lastReal = nowReal;
       clock += dt;
+      if (preRoll && !primed) {
+        primed = true;
+        clock = Math.max(clock, ((SPAWN_X - MARKER_X - PRE_ROLL_GAP) / SPEED) * 1000);
+      }
 
       while (clock >= nextSpawnAt) {
-        spawnNote();
+        spawnNote(clock - nextSpawnAt);
         nextSpawnAt += spawnInterval;
       }
 

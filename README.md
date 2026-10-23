@@ -27,10 +27,13 @@ défaut). Sur téléphone, l'onglet « Clavier » devient « Réglages » (notat
 
 **S'exercer**
 - *Deviner la note* — huit notes sur la portée (celle repérée par le trait et les sept à venir), trouve le nom de celle repérée.
+- Dans *Deviner la note* et *Défilement continu*, aucune note n'est jouée pour aider : seule la bonne note sonne quand elle est
+  devinée ; un interrupteur « Son » (même réglage que Réglages > Son) remplace « Réécouter ».
 - *Deviner la note – défilement continu* — les notes défilent, vitesse réglable
   (Débutant → Expert) ; on répond dans l'ordre d'arrivée, la prochaine note est cerclée et son
   nom s'écrit un instant dans la tête de note.
-- *Placer la note* — un nom est donné, clique sa position sur la portée.
+- *Placer la note* — un nom est donné, on place la note sur la portée (souris : survol + clic ; toucher : on pose le
+  doigt, on glisse, on relâche). Sur téléphone, le jeu se joue en portrait avec une portée haute (≈ 18 px par demi-ton).
 - *Oreille absolue — deviner* — un son, 7 notes en cercle autour d'un bouton rond ; les
   touches du clavier configurées restent valables.
 - *Oreille absolue — placer* — un son, on place la note sur la portée (clic, ou toucher et
