@@ -3,7 +3,7 @@
 Web app d'apprentissage du solfège — lecture de notes, clés et entraînement de l'oreille. HTML / CSS / JavaScript « vanilla », sans framework ni
 étape de build : tout tourne dans le navigateur, sans compte ni installation.
 
-Déployée sur Netlify depuis ce dépôt.
+Déployée sur Netlify depuis ce dépôt. Adresse définitive prévue : notanext.com (voir `docs/mise-en-ligne-notanext-com.md`).
 
 ## Fonctionnalités
 
@@ -71,17 +71,23 @@ python3 -m http.server 8000
 ## Structure
 
 ```
-index.html        page unique : accueil, onglets S'exercer / Apprendre
-style.css         tous les styles (palette et polices définies dans :root)
+index.html        page unique : accueil, S'exercer, Apprendre, Réglages, pages texte
+style.css         tous les styles (valeurs : variables de design-system/tokens.css)
+404.html          adresses directes (/s-exercer/, /reglages…) redirigées vers #/…
+robots.txt        autorise l'exploration
 netlify.toml      configuration de déploiement (cache, en-têtes)
+design-system/    jetons (tokens.json → tokens.css), règles, vérificateur (check-design-system.py)
 fonts/            polices hébergées (Fraunces, IBM Plex Sans, Noto Music)
 audio/            échantillons d'instruments (un dossier par instrument)
-docs/             documents du projet (mémoire du projet, 3 oct. 2026)
+docs/             documents du projet : audits, sources du cours, mise en ligne
 CREDITS.md        licences et crédits des sons
 CLAUDE.md         mémo projet : charte visuelle et règles de travail
 js/
   notes.js        données : clés, exercices, cartes Apprendre, théorie, FAQ
   audio.js        synthèse sonore Web Audio + lecture des échantillons d'instruments
+  access.js       point d'entrée unique de l'accès complet (renvoie toujours vrai)
+  version.js      numéro de version joint aux retours
+  keys.js         touches par position physique (event.code)
   instrument-menu.js menu de choix d'instrument (icônes et teintes)
   staff.js        portée statique + clés (glyphes Unicode)
   scroll-staff.js portée à défilement continu
@@ -89,6 +95,10 @@ js/
   ear.js          jeux d'oreille absolue (deviner, placer)
   runner.js       animation de la page Se connecter (coureur sur la portée)
   game.js         navigation, exercices, leçons, clavier
+  hub.js          hub S'exercer : liste, recherche, aperçus en démonstration
+  settings.js     Réglages
+  docs.js         mentions légales, confidentialité, crédits
+  feedback.js     icône de retours et formulaire Tally
   home.js         page d'accueil (démo, jeux, cours, mémoire de visite)
 ```
 
@@ -98,7 +108,9 @@ Ajouter un exercice, une clé ou une leçon = une entrée dans `js/notes.js`.
 
 - Fond blanc cassé `#FAF6EF`, cuivre `#B8502F` pour l'interface, or pour score et série,
   vert pour la bonne réponse uniquement, gris pour la mauvaise réponse / le neutre.
-- Un seul panneau « verre » par écran, aucune ombre portée ailleurs.
+- Verre réservé à l'aperçu du hero de l'accueil ; écrans de jeu plats sur papier ; aucune ombre portée.
+- Toutes les valeurs (couleurs, tailles, rayons, durées) viennent de `design-system/tokens.json` ;
+  `python3 design-system/check-design-system.py` doit rester vert.
 - Polices : Fraunces (titres, score) et IBM Plex Sans (texte, boutons).
 - Icônes : uniquement des têtes de note (exception : pictogrammes du choix d'instrument).
 

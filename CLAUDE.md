@@ -31,9 +31,12 @@ déployée sur Netlify depuis GitHub (josephardant-vibe/NotaNext).
   inventé librement.
 
 ## Structure actuelle
-- index.html, style.css, netlify.toml, js/ (notes.js = données, game.js =
-  navigation et jeux, ear.js = oreille absolue, runner.js = animation de la
-  page Se connecter), audio/ (échantillons), docs/.
+- index.html, style.css, 404.html (adresses directes → #/…), robots.txt,
+  netlify.toml, js/ (notes.js = données, game.js = navigation et jeux, ear.js =
+  oreille absolue, runner.js = animation de la page Se connecter), audio/
+  (échantillons), docs/ (audits, sources du cours, mise en ligne),
+  design-system/ (jetons, vérificateur, outil de contrôle à l'écran dans
+  outils/). Passage prévu sur notanext.com : docs/mise-en-ligne-notanext-com.md.
 - Navigation (shell v2, maquette design/shell-v2-2026-10-20.html) : logo ·
   S'exercer · Apprendre · Réglages (engrenage) · « Comptes bientôt » (texte non
   cliquable) ; mobile : barre fine en haut + barre d'onglets en bas. Habillage
