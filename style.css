@@ -1307,7 +1307,8 @@ body.in-game .shell { display: none; }
   font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 520px) { .gf-title { display: none; } }
+/* Titre de l'écran de jeu : masqué à l'écran quand la place manque, mais conservé pour les lecteurs d'écran (repère h1). */
+@media (max-width: 520px) { .gf-title { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; } }
 
 /* Bouton d'orientation : téléphone uniquement */
 .gf-rotate-btn {
@@ -1455,7 +1456,7 @@ body.game-rotated .nav { display: none; }
 @media (max-height: 520px) {
   body:not(.game-portrait) .nav { padding-top: 8px; padding-bottom: 4px; }
   body:not(.game-portrait) .gf { gap: 4px; padding: 8px 16px; }
-  body:not(.game-portrait) .gf-title { display: none; }
+  body:not(.game-portrait) .gf-title { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   body:not(.game-portrait) .gf-count { font-size: 20px; }
   body:not(.game-portrait) .gf-answers { gap: 6px; }
   body:not(.game-portrait) .gf-answers .answer-btn { padding: 5px 0; font-size: 14px; }
@@ -1470,7 +1471,7 @@ body.game-rotated .nav { display: none; }
 }
 
 .game.rot-cw .gf { gap: 4px; padding: 8px 16px; }
-.game.rot-cw .gf-title { display: none; }
+.game.rot-cw .gf-title { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .game.rot-cw .gf-count { font-size: 20px; }
 .game.rot-cw .gf-answers { gap: 6px; }
 .game.rot-cw .gf-answers .answer-btn { padding: 5px 0; font-size: 14px; }
